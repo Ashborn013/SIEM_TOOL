@@ -1,0 +1,69 @@
+{
+  "@timestamp": "2024-04-11T09:52:42.573Z",
+  "host": {
+    "name": "desktop-us822g0",
+    "ip": [
+      "169.254.87.64",
+      "169.254.166.152",
+      "169.254.21.82",
+      "fe80::915d:6825:d23d:a734",
+      "192.168.144.1",
+      "fe80::1cfd:bf9:682a:7d7b",
+      "192.168.80.1",
+      "10.12.68.7",
+      "169.254.96.19",
+      "fe80::dacd:c690:c308:c6d",
+      "172.30.128.1"
+    ],
+    "mac": [
+      "00-15-5D-A4-01-00",
+      "00-50-56-C0-00-01",
+      "00-50-56-C0-00-08",
+      "00-FF-21-22-3C-FF",
+      "B0-7D-64-BB-13-AE",
+      "B0-7D-64-BB-13-AF",
+      "B0-7D-64-BB-13-B2",
+      "B2-7D-64-BB-13-AE"
+    ],
+    "hostname": "desktop-us822g0",
+    "architecture": "x86_64",
+    "os": {
+      "name": "Windows 11 Pro",
+      "kernel": "10.0.22621.3447 (WinBuild.160101.0800)",
+      "build": "22631.3447",
+      "type": "windows",
+      "platform": "windows",
+      "version": "10.0",
+      "family": "windows"
+    },
+    "id": "afffecdc-d57f-4ead-9010-0143a734365d"
+  },
+  "winlog": {
+    "channel": "System",
+    "event_id": "98",
+    "computer_name": "DESKTOP-US822G0",
+    "event_data": {
+      "DriveName": "\\\\?\\Volume{55a91052-b654-4f0f-8858-9c3a151ac376}",
+      "DeviceName": "\\Device\\HarddiskVolume6",
+      "CorruptionActionState": "0"
+    },
+    "provider_name": "Microsoft-Windows-Ntfs"
+  },
+  "event": {
+    "code": "98",
+    "kind": "event",
+    "provider": "Microsoft-Windows-Ntfs",
+    "action": "None",
+    "created": "2024-05-02T04:28:25.726Z"
+  },
+  "log": { "level": "information" },
+  "message": "Volume \\\\?\\Volume{55a91052-b654-4f0f-8858-9c3a151ac376} (\\Device\\HarddiskVolume6) is healthy.  No action is needed.",
+  "ecs": { "version": "8.0.0" },
+  "agent": {
+    "name": "DESKTOP-US822G0",
+    "type": "winlogbeat",
+    "version": "8.13.2",
+    "ephemeral_id": "22415ebf-ad9e-41fa-9751-28bc044e4694",
+    "id": "47c6da14-cd88-47c0-b99b-9096a7bde971"
+  }
+}

@@ -1,0 +1,3 @@
+set up kafka serive that collects messages 
+a python serivie to collect the data from kafka and save to file
+a python service to manaplate the data 

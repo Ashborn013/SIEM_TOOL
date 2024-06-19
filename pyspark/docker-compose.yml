@@ -1,0 +1,29 @@
+services:
+  jupyter-notebook:
+    build:
+      context: pyspark-image-builder
+      dockerfile: Dockerfile
+    ports:
+      - "4040:4040"  
+    volumes:
+      - ./pyspark-image-builder/data:/home/jovyan/work  
+      - data:/saveData
+    # environment:
+    #   JUPYTER_ENABLE_LAB: "yes"  # Enable JupyterLab interface (optional)
+    command: [ "python", "/home/jovyan/work/main.py" ]
+    # command: ["tail", "-f", "/dev/null"]
+
+  flask-server:
+    build:
+      context: recive-server 
+      dockerfile: Dockerfile
+    ports:
+      - "223:223"
+    volumes:
+      - ./recive-server/:/app
+      - data:/saveData
+      - ./saveData:/saveData
+
+
+volumes:
+  data:
