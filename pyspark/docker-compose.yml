@@ -10,8 +10,8 @@ services:
       - data:/saveData
     # environment:
     #   JUPYTER_ENABLE_LAB: "yes"  # Enable JupyterLab interface (optional)
-    # command: [ "python", "/home/jovyan/work/main.py" ]
-    command: ["tail", "-f", "/dev/null"]
+    command: [ "python", "/home/jovyan/work/main.py" ]
+    # command: ["tail", "-f", "/dev/null"]
 
   # flask-server:
   #   build:
