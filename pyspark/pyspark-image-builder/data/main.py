@@ -1,6 +1,7 @@
-# How many LOGS based on an EventID
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import col, count
+from pyspark.sql.functions import col, count, to_json, lag
+from pyspark.sql.window import Window
+from pyspark.sql.types import TimestampType
 from datetime import datetime
 import json
 
