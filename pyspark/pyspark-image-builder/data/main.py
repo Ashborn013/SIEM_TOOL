@@ -70,6 +70,7 @@ def regex_query(df, query_list):
         print("No matches found.")
         return None
 
+# The `all_notable_event_id` function filters and aggregates log entries from a DataFrame based on a predefined list of notable event IDs. It is designed to work with log data, where each entry is associated with an event ID. This function helps in isolating log entries that are considered significant or noteworthy due to their event IDs.
 
 def all_notable_event_id(df):
     ids = [
@@ -142,9 +143,8 @@ def detact_bruteForce(df):
     logs_under_one_min = out_put.filter(col("time_diff") < 60)
 
     count = logs_under_one_min.count()
-    if count > 10:
+    if count > 5:
         print("Brute Force attampt deatacted .. !")
-        logs_under_one_min.show()
         return logs_under_one_min
     else:
         return None
@@ -176,8 +176,14 @@ rules = [
 
 # Apply rules using the rule engine
 result_df = rule_engine(df_selected, rules)
+result_df.show(truncate=True)
 
-result_df.show(truncate=False)
+
+
+output = detact_bruteForce(df_selected)
+if output is not None:
+    output.show()
+
 
 output_path = f"/home/jovyan/work/categorized_winlogbeat-{datetime.now().isoformat()}"
 result_df.coalesce(1).write.json(output_path)
