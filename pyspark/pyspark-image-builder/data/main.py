@@ -144,7 +144,6 @@ def detact_bruteForce(df):
 
     count = logs_under_one_min.count()
     if count > 5:
-        print("Brute Force attampt deatacted .. !")
         return logs_under_one_min
     else:
         return None
@@ -182,8 +181,10 @@ result_df.show(truncate=True)
 
 output = detact_bruteForce(df_selected)
 if output is not None:
+    print("Brute Force attampt deatacted .. !")
     output.show()
-
+else:
+    print("No brute force attack detected")
 
 output_path = f"/home/jovyan/work/categorized_winlogbeat-{datetime.now().isoformat()}"
 result_df.coalesce(1).write.json(output_path)
