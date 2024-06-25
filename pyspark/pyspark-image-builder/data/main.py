@@ -186,6 +186,15 @@ if output is not None:
 else:
     print("No brute force attack detected")
 
+print("Regex query results:")
+quary = ["(?i)(?=.*error)"]
+regex_query(df_selected, quary).show()
+
+print("All notable event IDs:")
+all_notable_event_id(df_selected).show()
+print(all_notable_event_id(df_selected).count())
+
+
 output_path = f"/home/jovyan/work/categorized_winlogbeat-{datetime.now().isoformat()}"
 result_df.coalesce(1).write.json(output_path)
 
