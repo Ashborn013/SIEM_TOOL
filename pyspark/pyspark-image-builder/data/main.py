@@ -123,7 +123,7 @@ def all_notable_event_id(df):
         else:
             union_df = union_df.union(df_filter)
 
-    print(union_df.count())
+
     return union_df
 
 
@@ -143,7 +143,7 @@ def detact_bruteForce(df):
     logs_under_one_min = out_put.filter(col("time_diff") < 60)
 
     count = logs_under_one_min.count()
-    if count > 5:
+    if count > 10:
         return logs_under_one_min
     else:
         return None
