@@ -4,7 +4,7 @@ from pyspark.sql.window import Window
 from pyspark.sql.types import TimestampType
 from datetime import datetime
 import json
-
+from saveToSql import *
 spark = SparkSession.builder.appName("Read JSON File").getOrCreate()
 
 
