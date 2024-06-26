@@ -63,14 +63,12 @@ def regex_query(df, query_list):
                 result_df = result_df.withColumn(field.name, to_json(col(field.name)))
         result_df = result_df.dropDuplicates()
         # result_df.select("message").show(truncate=False)
-        result_df.show(truncate=True)
         return result_df
 
     else:
         print("No matches found.")
         return None
 
-# The `all_notable_event_id` function filters and aggregates log entries from a DataFrame based on a predefined list of notable event IDs. It is designed to work with log data, where each entry is associated with an event ID. This function helps in isolating log entries that are considered significant or noteworthy due to their event IDs.
 
 def all_notable_event_id(df):
     ids = [
