@@ -163,20 +163,20 @@ cython_debug/
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
-/node_modules
-/.pnp
+ui/node_modules
+ui/.pnp
 .pnp.js
 .yarn/install-state.gz
 
 # testing
-/coverage
+ui/coverage
 
 # next.js
-/.next/
-/out/
+ui/.next/
+ui/out/
 
 # production
-/build
+ui/build
 
 # misc
 .DS_Store
