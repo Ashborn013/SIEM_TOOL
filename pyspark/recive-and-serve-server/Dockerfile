@@ -5,7 +5,7 @@ RUN mkdir /saveData
 
 
 # Add the current directory contents into the container at /app
-ADD app/. /app
+ADD . /app
 WORKDIR /app
 # Install any needed packages specified in requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
@@ -14,5 +14,5 @@ RUN pip install --no-cache-dir -r requirements.txt
 EXPOSE 223
 
 # Run app.py when the container launches
-CMD ["python", "app/main.py"]
-# CMD ["tail", "-f", "/dev/null"]
+# CMD ["python", "main.py"]
+CMD ["tail", "-f", "/dev/null"]
