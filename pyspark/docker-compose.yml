@@ -8,6 +8,7 @@ services:
     volumes:
       - ./pyspark-image-builder/:/home/jovyan/work  
       - data:/saveData
+      - sql_db:/DataBaseStore
     # environment:
     #   JUPYTER_ENABLE_LAB: "yes"  # Enable JupyterLab interface (optional)
     command: [ "python" ,"/home/jovyan/work/main.py" ]
@@ -23,7 +24,9 @@ services:
       - ./recive-and-serve-server/:/app
       - data:/saveData
       - ./saveData:/saveData
+      - sql_db:/DataBaseStore
 
 
 volumes:
   data:
+  sql_db:
