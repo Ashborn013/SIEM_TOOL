@@ -5,8 +5,8 @@ from pyspark.sql.types import TimestampType
 from datetime import datetime
 import json
 from saveToSql import *
-spark = SparkSession.builder.appName("Read JSON File").getOrCreate()
 
+spark = SparkSession.builder.appName("Read JSON File").getOrCreate()
 
 file_path = "/home/jovyan/work/altered.json"
 
@@ -28,23 +28,13 @@ df_selected = df.select(
     col("host").getItem("hostname").alias("hostname"),
 )
 
-# ----------------- funtions  -----------------
+# ----------------- Functions -----------------
 
 def filter_logs_by_event_id(df, event_id):
     return df.filter(col("event_id") == event_id)
 
-
 def count_logs_by_hostname(df):
     return df.groupBy("hostname").agg(count("*").alias("log_count"))
-
-
-def rule_engine(df, rules):
-    for rule in rules:
-        if rule["type"] == "filter_by_event_id":
-            df = filter_logs_by_event_id(df, rule["event_id"])
-        elif rule["type"] == "count_by_hostname":
-            df = count_logs_by_hostname(df)
-    return df
 
 def regex_query(df, query_list):
     result_df = None
@@ -62,139 +52,106 @@ def regex_query(df, query_list):
             if field.dataType.simpleString().startswith("map"):
                 result_df = result_df.withColumn(field.name, to_json(col(field.name)))
         result_df = result_df.dropDuplicates()
-        # result_df.select("message").show(truncate=False)
         return result_df
-
     else:
         print("No matches found.")
         return None
 
-
 def all_notable_event_id(df):
     ids = [
-        27,
-        104,
-        140,
-        1001,
-        4624,
-        4625,
-        4648,
-        4649,
-        4657,
-        4670,
-        4703,
-        4713,
-        4717,
-        4718,
-        4725,
-        4732,
-        4739,
-        4769,
-        4771,
-        4776,
-        4781,
-        4782,
-        4782,
-        4798,
-        4816,
-        4946,
-        4947,
-        4948,
-        5025,
-        5027,
-        5034,
-        5142,
-        6145,
-        6273,
-        6416,
-        6423,
-        7023,
-        7045,
-        24577,
-        32850,
+        27, 104, 140, 1001, 4624, 4625, 4648, 4649, 4657, 4670, 4672, 4703, 4713, 4717,
+        4718, 4725, 4732, 4739, 4769, 4771, 4776, 4781, 4782, 4782, 4798, 4816,
+        4946, 4947, 4948, 5025, 5027, 5034, 5142, 6145, 6273, 6416, 6423, 7023,
+        7045, 24577, 32850,
     ]
-    union_df = None 
+    union_df = None
     for i in ids:
         df_filter = filter_logs_by_event_id(df, i)
         if union_df is None:
             union_df = df_filter
         else:
             union_df = union_df.union(df_filter)
-
-
     return union_df
 
-
-def detact_bruteForce(df):
+def detect_brute_force(df):
     df = df.withColumn("@timestamp", col("@timestamp").cast(TimestampType()))
     out_put = filter_logs_by_event_id(df, 4625)
     out_put = out_put.orderBy("@timestamp")
 
     windowSpec = Window.orderBy("@timestamp")
-
     out_put = out_put.withColumn(
         "time_diff",
-        col("@timestamp").cast("long")
-        - lag("@timestamp", 1).over(windowSpec).cast("long"),
+        col("@timestamp").cast("long") - lag("@timestamp", 1).over(windowSpec).cast("long"),
     )
 
     logs_under_one_min = out_put.filter(col("time_diff") < 60)
-
     count = logs_under_one_min.count()
+
     if count > 10:
         return logs_under_one_min
     else:
         return None
 
+def detect_special_privilege_logon(df):
+    df_filtered = df.filter(col("event_id") == '4672')
+    count = df_filtered.count()
 
+    if count > 0:
+        print("Special privilege logon detected .. !")
+        df_filtered.show()
+        return df_filtered
+    else:
+        print("No special privilege logon detected.")
+        return None
+    
+def rule_engine(df, rules):
+    for rule in rules:
+        if df is None:
+            print("DataFrame is None, skipping rule:", rule)
+            continue
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        if rule["type"] == "filter_by_event_id":
+            df = filter_logs_by_event_id(df, rule["event_id"])
+        elif rule["type"] == "count_by_hostname":
+            df = count_logs_by_hostname(df)
+        elif rule["type"] == "regex_query_test":
+            df = regex_query(df, ["failed login", "error", "critical"])
+        elif rule["type"] == "main_event_ids":
+            df = all_notable_event_id(df)
+        elif rule["type"] == "brute_force_detection":
+            df = detect_brute_force(df)
+        elif rule["type"] == "special_privilege_logon_detection":
+            df = detect_special_privilege_logon(df)
+    return df
 
 # ----------------- Main -----------------
 
 rules = [
     {"type": "filter_by_event_id", "event_id": "4625"},
     {"type": "count_by_hostname"},
+    {"type": "special_privilege_logon_detection"}
 ]
 
 # Apply rules using the rule engine
 result_df = rule_engine(df_selected, rules)
 result_df.show(truncate=True)
 
-
-
-output = detact_bruteForce(df_selected)
+output = detect_brute_force(df_selected)
 if output is not None:
-    print("Brute Force attampt deatacted .. !")
+    print("Brute Force attempt detected .. !")
     output.show()
 else:
     print("No brute force attack detected")
 
 print("Regex query results:")
-quary = ["(?i)(?=.*error)"]
-regex_query(df_selected, quary).show()
+query = ["(?i)(?=.*error)"]
+regex_query(df_selected, query).show()
 
 print("All notable event IDs:")
 all_notable_event_id(df_selected).show()
 print(all_notable_event_id(df_selected).count())
 
-
 output_path = f"/home/jovyan/work/categorized_winlogbeat-{datetime.now().isoformat()}"
 result_df.coalesce(1).write.json(output_path)
-
 
 spark.stop()
