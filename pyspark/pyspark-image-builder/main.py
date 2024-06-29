@@ -124,7 +124,7 @@ def rule_engine(df, rules):
             df = detect_special_privilege_logon(df)
     return df
 
-# ----------------- Main -----------------
+# ----------------- Main -----------------------
 
 rules = [
     {"type": "filter_by_event_id", "event_id": "4625"},
