@@ -103,7 +103,19 @@ def detect_special_privilege_logon(df):
     else:
         print("No special privilege logon detected.")
         return None
-    
+        
+def detect_user_account_changed(df):
+    df_filtered = df.filter(col("event_id") == '4738')
+    count = df_filtered.count()
+
+    if count > 0:
+        print(f"User account change detected {count} times .. !")
+        df_filtered.show()
+        return df_filtered
+    else:
+        print("No user account change detected.")
+        return None
+        
 def rule_engine(df, rules):
     for rule in rules:
         if df is None:
@@ -122,14 +134,18 @@ def rule_engine(df, rules):
             df = detect_brute_force(df)
         elif rule["type"] == "special_privilege_logon_detection":
             df = detect_special_privilege_logon(df)
+        elif rule["type"] == "user_account_change":
+            df = detect_user_account_changed(df)
     return df
 
 # ----------------- Main -----------------------
 
 rules = [
-    {"type": "filter_by_event_id", "event_id": "4625"},
-    {"type": "count_by_hostname"},
-    {"type": "special_privilege_logon_detection"}
+    #{"type": "filter_by_event_id", "event_id": "4625"},
+    #{"type": "count_by_hostname"},
+    #{"type": "special_privilege_logon_detection"}
+    {"type": "filter_by_event_id", "event_id": "4738"},
+    {"type": "user_account_change"},
 ]
 
 # Apply rules using the rule engine
