@@ -1,6 +1,8 @@
 FROM jupyter/pyspark-notebook:x86_64-spark-3.5.0
-RUN mkdir /DataBaseStore
-# Install PySpark
+# USER root
+RUN mkdir  ~/DataBaseStore
+RUN touch ~/DataBaseStore/database.db
+
 RUN pip install pyspark
 # CMD  ["tail", "-f", "/dev/null"]
 

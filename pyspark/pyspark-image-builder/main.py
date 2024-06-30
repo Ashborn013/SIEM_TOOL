@@ -30,11 +30,14 @@ df_selected = df.select(
 
 # ----------------- Functions -----------------
 
+
 def filter_logs_by_event_id(df, event_id):
     return df.filter(col("event_id") == event_id)
 
+
 def count_logs_by_hostname(df):
     return df.groupBy("hostname").agg(count("*").alias("log_count"))
+
 
 def regex_query(df, query_list):
     result_df = None
@@ -57,12 +60,50 @@ def regex_query(df, query_list):
         print("No matches found.")
         return None
 
+
 def all_notable_event_id(df):
     ids = [
-        27, 104, 140, 1001, 4624, 4625, 4648, 4649, 4657, 4670, 4672, 4703, 4713, 4717,
-        4718, 4725, 4732, 4739, 4769, 4771, 4776, 4781, 4782, 4782, 4798, 4816,
-        4946, 4947, 4948, 5025, 5027, 5034, 5142, 6145, 6273, 6416, 6423, 7023,
-        7045, 24577, 32850,
+        27,
+        104,
+        140,
+        1001,
+        4624,
+        4625,
+        4648,
+        4649,
+        4657,
+        4670,
+        4672,
+        4703,
+        4713,
+        4717,
+        4718,
+        4725,
+        4732,
+        4739,
+        4769,
+        4771,
+        4776,
+        4781,
+        4782,
+        4782,
+        4798,
+        4816,
+        4946,
+        4947,
+        4948,
+        5025,
+        5027,
+        5034,
+        5142,
+        6145,
+        6273,
+        6416,
+        6423,
+        7023,
+        7045,
+        24577,
+        32850,
     ]
     union_df = None
     for i in ids:
@@ -73,6 +114,7 @@ def all_notable_event_id(df):
             union_df = union_df.union(df_filter)
     return union_df
 
+
 def detect_brute_force(df):
     df = df.withColumn("@timestamp", col("@timestamp").cast(TimestampType()))
     out_put = filter_logs_by_event_id(df, 4625)
@@ -81,7 +123,8 @@ def detect_brute_force(df):
     windowSpec = Window.orderBy("@timestamp")
     out_put = out_put.withColumn(
         "time_diff",
-        col("@timestamp").cast("long") - lag("@timestamp", 1).over(windowSpec).cast("long"),
+        col("@timestamp").cast("long")
+        - lag("@timestamp", 1).over(windowSpec).cast("long"),
     )
 
     logs_under_one_min = out_put.filter(col("time_diff") < 60)
@@ -92,8 +135,9 @@ def detect_brute_force(df):
     else:
         return None
 
+
 def detect_special_privilege_logon(df):
-    df_filtered = df.filter(col("event_id") == '4672')
+    df_filtered = df.filter(col("event_id") == "4672")
     count = df_filtered.count()
 
     if count > 0:
@@ -103,11 +147,12 @@ def detect_special_privilege_logon(df):
     else:
         print("No special privilege logon detected.")
         return None
-        
-def detect_user_account_changed(df):
-    df_filtered = df.filter(col("event_id") == '4738')
-    count = df_filtered.count()
 
+
+def detect_user_account_changed(df):
+    df_filtered = df.filter(col("event_id") == "4738")
+    count = df_filtered.count()
+    detect_brute_force_db_save(df_filtered)
     if count > 0:
         print(f"User account change detected {count} times .. !")
         df_filtered.show()
@@ -115,7 +160,8 @@ def detect_user_account_changed(df):
     else:
         print("No user account change detected.")
         return None
-        
+
+
 def rule_engine(df, rules):
     for rule in rules:
         if df is None:
@@ -138,12 +184,13 @@ def rule_engine(df, rules):
             df = detect_user_account_changed(df)
     return df
 
+
 # ----------------- Main -----------------------
 
 rules = [
-    #{"type": "filter_by_event_id", "event_id": "4625"},
-    #{"type": "count_by_hostname"},
-    #{"type": "special_privilege_logon_detection"}
+    # {"type": "filter_by_event_id", "event_id": "4625"},
+    # {"type": "count_by_hostname"},
+    # {"type": "special_privilege_logon_detection"}
     {"type": "filter_by_event_id", "event_id": "4738"},
     {"type": "user_account_change"},
 ]
