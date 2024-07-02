@@ -1,4 +1,9 @@
 import React from "react";
+import { CgMenuGridO ,CgFlagAlt } from "react-icons/cg";
+import { FaServer } from "react-icons/fa6";
+import { IoIosPulse } from "react-icons/io";
+import { IoBook } from "react-icons/io5";
+import { GoGear } from "react-icons/go";
 
 export default function SideBar() {
   return (
@@ -7,12 +12,6 @@ export default function SideBar() {
         <input id="my-drawer-2" type="checkbox" className="drawer-toggle" />
         <div className="drawer-content flex flex-col items-center justify-center">
           {/* Page content here */}
-          <label
-            htmlFor="my-drawer-2"
-            className="btn btn-primary drawer-button lg:hidden"
-          >
-            Open drawer
-          </label>
         </div>
         <div className="drawer-side">
           <label
@@ -20,14 +19,33 @@ export default function SideBar() {
             aria-label="close sidebar"
             className="drawer-overlay"
           ></label>
-          <ul className="menu bg-base-200 text-base-content min-h-full w-80 p-4">
+          <ul className="menu bg-base-200 text-base-content min-h-full w-80 p-4 flex flex-col justify-between  text-lg">
             {/* Sidebar content here */}
-            <li>
-              <a>Sidebar Item 1</a>
-            </li>
-            <li>
-              <a>Sidebar Item 2</a>
-            </li>
+            <div>
+              <li>
+                <a><CgMenuGridO /> DashBord</a>
+              </li>
+              <li>
+                <a><FaServer />Targets</a>
+              </li>
+              <li>
+                <a><IoIosPulse /> Scans</a>
+              </li>
+              <li>
+                <a><CgFlagAlt />Risk</a>
+              </li>
+              <li>
+                <a><IoBook /> Report</a>
+              </li>
+            </div>
+           
+            <div>
+
+              <hr />
+              <li>
+                <a><GoGear /> Settings</a>
+              </li>
+            </div>
           </ul>
         </div>
       </div>
