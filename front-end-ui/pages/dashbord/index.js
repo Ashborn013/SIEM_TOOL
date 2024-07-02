@@ -7,7 +7,7 @@ export default function index() {
             <div className='flex h-screen'>
                 <SideBar />
                 <div className='flex-grow overflow-auto p-4'>
-                    <a className=' font-bold text-[5rem]'>DashBord</a>
+                    <a className=' font-bold text-[5rem]'>Dashboard</a>
                     <div className='flex flex-row  gap-4'>
                         <RiskCards title="Critical" content="0" color="bg-purple-600" />
                         <RiskCards title="High" content="0" color="bg-[#FF6160]" />
