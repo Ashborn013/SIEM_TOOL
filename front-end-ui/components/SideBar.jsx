@@ -4,7 +4,7 @@ import { FaServer } from "react-icons/fa6";
 import { IoIosPulse } from "react-icons/io";
 import { IoBook } from "react-icons/io5";
 import { GoGear } from "react-icons/go";
-
+import Link from "next/link";
 export default function SideBar() {
   return (
     <div>
@@ -23,7 +23,7 @@ export default function SideBar() {
             {/* Sidebar content here */}
             <div>
               <li>
-                <a><CgMenuGridO /> DashBord</a>
+                <Link href="/dashboard"> <CgMenuGridO /> DashBord</Link>
               </li>
               <li>
                 <a><FaServer />Targets</a>

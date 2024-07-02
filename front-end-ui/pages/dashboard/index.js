@@ -1,5 +1,5 @@
-import React from 'react'
 import SideBar from '../../components/SideBar'
+import React, { useEffect, useState } from 'react';
 
 export default function index() {
     return (
@@ -21,8 +21,8 @@ export default function index() {
 
                     </div>
                     <a className='text-[2rem]'>Recent Scans </a>
-                    {/* Place other row-by-row data here */}
-                    <CreateTable/>
+                    {/* MORE DATA */}
+                    <CreateTable />
                 </div>
             </div>
         </>
@@ -42,40 +42,48 @@ function RiskCards({ title, content, color }) {
 
 
 function CreateTable() {
+    const [rows, setRows] = useState([]);
+    useEffect(() => {
+        fetch('http://127.0.0.1:3002/data')
+            .then(response => response.json())
+            .then(data => {
+                setRows(data);
+
+            })
+            .catch(error => console.error("Fucked"), [])
+    })
     return (<>
         <div className="overflow-x-auto">
             <table className="table text-lg">
                 {/* head */}
                 <thead>
                     <tr>
-                        <th className="text-xl"></th>
-                        <th className="text-xl" >Scan</th>
-                        <th className="text-xl" >Target</th>
-                        <th className="text-xl" >Result</th>
+                        <th className="text-xl">Slno</th>
+                        <th className="text-xl" >Time</th>
+                        <th className="text-xl" >level</th>
+                        <th className="text-xl" >message</th>
+                        <th className="text-xl" >event_id</th>
+
                     </tr>
                 </thead>
                 <tbody>
+                    {rows.map((row, index) => {
+                        const correctedJson = row.log.replace(/'/g, '"');
+                        let logObj = JSON.parse(correctedJson);
+
+                        return (
+                            <tr key={index}>
+                                <th>{index + 1}</th>
+                                <td>{row.timestamp}</td>
+                                <td>{logObj.level}</td> 
+                                <td>{row.message}</td>
+                                <td>{row.event_id}</td>
+
+                            </tr>
+                        );
+                    })}
                     {/* row 1 */}
-                    <tr>
-                        <th>1</th>
-                        <td>Cy Ganderton</td>
-                        <td>Quality Control Specialist</td>
-                        <td>Blue</td>
-                    </tr>
-                    {/* row 2 */}
-                    <tr>
-                        <th>2</th>
-                        <td>Hart Hagerty</td>
-                        <td>Desktop Support Technician</td>
-                        <td>Purple</td>
-                    </tr>
-                    {/* row 3 */}
-                    <tr>
-                        <th>3</th>
-                        <td>Brice Swyre</td>
-                        <td>Tax Accountant</td>
-                        <td>Red</td>
-                    </tr>
+
                 </tbody>
             </table>
         </div>
