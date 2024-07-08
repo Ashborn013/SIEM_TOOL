@@ -4,7 +4,7 @@ def connect():
     return sqlite3.connect("/home/jovyan/DataBaseStore/database.db")
 
 def detect_brute_force_db_save(df):
-    conn = connect()  # Use a single connection for efficiency
+    conn = connect()  
     cursor = conn.cursor()
 
     cursor.execute(
