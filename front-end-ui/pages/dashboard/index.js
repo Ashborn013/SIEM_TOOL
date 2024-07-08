@@ -43,15 +43,17 @@ function RiskCards({ title, content, color }) {
 
 function CreateTable() {
     const [rows, setRows] = useState([]);
-    useEffect(() => {
-        fetch('http://127.0.0.1:3002/data')
-            .then(response => response.json())
-            .then(data => {
-                setRows(data);
+    useEffect(
+        () => {
+            fetch('http://127.0.0.1:223/data')
+                .then(response => response.json())
+                .then(data => {
+                    setRows(data);
 
-            })
-            .catch(error => console.error("Fucked"), [])
-    })
+                })
+                .catch(error => console.error("Error"), [])
+        }
+    )
     return (<>
         <div className="overflow-x-auto">
             <table className="table text-lg">
@@ -75,7 +77,7 @@ function CreateTable() {
                             <tr key={index}>
                                 <th>{index + 1}</th>
                                 <td>{row.timestamp}</td>
-                                <td>{logObj.level}</td> 
+                                <td>{logObj.level}</td>
                                 <td>{row.message}</td>
                                 <td>{row.event_id}</td>
 

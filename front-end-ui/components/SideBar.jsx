@@ -26,7 +26,7 @@ export default function SideBar() {
                 <Link href="/dashboard"> <CgMenuGridO /> DashBord</Link>
               </li>
               <li>
-                <a><FaServer />Targets</a>
+              <Link href="/targets"> <FaServer />Targets</Link>
               </li>
               <li>
                 <a><IoIosPulse /> Scans</a>
