@@ -1,13 +1,141 @@
 from flask import Flask, request, jsonify
-import json
+import sqlite3
 import os
-from sqlFuntions import *
+import json
 
 app = Flask(__name__)
 
-
 FILE_PATH = "/saveData/data.json"
+DATABASE_PATH = "/DataBaseStore/database.db"
 
+def connect_db():
+    return sqlite3.connect(DATABASE_PATH)
+
+def detect_brute_force_db_save(df):
+    conn = connect_db()  
+    cursor = conn.cursor()
+
+    cursor.execute(
+        """
+        CREATE TABLE IF NOT EXISTS brute_force (
+            timestamp TEXT,
+            log TEXT,
+            message TEXT,
+            ecs TEXT,
+            event TEXT,
+            name TEXT,
+            id TEXT,
+            type TEXT,
+            event_id TEXT,
+            hostname TEXT
+        )
+        """
+    )
+    for row in df.collect():
+        cursor.execute(
+            """
+            INSERT INTO brute_force (timestamp, log, message, ecs, event, name, id, type, event_id, hostname)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                row["@timestamp"],
+                str(row["log"]),
+                row["message"],
+                str(row["ecs"]),
+                str(row["event"]),
+                row["name"],
+                row["id"],
+                row["type"],
+                row["event_id"],
+                row["hostname"],
+            ),
+        )
+    conn.commit()
+    cursor.close()
+
+def user_account_change_db_save(df):
+    connection = connect_db()
+    cursor = connection.cursor()
+
+    cursor.execute(
+        """
+        CREATE TABLE IF NOT EXISTS user_account_changes (
+            timestamp TEXT,
+            log TEXT,
+            message TEXT,
+            ecs TEXT,
+            event TEXT,
+            name TEXT,
+            id TEXT,
+            type TEXT,
+            event_id TEXT,
+            hostname TEXT
+        )
+        """
+    )
+    for row in df.collect():
+        cursor.execute(
+            """
+            INSERT INTO user_account_changes (timestamp, log, message, ecs, event, name, id, type, event_id, hostname)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                row["@timestamp"],
+                str(row["log"]),
+                row["message"],
+                str(row["ecs"]),
+                str(row["event"]),
+                row["name"],
+                row["id"],
+                row["type"],
+                row["event_id"],
+                row["hostname"],
+            ),
+        )
+    connection.commit()
+    cursor.close()
+
+def spl_privilege_logon_db_save(df):
+    connection = connect_db()
+    cursor = connection.cursor()
+
+    cursor.execute(
+        """
+        CREATE TABLE IF NOT EXISTS spl_privilege_logons (
+            timestamp TEXT,
+            log TEXT,
+            message TEXT,
+            ecs TEXT,
+            event TEXT,
+            name TEXT,
+            id TEXT,
+            type TEXT,
+            event_id TEXT,
+            hostname TEXT
+        )
+        """
+    )
+    for row in df.collect():
+        cursor.execute(
+            """
+            INSERT INTO spl_privilege_logons (timestamp, log, message, ecs, event, name, id, type, event_id, hostname)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                row["@timestamp"],
+                str(row["log"]),
+                row["message"],
+                str(row["ecs"]),
+                str(row["event"]),
+                row["name"],
+                row["id"],
+                row["type"],
+                row["event_id"],
+                row["hostname"],
+            ),
+        )
+    connection.commit()
+    cursor.close()
 
 @app.route("/save_json", methods=["POST"])
 def save_json():
@@ -15,20 +143,68 @@ def save_json():
     if not data:
         return jsonify({"error": "Invalid JSON data"}), 400
 
+   
     if not os.path.exists(FILE_PATH):
-        with open(FILE_PATH, "a") as json_file:
-            pass
-    with open(FILE_PATH, "a") as json_file:
-        json_file.write(json.dumps(data))
-        json_file.write("\n")
+        with open(FILE_PATH, "w") as json_file:
+            json.dump([], json_file)
+
+    # Read the existing data
+    with open(FILE_PATH, "r") as json_file:
+        try:
+            existing_data = json.load(json_file)
+        except json.JSONDecodeError:
+            existing_data = []
+
+    # Append the new data
+    existing_data.append(data)
+
+    # Save back the updated data
+    with open(FILE_PATH, "w") as json_file:
+        json.dump(existing_data, json_file, indent=4)
 
     return jsonify({"message": "JSON data saved successfully"}), 200
-
 
 @app.route("/")
 def home():
     return "Hello, World!"
 
+def query_data(table_name):
+    conn = connect_db()
+    cursor = conn.cursor()
+    cursor.execute(f"SELECT * FROM {table_name}")
+    rows = cursor.fetchall()
+    conn.close()
+
+    return [
+        {
+            "timestamp": row[0],
+            "log": row[1],
+            "message": row[2],
+            "ecs": row[3],
+            "event": row[4],
+            "name": row[5],
+            "id": row[6],
+            "type": row[7],
+            "event_id": row[8],
+            "hostname": row[9],
+        }
+        for row in rows
+    ]
+
+@app.route("/brute_force", methods=["GET"])
+def get_brute_force():
+    data = query_data("brute_force")
+    return jsonify(data), 200
+
+@app.route("/user_account_changes", methods=["GET"])
+def get_user_account_changes():
+    data = query_data("user_account_changes")
+    return jsonify(data), 200
+
+@app.route("/spl_privilege_logons", methods=["GET"])
+def get_spl_privilege_logons():
+    data = query_data("spl_privilege_logons")
+    return jsonify(data), 200
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", debug=True, port=223)
