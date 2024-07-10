@@ -3,7 +3,10 @@ import sqlite3
 import os
 import json
 from sqlFuntions import * 
+from flask_cors import CORS 
+
 app = Flask(__name__)
+CORS(app)
 
 FILE_PATH = "/saveData/data.json"
 

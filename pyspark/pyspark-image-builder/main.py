@@ -115,6 +115,13 @@ def all_notable_event_id(df):
     return union_df
 
 
+
+
+
+
+
+
+
 def detect_brute_force(df):
     df = df.withColumn("@timestamp", col("@timestamp").cast(TimestampType()))
     out_put = filter_logs_by_event_id(df, 4625)
@@ -162,6 +169,19 @@ def detect_user_account_changed(df):
     else:
         print("No user account change detected.")
         return None
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 def rule_engine(df, rules):
