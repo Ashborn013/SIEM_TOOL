@@ -4,7 +4,6 @@ RUN mkdir  ~/DataBaseStore
 RUN touch ~/DataBaseStore/database.db
 
 RUN pip install pyspark
-RUN pip install flask-cors 
 # CMD  ["tail", "-f", "/dev/null"]
 
 # CMD [ "python", "/home/jovyan/work/main.py" ]

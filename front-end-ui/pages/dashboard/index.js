@@ -45,7 +45,7 @@ function CreateTable() {
     const [rows, setRows] = useState([]);
     useEffect(
         () => {
-            fetch('http://127.0.0.1:223/data')
+            fetch('http://127.0.0.1:223/brute_force')
                 .then(response => response.json())
                 .then(data => {
                     setRows(data);
