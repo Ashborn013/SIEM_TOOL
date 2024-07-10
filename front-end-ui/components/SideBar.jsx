@@ -29,13 +29,13 @@ export default function SideBar() {
               <Link href="/targets"> <FaServer />Targets</Link>
               </li>
               <li>
-                <a><IoIosPulse /> Scans</a>
+              <Link href="/scans"><IoIosPulse /> Scans</Link>
               </li>
               <li>
-                <a><CgFlagAlt />Risk</a>
+              <Link href="/risk"><CgFlagAlt />Risk</Link>
               </li>
               <li>
-                <a><IoBook /> Report</a>
+              <Link href="/report"><IoBook /> Report</Link>
               </li>
             </div>
            
