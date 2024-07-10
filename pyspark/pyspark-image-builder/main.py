@@ -131,6 +131,7 @@ def detect_brute_force(df):
     count = logs_under_one_min.count()
 
     if count > 10:
+        detect_brute_force_db_save(logs_under_one_min)
         return logs_under_one_min
     else:
         return None
@@ -143,6 +144,7 @@ def detect_special_privilege_logon(df):
     if count > 0:
         print("Special privilege logon detected .. !")
         df_filtered.show()
+        spl_privilege_logon_db_save(df_filtered) # db save function
         return df_filtered
     else:
         print("No special privilege logon detected.")
@@ -152,7 +154,7 @@ def detect_special_privilege_logon(df):
 def detect_user_account_changed(df):
     df_filtered = df.filter(col("event_id") == "4738")
     count = df_filtered.count()
-    detect_brute_force_db_save(df_filtered)
+    user_account_change_db_save(df_filtered) # db save function
     if count > 0:
         print(f"User account change detected {count} times .. !")
         df_filtered.show()
@@ -193,11 +195,15 @@ rules = [
     # {"type": "special_privilege_logon_detection"}
     {"type": "filter_by_event_id", "event_id": "4738"},
     {"type": "user_account_change"},
+    {"type": "brute_force_detection"},
+    {"type": "special_privilege_logon_detection"},
+    {"type": "user_account_change"},
+    {"type": "main_event_ids"},
 ]
 
 # Apply rules using the rule engine
-result_df = rule_engine(df_selected, rules)
-result_df.show(truncate=True)
+# result_df = rule_engine(df_selected, rules)
+# result_df.show(truncate=True)
 
 output = detect_brute_force(df_selected)
 if output is not None:
@@ -206,15 +212,16 @@ if output is not None:
 else:
     print("No brute force attack detected")
 
-print("Regex query results:")
-query = ["(?i)(?=.*error)"]
-regex_query(df_selected, query).show()
+# test ing the functions
 
-print("All notable event IDs:")
-all_notable_event_id(df_selected).show()
-print(all_notable_event_id(df_selected).count())
+detect_brute_force              (df_selected)
+detect_special_privilege_logon  (df_selected)
+detect_user_account_changed     (df_selected)
 
-output_path = f"/home/jovyan/work/categorized_winlogbeat-{datetime.now().isoformat()}"
-result_df.coalesce(1).write.json(output_path)
+# output_path = f"/home/jovyan/work/categorized_winlogbeat-{datetime.now().isoformat()}"
+# result_df.coalesce(1).write.json(output_path)
+
+
+
 
 spark.stop()
