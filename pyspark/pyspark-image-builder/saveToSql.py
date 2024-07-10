@@ -148,7 +148,7 @@ def Job_Update(df):
             Job TEXT,
             message TEXT,
             level TEXT,
-            Job_id TEXT,
+            Job_id TEXT
         )
         """
     )
@@ -162,7 +162,7 @@ def Job_Update(df):
             df[1],
             df[2],
             df[3],
-            df[4],
+            str(df[4]),
         ),
     )
     connection.commit()

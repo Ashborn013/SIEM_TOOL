@@ -43,17 +43,17 @@ def home():
 
 @app.route("/brute_force", methods=["GET"])
 def get_brute_force():
-    data = query_data("brute_force")
+    data = query_data_brute_force()
     return jsonify(data), 200
 
 @app.route("/user_account_changes", methods=["GET"])
 def get_user_account_changes():
-    data = query_data("user_account_changes")
+    data = query_data_user_account_changes()
     return jsonify(data), 200
 
 @app.route("/spl_privilege_logons", methods=["GET"])
 def get_spl_privilege_logons():
-    data = query_data("spl_privilege_logons")
+    data = query_data_spl_privilege_logons()
     return jsonify(data), 200
 
 @app.route("/Job_details", methods=["GET"])
