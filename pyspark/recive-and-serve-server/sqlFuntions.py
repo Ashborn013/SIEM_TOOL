@@ -8,128 +8,39 @@ def connect():
 def connect_db():
     return sqlite3.connect(DATABASE_PATH)
 
-def detect_brute_force_db_save(df):
-    conn = connect_db()  
+
+def query_data(table_name):
+    conn = connect_db()
     cursor = conn.cursor()
+    cursor.execute(f"SELECT * FROM {table_name}")
+    rows = cursor.fetchall()
+    conn.close()
 
-    cursor.execute(
-        """
-        CREATE TABLE IF NOT EXISTS brute_force (
-            timestamp TEXT,
-            log TEXT,
-            message TEXT,
-            ecs TEXT,
-            event TEXT,
-            name TEXT,
-            id TEXT,
-            type TEXT,
-            event_id TEXT,
-            hostname TEXT
-        )
-        """
-    )
-    for row in df.collect():
-        cursor.execute(
-            """
-            INSERT INTO brute_force (timestamp, log, message, ecs, event, name, id, type, event_id, hostname)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            """,
-            (
-                row["@timestamp"],
-                str(row["log"]),
-                row["message"],
-                str(row["ecs"]),
-                str(row["event"]),
-                row["name"],
-                row["id"],
-                row["type"],
-                row["event_id"],
-                row["hostname"],
-            ),
-        )
-    conn.commit()
-    cursor.close()
+    return [
+        {
+            "timestamp": row[0],
+            "log": row[1],
+            "message": row[2],
+            "ecs": row[3],
+            "event": row[4],
+            "name": row[5],
+            "id": row[6],
+            "type": row[7],
+            "event_id": row[8],
+            "hostname": row[9],
+        }
+        for row in rows
+    ]
 
-def user_account_change_db_save(df):
-    connection = connect_db()
-    cursor = connection.cursor()
-
-    cursor.execute(
-        """
-        CREATE TABLE IF NOT EXISTS user_account_changes (
-            timestamp TEXT,
-            log TEXT,
-            message TEXT,
-            ecs TEXT,
-            event TEXT,
-            name TEXT,
-            id TEXT,
-            type TEXT,
-            event_id TEXT,
-            hostname TEXT
-        )
-        """
-    )
-    for row in df.collect():
-        cursor.execute(
-            """
-            INSERT INTO user_account_changes (timestamp, log, message, ecs, event, name, id, type, event_id, hostname)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            """,
-            (
-                row["@timestamp"],
-                str(row["log"]),
-                row["message"],
-                str(row["ecs"]),
-                str(row["event"]),
-                row["name"],
-                row["id"],
-                row["type"],
-                row["event_id"],
-                row["hostname"],
-            ),
-        )
-    connection.commit()
-    cursor.close()
-
-def spl_privilege_logon_db_save(df):
-    connection = connect_db()
-    cursor = connection.cursor()
-
-    cursor.execute(
-        """
-        CREATE TABLE IF NOT EXISTS spl_privilege_logons (
-            timestamp TEXT,
-            log TEXT,
-            message TEXT,
-            ecs TEXT,
-            event TEXT,
-            name TEXT,
-            id TEXT,
-            type TEXT,
-            event_id TEXT,
-            hostname TEXT
-        )
-        """
-    )
-    for row in df.collect():
-        cursor.execute(
-            """
-            INSERT INTO spl_privilege_logons (timestamp, log, message, ecs, event, name, id, type, event_id, hostname)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            """,
-            (
-                row["@timestamp"],
-                str(row["log"]),
-                row["message"],
-                str(row["ecs"]),
-                str(row["event"]),
-                row["name"],
-                row["id"],
-                row["type"],
-                row["event_id"],
-                row["hostname"],
-            ),
-        )
-    connection.commit()
-    cursor.close()
+def quary_job_details():
+    conn = connect_db()
+    cursor = conn.cursor()
+    cursor.execute(f"SELECT * FROM ")
+    rows = cursor.fetchall()
+    conn.close()
+    return [
+        {
+            "time" : row[0], "Job":row[0], "message":row[0], "level":row[0], "Job_id":row[0]
+        }
+        for row in rows
+    ]

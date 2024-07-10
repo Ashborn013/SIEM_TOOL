@@ -1,5 +1,6 @@
 import sqlite3
-
+import uuid 
+import time
 def connect():
     return sqlite3.connect("/home/jovyan/DataBaseStore/database.db")
 
@@ -132,3 +133,38 @@ def spl_privilege_logon_db_save(df):
         )
     connection.commit()
     cursor.close()
+
+def Job_id_create_list(job,message,level):
+    return [time.time(), job, message, level,uuid.uuid4() ]
+
+def Job_Update(df):
+    connection = connect()
+    cursor = connection.cursor()
+
+    cursor.execute(
+        """
+        CREATE TABLE IF NOT EXISTS Jobs (
+            time TEXT,
+            Job TEXT,
+            message TEXT,
+            level TEXT,
+            Job_id TEXT,
+        )
+        """
+    )
+    cursor.execute(
+        """
+        INSERT INTO Jobs (time, Job, message, level, Job_id)
+        VALUES (?, ?, ?, ?, ?)
+        """,
+        (
+            df[0],
+            df[1],
+            df[2],
+            df[3],
+            df[4],
+        ),
+    )
+    connection.commit()
+    cursor.close()
+    

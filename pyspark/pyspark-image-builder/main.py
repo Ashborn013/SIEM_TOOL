@@ -5,6 +5,7 @@ from pyspark.sql.types import TimestampType
 from datetime import datetime
 import json
 from saveToSql import *
+import uuid # for generating unique id for each Job entry
 
 spark = SparkSession.builder.appName("Read JSON File").getOrCreate()
 
@@ -139,8 +140,10 @@ def detect_brute_force(df):
 
     if count > 10:
         detect_brute_force_db_save(logs_under_one_min)
+        Job_Update(Job_id_create_list("Brute Force", "Brute Force detected", "Critical"))
         return logs_under_one_min
     else:
+        Job_Update(Job_id_create_list("Brute Force", "Brute Force Not detected", "Low"))
         return None
 
 
@@ -152,9 +155,11 @@ def detect_special_privilege_logon(df):
         print("Special privilege logon detected .. !")
         df_filtered.show()
         spl_privilege_logon_db_save(df_filtered) # db save function
+        Job_Update(Job_id_create_list("Special privilege logon", "Special privilege logon detected .. !", "Critical"))
         return df_filtered
     else:
         print("No special privilege logon detected.")
+        Job_Update(Job_id_create_list("Special privilege logon", "No Special privilege ", "Low"))
         return None
 
 
@@ -164,10 +169,13 @@ def detect_user_account_changed(df):
     user_account_change_db_save(df_filtered) # db save function
     if count > 0:
         print(f"User account change detected {count} times .. !")
+        Job_Update(Job_id_create_list(f"User account change", f"User account change detected {count} times", "Mid"))
         df_filtered.show()
         return df_filtered
     else:
         print("No user account change detected.")
+        Job_Update(Job_id_create_list(f"User account change", f"No User account change detected", "Low"))
+
         return None
 
 

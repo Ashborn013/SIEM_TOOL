@@ -41,29 +41,6 @@ def save_json():
 def home():
     return "Hello, World!"
 
-def query_data(table_name):
-    conn = connect_db()
-    cursor = conn.cursor()
-    cursor.execute(f"SELECT * FROM {table_name}")
-    rows = cursor.fetchall()
-    conn.close()
-
-    return [
-        {
-            "timestamp": row[0],
-            "log": row[1],
-            "message": row[2],
-            "ecs": row[3],
-            "event": row[4],
-            "name": row[5],
-            "id": row[6],
-            "type": row[7],
-            "event_id": row[8],
-            "hostname": row[9],
-        }
-        for row in rows
-    ]
-
 @app.route("/brute_force", methods=["GET"])
 def get_brute_force():
     data = query_data("brute_force")
@@ -77,6 +54,11 @@ def get_user_account_changes():
 @app.route("/spl_privilege_logons", methods=["GET"])
 def get_spl_privilege_logons():
     data = query_data("spl_privilege_logons")
+    return jsonify(data), 200
+
+@app.route("/Job_details", methods=["GET"])
+def get_Job_details():
+    data = quary_job_details()
     return jsonify(data), 200
 
 if __name__ == "__main__":
