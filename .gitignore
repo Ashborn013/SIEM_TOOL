@@ -6,7 +6,7 @@ node_modules
 .next
 # C extensions
 *.sow
-
+categorized_winlogbeat-2024*
 # Distribution / packaging
 .Python
 build/
