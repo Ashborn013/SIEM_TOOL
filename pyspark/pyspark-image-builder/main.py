@@ -230,21 +230,21 @@ rules = [
 ]
 
 # Apply rules using the rule engine
-# result_df = rule_engine(df_selected, rules)
-# result_df.show(truncate=True)
+result_df = rule_engine(df_selected, rules)
+result_df.show(truncate=True)
 
-output = detect_brute_force(df_selected)
-if output is not None:
-    print("Brute Force attempt detected .. !")
-    output.show()
-else:
-    print("No brute force attack detected")
+# output = detect_brute_force(df_selected)
+# if output is not None:
+    # print("Brute Force attempt detected .. !")
+    # output.show()
+# else:
+    # print("No brute force attack detected")
 
 # test ing the functions
 
-detect_brute_force              (df_selected)
-detect_special_privilege_logon  (df_selected)
-detect_user_account_changed     (df_selected)
+# detect_brute_force              (df_selected)
+# detect_special_privilege_logon  (df_selected)
+# detect_user_account_changed     (df_selected)
 
 # output_path = f"/home/jovyan/work/categorized_winlogbeat-{datetime.now().isoformat()}"
 # result_df.coalesce(1).write.json(output_path)
