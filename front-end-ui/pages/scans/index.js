@@ -10,7 +10,7 @@ export default function index() {
                 <div className=''>
                 <Focus_drop_data title="BruteForce" content={<CreateTableBruteForce />}  />
                 <Focus_drop_data title="UserAccountChanges" content={<CreateTableUserAccountChanges />}  />
-                <Focus_drop_data title="UserAccountChanges" content={<CreateTableSplPrivilegeLogons />}  />
+                <Focus_drop_data title="special privilege Logons" content={<CreateTableSplPrivilegeLogons />}  />
 
                 {/* <Focus_drop_data /> */}
                 </div>
@@ -145,7 +145,7 @@ function CreateTableSplPrivilegeLogons() {
     const [rows, setRows] = useState([]);
     useEffect(
         () => {
-            fetch('http://127.0.0.1:223/user_account_changes')
+            fetch('http://127.0.0.1:223/spl_privilege_logons')
                 .then(response => response.json())
                 .then(data => {
                     setRows(data);
