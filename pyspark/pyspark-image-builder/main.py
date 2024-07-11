@@ -199,20 +199,20 @@ def rule_engine(df, rules):
             continue
 
         if rule["type"] == "filter_by_event_id":
-            df = filter_logs_by_event_id(df, rule["event_id"])
+            filter_logs_by_event_id(df, rule["event_id"])
         elif rule["type"] == "count_by_hostname":
-            df = count_logs_by_hostname(df)
+            count_logs_by_hostname(df)
         elif rule["type"] == "regex_query_test":
-            df = regex_query(df, ["failed login", "error", "critical"])
+            regex_query(df, ["failed login", "error", "critical"])
         elif rule["type"] == "main_event_ids":
-            df = all_notable_event_id(df)
+            all_notable_event_id(df)
         elif rule["type"] == "brute_force_detection":
-            df = detect_brute_force(df)
+            detect_brute_force(df)
         elif rule["type"] == "special_privilege_logon_detection":
-            df = detect_special_privilege_logon(df)
+            detect_special_privilege_logon(df)
         elif rule["type"] == "user_account_change":
-            df = detect_user_account_changed(df)
-    return df
+            detect_user_account_changed(df)
+    # return df
 
 
 # ----------------- Main -----------------------
@@ -231,7 +231,7 @@ rules = [
 
 # Apply rules using the rule engine
 result_df = rule_engine(df_selected, rules)
-result_df.show(truncate=True)
+# result_df.show(truncate=True)
 
 # output = detect_brute_force(df_selected)
 # if output is not None:

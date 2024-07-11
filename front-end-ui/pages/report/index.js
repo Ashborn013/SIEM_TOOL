@@ -39,6 +39,8 @@ function CreateTable() {
                         <th className="text-xl" >Message</th>
                         <th className="text-xl" >level</th>
                         <th className="text-xl" >Job_id</th>
+                        <th className="text-xl" >Time</th>
+
 
                     </tr>
                 </thead>
@@ -54,6 +56,7 @@ function CreateTable() {
                                 <td>{row.message}</td>
                                 <td>{row.level}</td>
                                 <td>{row.Job_id}</td>
+                                <td>{new Date(row.time * 1000).toLocaleString()}</td>
 
                             </tr>
                         );

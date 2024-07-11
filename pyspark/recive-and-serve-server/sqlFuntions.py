@@ -124,6 +124,17 @@ def query_data_spl_privilege_logons():
 def quary_job_details():
     conn = connect()  # Use the simplified connect function
     cursor = conn.cursor()
+    cursor.execute(
+        """
+        CREATE TABLE IF NOT EXISTS Jobs (
+            time TEXT,
+            Job TEXT,
+            message TEXT,
+            level TEXT,
+            Job_id TEXT
+        )
+        """
+    )
     cursor.execute("SELECT * FROM Jobs")  # Removed unnecessary f-string
     rows = cursor.fetchall()
     conn.close()
