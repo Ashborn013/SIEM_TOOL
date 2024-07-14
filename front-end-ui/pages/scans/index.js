@@ -11,7 +11,7 @@ export default function index() {
                 <Focus_drop_data title="BruteForce" content={<CreateTableBruteForce />}  />
                 <Focus_drop_data title="UserAccountChanges" content={<CreateTableUserAccountChanges />}  />
                 <Focus_drop_data title="special privilege Logons" content={<CreateTableSplPrivilegeLogons />}  />
-
+                <Focus_drop_data title="Explicit Credential Logon" content={<CreateTableExplicitCredentialLogon  />}/>
                 {/* <Focus_drop_data /> */}
                 </div>
             </div>
@@ -180,6 +180,60 @@ function CreateTableSplPrivilegeLogons() {
                                 <td>{logObj.level}</td>
                                 <td>{row.message}</td>
                                 <td>{row.event_id}</td>
+
+                            </tr>
+                        );
+                    })}
+                    {/* row 1 */}
+
+                </tbody>
+            </table>
+        </div>
+    </>
+    )
+}
+
+function CreateTableExplicitCredentialLogon() {
+    const [rows, setRows] = useState([]);
+    useEffect(
+        () => {
+            fetch('http://127.0.0.1:223/explicit_credential_logon')
+                .then(response => response.json())
+                .then(data => {
+                    setRows(data);
+
+                })
+                .catch(error => console.error("Error"), [])
+        }
+    )
+    return (<>
+        <div className="overflow-x-auto">
+            <table className="table text-lg">
+                {/* head */}
+                <thead>
+                    <tr>
+                        <th className="text-xl">Slno</th>
+                        <th className="text-xl" >Time</th>
+                        <th className="text-xl" >level</th>
+                        <th className="text-xl" >message</th>
+                        <th className="text-xl" >event_id</th>
+                        <th className="text-xl" >email</th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                    {rows.map((row, index) => {
+                        const correctedJson = row.log.replace(/'/g, '"');
+                        let logObj = JSON.parse(correctedJson);
+
+                        return (
+                            <tr key={index}>
+                                <th>{index + 1}</th>
+                                <td>{row.timestamp}</td>
+                                <td>{logObj.level}</td>
+                                <td>{row.message}</td>
+                                <td>{row.event_id}</td>
+                                <td>{row.email}</td>
 
                             </tr>
                         );

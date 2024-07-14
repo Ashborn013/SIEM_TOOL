@@ -56,6 +56,12 @@ def get_spl_privilege_logons():
     data = query_data_spl_privilege_logons()
     return jsonify(data), 200
 
+@app.route("/explicit_credential_logon", methods=["GET"])
+def get_explicit_credential_logon():
+    data = quary_explicit_credential_logon()
+    return jsonify(data), 200
+
+
 @app.route("/Job_details", methods=["GET"])
 def get_Job_details():
     data = quary_job_details()

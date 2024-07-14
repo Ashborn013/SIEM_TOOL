@@ -13,9 +13,10 @@ module.exports = {
   },
   daisyui: {
     themes: [
-      "dark",
-      "forest",
-      "synthwave"
+      // "dark",
+      // "forest",
+      // "synthwave"
+      "dracula"
 
     ],
   },
