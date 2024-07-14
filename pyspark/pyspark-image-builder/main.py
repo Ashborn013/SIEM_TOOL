@@ -1,5 +1,5 @@
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import col, count, to_json, lag
+from pyspark.sql.functions import col, count, to_json, lag , regexp_extract
 from pyspark.sql.window import Window
 from pyspark.sql.types import TimestampType
 from datetime import datetime
@@ -179,6 +179,30 @@ def detect_user_account_changed(df):
         return None
 
 
+def explicit_credential_logon(df):
+    df_filtered = filter_logs_by_event_id(df, 4648)
+    df_valid = regex_query(df_filtered, [r'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}'])
+
+    if df_valid:
+        df_valid = df_valid.withColumn("email", regexp_extract(col("message"), r'([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})', 0))
+        count = df_valid.count()
+
+        if count > 0:
+            print(f"Logon with explicit credentials detected {count} times (Event ID 4648) with valid email addresses.. !")
+            # event_4648_db_save(df_valid)  # db save function
+            # Job_Update(Job_id_create_list("Event ID 4648", f"Logon with explicit credentials detected {count} times with valid email addresses", "High"))
+            df_valid.show()
+            return df_valid
+        else:
+            print("No valid logon with explicit credentials detected (Event ID 4648).")
+            # Job_Update(Job_id_create_list("Event ID 4648", "No valid logon with explicit credentials detected", "Low"))
+            return None
+    else:
+        print("No valid logon with explicit credentials detected (Event ID 4648).")
+        # Job_Update(Job_id_create_list("Event ID 4648", "No valid logon with explicit credentials detected", "Low"))
+        return None
+
+
 
 
 
@@ -212,6 +236,8 @@ def rule_engine(df, rules):
             detect_special_privilege_logon(df)
         elif rule["type"] == "user_account_change":
             detect_user_account_changed(df)
+        elif rule["type"] == "explicit_credential_logon":
+            explicit_credential_logon(df)
     # return df
 
 
