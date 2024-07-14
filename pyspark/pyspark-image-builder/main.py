@@ -205,7 +205,25 @@ def explicit_credential_logon(df):
         # return None
 
 
+def extract_new_process_creation_logs(df):
+    df_filtered = df.filter(col("event_id") == 4688)
+    df_exe = df_filtered.filter(col("message").contains(".exe"))
 
+    if df_exe:
+        df_exe = df_exe.withColumn("exe_files", regexp_extract(col("message"), r'(.*\.exe)', 0))
+        # df_exe = df_exe.withColumn("exe_files", df_exe["exe_files"].cast(StringType()))
+        count = df_exe.count()
+
+        if count > 0:
+            print(f"Found {count} logs with new process being created.")
+            df_exe.show(truncate=False)
+            return df_exe
+        else:
+            print("No logs with new process created")
+            return None
+    else:
+        print("No logs with new process created")
+        return None
 
 
 
@@ -240,6 +258,8 @@ def rule_engine(df, rules):
             detect_user_account_changed(df)
         elif rule["type"] == "explicit_credential_logon":
             explicit_credential_logon(df)
+        elif rule["type"] == "new_process_creation":
+            extract_new_process_creation_logs(df)
     # return df
 
 
@@ -250,7 +270,8 @@ rules = [
     {"type": "brute_force_detection"},
     {"type": "special_privilege_logon_detection"},
     {"type": "user_account_change"},
-    {"type":"explicit_credential_logon"}
+    {"type":"explicit_credential_logon"},
+    {"type": "new_process_creation"},
 ]
 
 # Apply rules using the rule engine
@@ -264,7 +285,7 @@ result_df = rule_engine(df_selected, rules)
 # else:
     # print("No brute force attack detected")
 
-# test ing the functions
+# testing the functions
 
 # detect_brute_force              (df_selected)
 # detect_special_privilege_logon  (df_selected)
