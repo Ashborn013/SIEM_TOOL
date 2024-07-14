@@ -188,6 +188,7 @@ def explicit_credential_logon(df):
         count = df_valid.count()
 
         if count > 0:
+            Job_Update(Job_id_create_list("Explicit credentials logon", f"Logon with explicit credentials detected {count} times (Event ID 4648) with valid email addresses.. !", "High"))
             print(f"Logon with explicit credentials detected {count} times (Event ID 4648) with valid email addresses.. !")
             # event_4648_db_save(df_valid)  # db save function
             # Job_Update(Job_id_create_list("Event ID 4648", f"Logon with explicit credentials detected {count} times with valid email addresses", "High"))
@@ -196,11 +197,11 @@ def explicit_credential_logon(df):
             # return df_valid
         else:
             print("No valid logon with explicit credentials detected (Event ID 4648).")
-            # Job_Update(Job_id_create_list("Event ID 4648", "No valid logon with explicit credentials detected", "Low"))
+            Job_Update(Job_id_create_list("Explicit credentials logon", "No valid logon with explicit credentials detected", "Low"))
             # return None
     else:
         print("No valid logon with explicit credentials detected (Event ID 4648).")
-        # Job_Update(Job_id_create_list("Event ID 4648", "No valid logon with explicit credentials detected", "Low"))
+        Job_Update(Job_id_create_list("Explicit credentials logon", "No valid logon with explicit credentials detected", "Low"))
         # return None
 
 
@@ -245,15 +246,10 @@ def rule_engine(df, rules):
 # ----------------- Main -----------------------
 
 rules = [
-    # {"type": "filter_by_event_id", "event_id": "4625"},
-    # {"type": "count_by_hostname"},
-    # {"type": "special_privilege_logon_detection"}
     {"type": "filter_by_event_id", "event_id": "4738"},
-    {"type": "user_account_change"},
     {"type": "brute_force_detection"},
     {"type": "special_privilege_logon_detection"},
     {"type": "user_account_change"},
-    {"type": "main_event_ids"},
     {"type":"explicit_credential_logon"}
 ]
 
