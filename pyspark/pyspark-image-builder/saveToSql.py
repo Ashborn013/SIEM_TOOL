@@ -134,6 +134,53 @@ def spl_privilege_logon_db_save(df):
     connection.commit()
     cursor.close()
 
+def explicit_credential_logon_db_save(df):
+    connection = connect()
+    cursor = connection.cursor()
+
+    cursor.execute(
+        """
+        CREATE TABLE IF NOT EXISTS explicit_credential_logon (
+            timestamp TEXT,
+            log TEXT,
+            message TEXT,
+            ecs TEXT,
+            event TEXT,
+            name TEXT,
+            id TEXT,
+            type TEXT,
+            event_id TEXT,
+            hostname TEXT,
+            email TEXT
+        )
+        """
+    )
+    pandas_df = df.toPandas()
+    for _, row in pandas_df.iterrows():
+        cursor.execute(
+            """
+            INSERT INTO explicit_credential_logon (timestamp, log, message, ecs, event, name, id, type, event_id, hostname,email)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)
+            """,
+            (
+                row["@timestamp"],
+                str(row["log"]),
+                row["message"],
+                str(row["ecs"]),
+                str(row["event"]),
+                row["name"],
+                row["id"],
+                row["type"],
+                row["event_id"],
+                row["hostname"],
+                row['email']
+            ),
+        )
+    connection.commit()
+    cursor.close()
+
+
+
 def Job_id_create_list(job,message,level):
     return [time.time(), job, message, level,uuid.uuid4() ]
 

@@ -120,6 +120,48 @@ def query_data_spl_privilege_logons():
         }
         for row in rows
     ]
+def quary_explicit_credential_logon():
+    conn = connect()  # Use the simplified connect function
+    cursor = conn.cursor()
+    cursor.execute(
+        """
+        CREATE TABLE IF NOT EXISTS explicit_credential_logon (
+            timestamp TEXT,
+            log TEXT,
+            message TEXT,
+            ecs TEXT,
+            event TEXT,
+            name TEXT,
+            id TEXT,
+            type TEXT,
+            event_id TEXT,
+            hostname TEXT,
+            email TEXT
+        )
+        """
+    )
+    cursor.execute("SELECT * FROM explicit_credential_logon")  # Removed unnecessary f-string
+    rows = cursor.fetchall()
+    conn.close()
+
+    return [
+        {
+            "timestamp": row[0],
+            "log": row[1],
+            "message": row[2],
+            "ecs": row[3],
+            "event": row[4],
+            "name": row[5],
+            "id": row[6],
+            "type": row[7],
+            "event_id": row[8],
+            "hostname": row[9],
+            "email" : row[10]
+        }
+        for row in rows
+    ]
+
+
 
 def quary_job_details():
     conn = connect()  # Use the simplified connect function

@@ -192,15 +192,16 @@ def explicit_credential_logon(df):
             # event_4648_db_save(df_valid)  # db save function
             # Job_Update(Job_id_create_list("Event ID 4648", f"Logon with explicit credentials detected {count} times with valid email addresses", "High"))
             df_valid.show()
-            return df_valid
+            explicit_credential_logon_db_save(df_valid)
+            # return df_valid
         else:
             print("No valid logon with explicit credentials detected (Event ID 4648).")
             # Job_Update(Job_id_create_list("Event ID 4648", "No valid logon with explicit credentials detected", "Low"))
-            return None
+            # return None
     else:
         print("No valid logon with explicit credentials detected (Event ID 4648).")
         # Job_Update(Job_id_create_list("Event ID 4648", "No valid logon with explicit credentials detected", "Low"))
-        return None
+        # return None
 
 
 
@@ -253,6 +254,7 @@ rules = [
     {"type": "special_privilege_logon_detection"},
     {"type": "user_account_change"},
     {"type": "main_event_ids"},
+    {"type":"explicit_credential_logon"}
 ]
 
 # Apply rules using the rule engine
