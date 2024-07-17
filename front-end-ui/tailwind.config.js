@@ -16,7 +16,8 @@ module.exports = {
       // "dark",
       // "forest",
       // "synthwave"
-      "dracula"
+      "dracula",
+      "light"
 
     ],
   },

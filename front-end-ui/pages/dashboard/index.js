@@ -1,12 +1,17 @@
+import NavBar from '../../components/NavBar';
 import SideBar from '../../components/SideBar'
 import React, { useEffect, useState } from 'react';
 
 export default function index() {
     return (
-        <>
+        < div>
+
+            <NavBar />
+
             <div className='flex h-screen'>
-                <SideBar />
+                {/* <SideNavBar/> */}
                 <div className='flex-grow overflow-auto p-4'>
+
                     <a className=' font-bold text-[5rem]'>Dashboard</a>
                     <div className='flex flex-row  gap-4'>
                         <RiskCards title="Critical" content="0" color="bg-purple-600" />
@@ -25,7 +30,9 @@ export default function index() {
                     <CreateTable />
                 </div>
             </div>
-        </>
+            <SideBar/>
+
+        </div>
     )
 }
 

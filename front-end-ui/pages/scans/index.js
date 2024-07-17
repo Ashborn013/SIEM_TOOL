@@ -1,3 +1,4 @@
+import NavBar from '../../components/NavBar';
 import SideBar from '../../components/SideBar'
 import React, { useEffect, useState } from 'react';
 
@@ -5,8 +6,8 @@ import React, { useEffect, useState } from 'react';
 export default function index() {
     return (
         <div>
+            <NavBar/>
             <div className='flex h-screen'>
-                <SideBar />
                 <div className=''>
                 <Focus_drop_data title="BruteForce" content={<CreateTableBruteForce />}  />
                 <Focus_drop_data title="UserAccountChanges" content={<CreateTableUserAccountChanges />}  />
@@ -16,7 +17,7 @@ export default function index() {
                 </div>
             </div>
 
-
+        <SideBar / >
         </div>
     )
 }

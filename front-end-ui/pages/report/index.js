@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import SideBar from '../../components/SideBar'
+import NavBar from '../../components/NavBar';
 //  to do add a funtion in main.py which can add each job run to table 
 export default function index() {
     return (
         <div>
+            <NavBar />
             <div className='flex h-screen'>
-                <SideBar />
                 <CreateTable />
             </div>
 
-
+        <SideBar/>
         </div>
     )
 }

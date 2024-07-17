@@ -1,9 +1,11 @@
+import NavBar from "../components/NavBar";
 import SideBar from "../components/SideBar";
 
 export default function Home() {
   return (
     <div className="flex   items-start h-screen  gap-4"> {/* Adjusted for center alignment and full height */}
-      <SideBar />
+      {/* <SideBar /> */}
+      <NavBar />
       {/* <CardReapthing title="Awesome Shoes" content="If a dog chews shoes whose shoes does he choose?" />
       <CardReapthing title="Awesome Leg" content="If a dog chews shoes whose shoes does he choose?" />
       <CardReapthing title="Awesome Face" content="If a dog chews shoes whose shoes does he choose?" /> */}
