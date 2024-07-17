@@ -8,7 +8,7 @@ export default function index() {
 
             <NavBar />
 
-            <div className='flex h-screen'>
+            <div className='flex h-screen '>
                 {/* <SideNavBar/> */}
                 <div className='flex-grow overflow-auto p-4'>
 

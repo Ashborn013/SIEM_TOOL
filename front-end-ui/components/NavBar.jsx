@@ -4,7 +4,7 @@ export default function NavBar() {
   
   return (
     <>
-      <div className="navbar bg-base-100 w-full ">
+      <div className="navbar bg-base-100 w-full   ">
         <div className="flex-none">
           <button
             className="btn btn-square btn-ghost"

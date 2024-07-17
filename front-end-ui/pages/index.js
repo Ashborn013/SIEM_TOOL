@@ -9,6 +9,8 @@ export default function Home() {
       {/* <CardReapthing title="Awesome Shoes" content="If a dog chews shoes whose shoes does he choose?" />
       <CardReapthing title="Awesome Leg" content="If a dog chews shoes whose shoes does he choose?" />
       <CardReapthing title="Awesome Face" content="If a dog chews shoes whose shoes does he choose?" /> */}
+      
+      <SideBar/>
 
     </div>
   );
