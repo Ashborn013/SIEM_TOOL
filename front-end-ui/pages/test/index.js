@@ -2,28 +2,33 @@ import React, { useEffect, useState } from 'react';
 import SideBar from '../../components/SideBar'
 import NavBar from '../../components/NavBar';
 import Chart from 'chart.js/auto';
-//  to do add a funtion in main.py which can add each job run to table 
+
 export default function index() {
   const [rows, setRows] = useState([]);
-  useEffect(
-    () => {
+  useEffect(() => {
+    function fetchJobDetails() {
       fetch('http://127.0.0.1:223/Job_details')
         .then(response => response.json())
         .then(data => {
-          setRows(data);
-
+          console.log("Fetched data");
+          setRows((currentRows) => {
+            if (JSON.stringify(currentRows) !== JSON.stringify(data)) {
+              if (data.length > 0) {
+                CreateGraph(CountValuesInArray(data), "canva-bar");
+              }
+              return data;
+            }
+            return currentRows;
+          });
         })
-        .catch(error => console.error("Error"), [])
-    }, []
-
-  )
-  // console.log(CountValuesInArray(rows))
-  useEffect(() => {
-    if (rows.length > 0) {
-      CreateGraph(CountValuesInArray(rows), "canva-bar");
-    }
-  }, [rows]);
-
+        .catch(error => console.error("Error fetching data:", error));
+    };
+  
+    fetchJobDetails(); // Initial fetch
+    const intervalId = setInterval(fetchJobDetails, 5000); // Fetch every 5000 ms (5 seconds)
+    return () => clearInterval(intervalId); 
+  }, []);
+  
 
   return (
     <div>
@@ -38,6 +43,7 @@ export default function index() {
     </div>
   )
 }
+
 
 function CountValuesInArray(rows) {
   let dict = {}
@@ -58,7 +64,7 @@ function CreateGraph(lablesPluseData, elmid) {
   }
 
   window.myChartInstance = new Chart(ctx, {
-    type: 'doughnut',
+    type: 'pie',
     data: {
       labels: Object.keys(lablesPluseData),
       datasets: [{
