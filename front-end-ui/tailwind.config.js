@@ -13,12 +13,12 @@ module.exports = {
   },
   daisyui: {
     themes: [
-      // "dark",
       // "forest",
       // "synthwave"
-      "dracula",
-      "light"
+      // "light",
+      // "dark",
 
+      "dracula"
     ],
   },
   plugins: [require('daisyui')],

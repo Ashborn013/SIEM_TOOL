@@ -1,120 +1,107 @@
 import React, { useEffect, useState } from 'react';
 import SideBar from '../../components/SideBar'
 import NavBar from '../../components/NavBar';
-import Chart from 'chart.js/auto';
+import { getCookies, getCookie, setCookie, deleteCookie } from 'cookies-next';
+
 
 export default function index() {
-  const [rows, setRows] = useState([]);
+  const [user, setUser] = useState(null)
   useEffect(() => {
-    function fetchJobDetails() {
-      fetch('http://127.0.0.1:223/Job_details')
-        .then(response => response.json())
-        .then(data => {
-          console.log("Fetched data");
-          setRows((currentRows) => {
-            if (JSON.stringify(currentRows) !== JSON.stringify(data)) {
-              if (data.length > 0) {
-                CreateGraph(CountValuesInArray(data), "canva-bar");
-              }
-              return data;
-            }
-            return currentRows;
-          });
-        })
-        .catch(error => console.error("Error fetching data:", error));
-    };
-  
-    fetchJobDetails(); // Initial fetch
-    const intervalId = setInterval(fetchJobDetails, 5000); // Fetch every 5000 ms (5 seconds)
-    return () => clearInterval(intervalId); 
+    const loginCookie = getCookie('login');
+    if (loginCookie) {
+      setUser(loginCookie);
+    }
   }, []);
-  
+
+
+  function handleSubmit() {
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+
+    fetch('/api/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email: email, password: password })
+    })
+      .then(response => response.json())
+      .then(data => {
+        if (data.valid === true) {
+          setCookie("login", email, { path: '/' })
+        } else {
+          alert("Wrong Password or Email")
+        }
+      })
+      .catch(error => console.error('Error:', error));
+  }
+
 
   return (
     <div>
       <NavBar />
+      <ToastandToast />
       <div className='flex h-screen'>
-        <CreateTable rows={rows} />
-        <canvas id="canva-bar"></canvas>
+        <div className="hero bg-base-200 min-h-screen">
+          <div className="hero-content flex-col lg:flex-row-reverse">
+            <div className="text-center lg:text-left">
+              <h1 className="text-5xl font-bold">Login now!</h1>
+              <p className="py-6">
+                Provident cupiditate voluptatem et in. Quaerat fugiat ut assumenda excepturi exercitationem
+                quasi. In deleniti eaque aut repudiandae et a id nisi.
+              </p>
+            </div>
+            <div className="card bg-base-100 w-full max-w-sm shrink-0 shadow-2xl">
+              <form className="card-body" onSubmit={handleSubmit}  >
 
+                <div className="form-control"  >
+                  <label className="label">
+                    <span className="label-text">Email</span>
+                  </label>
+                  <input id="email" type="email" placeholder="email" className="input input-bordered" required />
+                </div>
+                <div className="form-control">
+                  <label className="label">
+                    <span className="label-text">Password</span>
+                  </label>
+                  <input id="password" type="password" placeholder="password" className="input input-bordered" required />
+                  <label className="label">
+                    <a href="#" className="label-text-alt link link-hover">Forgot password?</a>
+                  </label>
+                </div>
+                <div className="form-control mt-6">
+                  <button className="btn btn-primary"  >Login</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
       </div>
-      awd
       <SideBar />
     </div>
   )
 }
 
+function handleOnClick() {
+  console.log("Yo")
 
-function CountValuesInArray(rows) {
-  let dict = {}
-  rows.forEach(row => {
-    let what = row.level;
-    dict[what] = (dict[what] || 0) + 1;
-  });
 
-  return dict
+  console.log(x)
 }
 
-
-function CreateGraph(lablesPluseData, elmid) {
-
-  const ctx = document.getElementById(elmid)
-  if (window.myChartInstance) {
-    window.myChartInstance.destroy();
-  }
-
-  window.myChartInstance = new Chart(ctx, {
-    type: 'pie',
-    data: {
-      labels: Object.keys(lablesPluseData),
-      datasets: [{
-        // label: 'lol my brain',
-        data: Object.values(lablesPluseData)
-      }]
-    }
-  })
-}
-
-
-function CreateTable({ rows }) {
-  return (<>
-    <div className="overflow-x-auto">
-      <table className="table text-lg">
-        {/* head */}
-        <thead>
-          <tr>
-            <th className="text-xl">Slno</th>
-            <th className="text-xl" >Job</th>
-            <th className="text-xl" >Message</th>
-            <th className="text-xl" >level</th>
-            <th className="text-xl" >Job_id</th>
-            <th className="text-xl" >Time</th>
-
-
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((row, index) => {
-            // const correctedJson = row.log.replace(/'/g, '"');
-            // let logObj = JSON.parse(correctedJson);
-
-            return (
-              <tr key={index}>
-                <th>{index + 1}</th>
-                <td>{row.Job}</td>
-                <td>{row.message}</td>
-                <td>{row.level}</td>
-                <td>{row.Job_id}</td>
-                <td>{new Date(row.time * 1000).toLocaleString()}</td>
-
-              </tr>
-            );
-          })}
-          {/* row 1 */}
-
-        </tbody>
-      </table>
-    </div>
-  </>
-  )
+function ToastandToast() {
+  return (<div role="alert" id="error-thing" className="alert alert-error fixed hidden">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      className="h-6 w-6 shrink-0 stroke-current"
+      fill="none"
+      viewBox="0 0 24 24">
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="2"
+        d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+    </svg>
+    <span>Error! Task failed successfully.</span>
+  </div>)
 }

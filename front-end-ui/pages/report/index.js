@@ -13,9 +13,9 @@ export default function index() {
           console.log("Fetched data");
           setRows((currentRows) => {
             if (JSON.stringify(currentRows) !== JSON.stringify(data)) {
-              if (data.length > 0) {
-                CreateGraph(CountValuesInArray(data), "canva-bar");
-              }
+              // if (data.length > 0) {
+                CreateGraph(CountValuesInArray(data), "canva-bar","pie");
+              // }
               return data;
             }
             return currentRows;
@@ -38,7 +38,6 @@ export default function index() {
         <canvas id="canva-bar"></canvas>
 
       </div>
-      awd
       <SideBar />
     </div>
   )
@@ -56,7 +55,7 @@ function CountValuesInArray(rows) {
 }
 
 
-function CreateGraph(lablesPluseData, elmid) {
+function CreateGraph(lablesPluseData, elmid,graph) {
 
   const ctx = document.getElementById(elmid)
   if (window.myChartInstance) {
@@ -64,7 +63,7 @@ function CreateGraph(lablesPluseData, elmid) {
   }
 
   window.myChartInstance = new Chart(ctx, {
-    type: 'pie',
+    type: graph,
     data: {
       labels: Object.keys(lablesPluseData),
       datasets: [{
@@ -110,7 +109,6 @@ function CreateTable({ rows }) {
               </tr>
             );
           })}
-          {/* row 1 */}
 
         </tbody>
       </table>
