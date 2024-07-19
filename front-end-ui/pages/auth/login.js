@@ -46,7 +46,6 @@ export default function index() {
   return (
     <div>
       <NavBar />
-      <ToastandToast />
       <div className='flex h-screen'>
         <div className="hero bg-base-200 min-h-screen">
           <div className="hero-content flex-col lg:flex-row-reverse">
