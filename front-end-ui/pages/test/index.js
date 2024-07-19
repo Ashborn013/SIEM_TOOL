@@ -2,17 +2,21 @@ import React, { useEffect, useState } from 'react';
 import SideBar from '../../components/SideBar'
 import NavBar from '../../components/NavBar';
 import { getCookies, getCookie, setCookie, deleteCookie } from 'cookies-next';
-
-
+import { useRouter } from 'next/router'
 export default function index() {
   const [user, setUser] = useState(null)
-  useEffect(() => {
-    const loginCookie = getCookie('login');
-    if (loginCookie) {
-      setUser(loginCookie);
+  const router = useRouter();
+  useEffect(()=>{
+    if(getCookie('login')){
+      setUser(getCookie('login'))
+      console.log(user)
     }
-  }, []);
-
+  })
+  useEffect(()=>{
+    if(user){
+      router.push('/dashboard')
+    }
+  },[user])
 
   function handleSubmit() {
     const email = document.getElementById("email").value;
@@ -29,6 +33,8 @@ export default function index() {
       .then(data => {
         if (data.valid === true) {
           setCookie("login", email, { path: '/' })
+          alert("loged In")
+          // router.push('/dashboard')
         } else {
           alert("Wrong Password or Email")
         }
