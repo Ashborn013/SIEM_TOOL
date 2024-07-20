@@ -1,7 +1,24 @@
 import NavBar from '../../components/NavBar';
 import SideBar from '../../components/SideBar'
 import React, { useEffect, useState } from 'react';
+import { getCookie } from 'cookies-next';
 
+
+export const getServerSideProps = (context) => {
+    console.log(context.req)
+    const user = getCookie('login', { req: context.req });
+  
+    if (!user) {
+      return {
+        redirect: {
+          destination: '/auth/login',
+          permanent: false,
+        },
+      };
+    }
+  
+    return { props: {} };
+  };
 
 export default function index() {
     return (

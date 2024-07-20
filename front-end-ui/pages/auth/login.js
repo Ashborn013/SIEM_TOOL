@@ -1,11 +1,33 @@
 import React, { useEffect, useState } from 'react';
 import SideBar from '../../components/SideBar'
 import NavBar from '../../components/NavBar';
-import { getCookies, getCookie, setCookie, deleteCookie } from 'cookies-next';
+import {  getCookie, setCookie } from 'cookies-next';
 import { useRouter } from 'next/router'
+
+
+
+export const getServerSideProps = (context) => {
+    console.log(context.req)
+    const user = getCookie('login', { req: context.req });
+  
+    if (user) {
+      return {
+        redirect: {
+          destination: '/dashboard',
+          permanent: false,
+        },
+      };
+    }
+  
+    return { props: {} };
+  };
+
+
+
 export default function index() {
   const [user, setUser] = useState(null)
   const router = useRouter();
+  
   useEffect(()=>{
     if(getCookie('login')){
       setUser(getCookie('login'))

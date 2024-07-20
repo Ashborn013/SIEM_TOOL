@@ -1,9 +1,39 @@
 import NavBar from '../../components/NavBar';
 import SideBar from '../../components/SideBar'
 import React, { useEffect, useState } from 'react';
+import { getCookie } from 'cookies-next';
+
+
+export const getServerSideProps = (context) => {
+    console.log(context.req)
+    const user = getCookie('login', { req: context.req });
+  
+    if (!user) {
+      return {
+        redirect: {
+          destination: '/auth/login',
+          permanent: false,
+        },
+      };
+    }
+  
+    return { props: {} };
+  };
+
+
 
 export default function index() {
     const [rows, setRows] = useState([]);
+    const [user, setUser] = useState(null)
+
+
+    useEffect(()=>{
+        if(getCookie('login')){
+          setUser(getCookie('login'))
+          console.log(user)
+        }
+      })
+
     useEffect(() => {
         function fetchJobDetails() {
             fetch('http://127.0.0.1:223/Job_details')
@@ -14,8 +44,7 @@ export default function index() {
 
                     setRows((currentRows) => {
                         if (JSON.stringify(currentRows) !== JSON.stringify(data)) {
-                            // if (data.length > 0) {
-                            // }
+
 
                             return data;
                         }

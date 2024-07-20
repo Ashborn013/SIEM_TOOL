@@ -2,6 +2,25 @@ import React, { useEffect, useState } from 'react';
 import SideBar from '../../components/SideBar'
 import NavBar from '../../components/NavBar';
 import Chart from 'chart.js/auto';
+import { getCookie } from 'cookies-next';
+
+
+export const getServerSideProps = (context) => {
+    console.log(context.req)
+    const user = getCookie('login', { req: context.req });
+  
+    if (!user) {
+      return {
+        redirect: {
+          destination: '/auth/login',
+          permanent: false,
+        },
+      };
+    }
+  
+    return { props: {} };
+  };
+
 
 export default function index() {
   const [rows, setRows] = useState([]);
