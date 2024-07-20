@@ -8,7 +8,6 @@ export default async function hello(req, res) {
 
   const email = req.body.email
   const password = req.body.password
-  console.log(req.headers.cookie)
   try {
     Cred = await VaidateUserandPassword(email, password); // Await the promise>
     if (Cred) {
