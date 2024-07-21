@@ -226,6 +226,44 @@ def extract_new_process_creation_logs(df):
         return None
 
 
+def detect_network_disconnection(df):
+    df_filtered = df.filter(col("event_id") == "27")  
+    count = df_filtered.count()
+    
+    if count > 0:
+        print(f"Network link disconnection detected {count} times.")
+        df_filtered.show(truncate=False)
+        return df_filtered
+    else:
+        print("No network link disconnection detected.")
+        return None
+
+
+    
+def detect_user_local_group_enumeration(df):
+    df_filtered = df.filter(col("event_id") == "4798") 
+    count = df_filtered.count()
+    
+    if count > 0:
+        print(f"A user's local group membership was enumerated {count} times.")
+        df_filtered.show(truncate=False)
+        return df_filtered
+    else:
+        print("No user local group membership enumeration detected.")
+        return None
+
+
+    
+def powershell_remote_auth(df):
+    df_filtered = df.filter(col("winlog.event_id") == "32850")
+    count = df_filtered.count()
+    if count > 0:
+        print(f"PowerShell remote authentication detected {count} times!")
+        df_filtered.show()
+        return df_filtered
+    else:
+        print("No PowerShell remote authentication detected.")
+        return None
 
 
 
@@ -260,6 +298,12 @@ def rule_engine(df, rules):
             explicit_credential_logon(df)
         elif rule["type"] == "new_process_creation":
             extract_new_process_creation_logs(df)
+        elif rule["type"] == "net_link_disconnection":
+            detect_network_disconnection(df)
+        elif rule["type"] == "user_grp_enum":
+            detect_user_local_group_enumeration(df)
+        elif rule["type"] == "powershell_remote_auth":
+            powershell_remote_auth(df)
     # return df
 
 
@@ -270,8 +314,11 @@ rules = [
     {"type": "brute_force_detection"},
     {"type": "special_privilege_logon_detection"},
     {"type": "user_account_change"},
-    {"type":"explicit_credential_logon"},
+    {"type": "explicit_credential_logon"},
     {"type": "new_process_creation"},
+    {"type": "net_link_disconnection"},
+    {"type": "user_grp_enum"},
+    {"type": "powershell_remote_auth"},
 ]
 
 # Apply rules using the rule engine
