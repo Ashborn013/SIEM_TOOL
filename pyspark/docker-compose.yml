@@ -13,6 +13,9 @@ services:
     #   JUPYTER_ENABLE_LAB: "yes"  # Enable JupyterLab interface (optional)
     command: [ "python" ,"/home/jovyan/work/main.py" ]
     # command: ["tail", "-f", "/dev/null"]
+    networks:
+      - my_shared_network
+
 
   flask-server:
     build:
@@ -26,10 +29,13 @@ services:
       - ./saveData:/saveData
       - sql_db:/DataBaseStore
     networks:
-      my_shared_network:
-        external: true
+      - my_shared_network
 
 
 volumes:
   data:
   sql_db:
+
+networks:
+  my_shared_network:
+    external: true
