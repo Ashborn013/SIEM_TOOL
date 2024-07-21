@@ -25,6 +25,9 @@ services:
       - data:/saveData
       - ./saveData:/saveData
       - sql_db:/DataBaseStore
+    networks:
+      my_shared_network:
+        external: true
 
 
 volumes:
