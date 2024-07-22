@@ -9,7 +9,6 @@ export default function index() {
   useEffect(()=>{
     if(getCookie('login')){
       setUser(getCookie('login'))
-      console.log(user)
     }
   })
   useEffect(()=>{
@@ -88,12 +87,6 @@ export default function index() {
   )
 }
 
-function handleOnClick() {
-  console.log("Yo")
-
-
-  console.log(x)
-}
 
 function ToastandToast() {
   return (<div role="alert" id="error-thing" className="alert alert-error fixed hidden">

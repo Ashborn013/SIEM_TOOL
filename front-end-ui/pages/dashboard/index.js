@@ -5,7 +5,6 @@ import { getCookie } from 'cookies-next';
 
 
 export const getServerSideProps = (context) => {
-    console.log(context.req)
     const user = getCookie('login', { req: context.req });
   
     if (!user) {
@@ -30,7 +29,6 @@ export default function index() {
     useEffect(()=>{
         if(getCookie('login')){
           setUser(getCookie('login'))
-          console.log(user)
         }
       })
 
@@ -57,10 +55,6 @@ export default function index() {
         const intervalId = setInterval(fetchJobDetails, 5000); // Fetch every 5000 ms (5 seconds)
         return () => clearInterval(intervalId);
     }, []);
-    useEffect(() => {
-        console.log(new Date(), rows);
-    }, [rows]);
-    // console.log(rows)    
     return (
         < div>
 

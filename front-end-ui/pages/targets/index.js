@@ -7,7 +7,6 @@ import { getCookie } from 'cookies-next';
 
 
 export const getServerSideProps = (context) => {
-    console.log(context.req)
     const user = getCookie('login', { req: context.req });
   
     if (!user) {

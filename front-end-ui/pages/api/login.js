@@ -19,7 +19,6 @@ export default async function hello(req, res) {
     console.error(error);
     res.status(500).json({ error: 'Internal server error' });
   }
-  console.log(Cred)
 
 
 }
@@ -29,7 +28,6 @@ function VaidateUserandPassword(email, password) {
     .then(res => res.json())
     .then(data => {
       const validCredentials = data.filter(elem => elem.email === email && elem.password === password);
-      console.log(validCredentials); // Log the valid credentials
       return validCredentials[0];
     })
     .catch(error => console.error('Error:', error)); // Handle any errors

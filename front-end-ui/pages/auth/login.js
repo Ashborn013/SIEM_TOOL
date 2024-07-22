@@ -7,7 +7,6 @@ import { useRouter } from 'next/router'
 
 
 export const getServerSideProps = (context) => {
-    console.log(context.req)
     const user = getCookie('login', { req: context.req });
   
     if (user) {
@@ -31,7 +30,6 @@ export default function index() {
   useEffect(()=>{
     if(getCookie('login')){
       setUser(getCookie('login'))
-      console.log(user)
     }
   })
   useEffect(()=>{
