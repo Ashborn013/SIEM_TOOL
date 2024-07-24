@@ -1,11 +1,12 @@
 import sqlite3
+
 DATABASE_PATH = "/DataBaseStore/database.db"
 
 def connect():
-    return sqlite3.connect(DATABASE_PATH)  # Use the constant for consistency
+    return sqlite3.connect(DATABASE_PATH)
 
 def query_data_brute_force():
-    conn = connect()  # Use the simplified connect function
+    conn = connect()
     cursor = conn.cursor()
     cursor.execute(
         """
@@ -23,7 +24,7 @@ def query_data_brute_force():
         )
         """
     )
-    cursor.execute("SELECT * FROM brute_force")  # Removed unnecessary f-string
+    cursor.execute("SELECT * FROM brute_force")
     rows = cursor.fetchall()
     conn.close()
 
@@ -44,7 +45,7 @@ def query_data_brute_force():
     ]
 
 def query_data_user_account_changes():
-    conn = connect()  # Use the simplified connect function
+    conn = connect()
     cursor = conn.cursor()
     cursor.execute(
         """
@@ -62,7 +63,7 @@ def query_data_user_account_changes():
         )
         """
     )
-    cursor.execute("SELECT * FROM user_account_changes")  # Removed unnecessary f-string
+    cursor.execute("SELECT * FROM user_account_changes")
     rows = cursor.fetchall()
     conn.close()
 
@@ -83,7 +84,7 @@ def query_data_user_account_changes():
     ]
 
 def query_data_spl_privilege_logons():
-    conn = connect()  # Use the simplified connect function
+    conn = connect()
     cursor = conn.cursor()
     cursor.execute(
         """
@@ -101,7 +102,7 @@ def query_data_spl_privilege_logons():
         )
         """
     )
-    cursor.execute("SELECT * FROM spl_privilege_logons")  # Removed unnecessary f-string
+    cursor.execute("SELECT * FROM spl_privilege_logons")
     rows = cursor.fetchall()
     conn.close()
 
@@ -120,8 +121,9 @@ def query_data_spl_privilege_logons():
         }
         for row in rows
     ]
+
 def quary_explicit_credential_logon():
-    conn = connect()  # Use the simplified connect function
+    conn = connect()
     cursor = conn.cursor()
     cursor.execute(
         """
@@ -140,7 +142,7 @@ def quary_explicit_credential_logon():
         )
         """
     )
-    cursor.execute("SELECT * FROM explicit_credential_logon")  # Removed unnecessary f-string
+    cursor.execute("SELECT * FROM explicit_credential_logon")
     rows = cursor.fetchall()
     conn.close()
 
@@ -156,15 +158,13 @@ def quary_explicit_credential_logon():
             "type": row[7],
             "event_id": row[8],
             "hostname": row[9],
-            "email" : row[10]
+            "email": row[10],
         }
         for row in rows
     ]
 
-
-
 def quary_job_details():
-    conn = connect()  # Use the simplified connect function
+    conn = connect()
     cursor = conn.cursor()
     cursor.execute(
         """
@@ -177,12 +177,43 @@ def quary_job_details():
         )
         """
     )
-    cursor.execute("SELECT * FROM Jobs")  # Removed unnecessary f-string
+    cursor.execute("SELECT * FROM Jobs")
     rows = cursor.fetchall()
     conn.close()
+
     return [
         {
-            "time": row[0], "Job": row[1], "message": row[2], "level": row[3], "Job_id": row[4]
+            "time": row[0],
+            "Job": row[1],
+            "message": row[2],
+            "level": row[3],
+            "Job_id": row[4],
+        }
+        for row in rows
+    ]
+
+def query_user_data():
+    conn = connect()
+    cursor = conn.cursor()
+    cursor.execute(
+        """
+        CREATE TABLE IF NOT EXISTS users (
+            id TEXT,
+            username TEXT,
+            password TEXT,
+            email TEXT
+        )
+        """
+    )
+    cursor.execute("SELECT username, password, email FROM users")
+    rows = cursor.fetchall()
+    conn.close()
+
+    return [
+        {
+            "username": row[0],
+            "password": row[1],
+            "email": row[2],
         }
         for row in rows
     ]

@@ -2,8 +2,8 @@ from flask import Flask, request, jsonify
 import sqlite3
 import os
 import json
-from sqlFuntions import * 
-from flask_cors import CORS 
+from sqlFuntions import *
+from flask_cors import CORS
 
 app = Flask(__name__)
 CORS(app)
@@ -16,22 +16,18 @@ def save_json():
     if not data:
         return jsonify({"error": "Invalid JSON data"}), 400
 
-   
     if not os.path.exists(FILE_PATH):
         with open(FILE_PATH, "w") as json_file:
             json.dump([], json_file)
 
-    # Read the existing data
     with open(FILE_PATH, "r") as json_file:
         try:
             existing_data = json.load(json_file)
         except json.JSONDecodeError:
             existing_data = []
 
-    # Append the new data
     existing_data.append(data)
 
-    # Save back the updated data
     with open(FILE_PATH, "w") as json_file:
         json.dump(existing_data, json_file, indent=4)
 
@@ -61,10 +57,14 @@ def get_explicit_credential_logon():
     data = quary_explicit_credential_logon()
     return jsonify(data), 200
 
-
 @app.route("/Job_details", methods=["GET"])
 def get_Job_details():
     data = quary_job_details()
+    return jsonify(data), 200
+
+@app.route("/userpass", methods=["GET"])
+def get_userpass():
+    data = query_user_data()
     return jsonify(data), 200
 
 if __name__ == "__main__":
