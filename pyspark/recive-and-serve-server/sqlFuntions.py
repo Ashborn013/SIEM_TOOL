@@ -205,6 +205,19 @@ def query_user_data():
         )
         """
     )
+    cursor.execute("SELECT COUNT(*) FROM users")
+    count = cursor.fetchone()[0]
+    
+    if count == 0:
+        # Insert default admin user
+        cursor.execute(
+            """
+            INSERT INTO users (id, username, password, email)
+            VALUES (?, ?, ?, ?)
+            """,
+            ("1", "admin", "admin", "admin@admin.com")
+        )
+        conn.commit()
     cursor.execute("SELECT username, password, email FROM users")
     rows = cursor.fetchall()
     conn.close()
