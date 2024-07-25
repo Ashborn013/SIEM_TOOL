@@ -1,12 +1,30 @@
 import sqlite3
-
+import mysql.connector
+from mysql.connector import Error
 DATABASE_PATH = "/DataBaseStore/database.db"
 
 def connect():
-    return sqlite3.connect(DATABASE_PATH)
+    # return sqlite3.connect("/home/jovyan/DataBaseStore/database.db")
+    try:
+        connection = mysql.connector.connect(
+            database="pyspark",
+            host='db',  
+            port=3306,
+            user='root',
+            password='root'
+        )
+        
+        if connection.is_connected():
+            print("Connected to MySQL Server")
+            return connection
+
+    except Error as e:
+        print("Error while connecting to MySQL", e)
+        return None
 
 def query_data_brute_force():
     conn = connect()
+
     cursor = conn.cursor()
     cursor.execute(
         """
@@ -26,7 +44,6 @@ def query_data_brute_force():
     )
     cursor.execute("SELECT * FROM brute_force")
     rows = cursor.fetchall()
-    conn.close()
 
     return [
         {
@@ -213,7 +230,7 @@ def query_user_data():
         cursor.execute(
             """
             INSERT INTO users (id, username, password, email)
-            VALUES (?, ?, ?, ?)
+            VALUES (%s, %s, %s, %s)
             """,
             ("1", "admin", "admin", "admin@admin.com")
         )

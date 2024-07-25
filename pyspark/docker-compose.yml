@@ -13,8 +13,6 @@ services:
     #   JUPYTER_ENABLE_LAB: "yes"  # Enable JupyterLab interface (optional)
     command: [ "python" ,"/home/jovyan/work/main.py" ]
     # command: ["tail", "-f", "/dev/null"]
-    networks:
-      - my_shared_network
 
 
   flask-server:
@@ -28,14 +26,39 @@ services:
       - data:/saveData
       - ./saveData:/saveData
       - sql_db:/DataBaseStore
-    networks:
-      - my_shared_network
+
+  db:
+    image: mariadb:10.6
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - 3306:3306
+  # mysql:
+  #   restart: always
+  #   container_name: "mysql"
+  #   image: mysql:latest
+  #   ports:
+  #     - 3306:3306
+  #   environment:
+  #     - MYSQL_ROOT_PASSWORD=password
+  #     - MYSQL_DATABASE=pyspark
+  #     - MYSQL_USER=user
+  #     - MYSQL_PASSWORD=password
+    volumes:
+    - mysql_db:/var/lib/mysql
+
+  phpmyadmin:
+    image: phpmyadmin
+    restart: always
+    ports:
+      - 8080:80
+    environment:
+      - PMA_ARBITRARY=1
 
 
 volumes:
   data:
   sql_db:
+  mysql_db:
 
-networks:
-  my_shared_network:
-    external: true

@@ -1,8 +1,31 @@
 import sqlite3
 import uuid 
 import time
+
+import mysql.connector
+from mysql.connector import Error
+
 def connect():
-    return sqlite3.connect("/home/jovyan/DataBaseStore/database.db")
+    # return sqlite3.connect("/home/jovyan/DataBaseStore/database.db")
+    try:
+        connection = mysql.connector.connect(
+            # host="localhost",
+            database="pyspark",
+            # user="root",
+            # password="root"
+            host='db',  # Assuming the script runs on the same machine as the Docker container
+            port=3306,
+            user='root',
+            password='root'
+        )
+        
+        if connection.is_connected():
+            print("Connected to MySQL Server")
+            return connection
+
+    except Error as e:
+        print("Error while connecting to MySQL", e)
+        return None
 
 def detect_brute_force_db_save(df):
     conn = connect()  
@@ -29,7 +52,7 @@ def detect_brute_force_db_save(df):
         cursor.execute(
             """
             INSERT INTO brute_force (timestamp, log, message, ecs, event, name, id, type, event_id, hostname)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (%s, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
             (
                 row["@timestamp"],
@@ -72,7 +95,7 @@ def user_account_change_db_save(df):
         cursor.execute(
             """
             INSERT INTO user_account_changes (timestamp, log, message, ecs, event, name, id, type, event_id, hostname)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             """,
             (
                 row["@timestamp"],
@@ -116,7 +139,7 @@ def spl_privilege_logon_db_save(df):
         cursor.execute(
             """
             INSERT INTO spl_privilege_logons (timestamp, log, message, ecs, event, name, id, type, event_id, hostname)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             """,
             (
                 row["@timestamp"],
@@ -160,7 +183,7 @@ def explicit_credential_logon_db_save(df):
         cursor.execute(
             """
             INSERT INTO explicit_credential_logon (timestamp, log, message, ecs, event, name, id, type, event_id, hostname,email)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s,%s)
             """,
             (
                 row["@timestamp"],
@@ -202,7 +225,7 @@ def Job_Update(df):
     cursor.execute(
         """
         INSERT INTO Jobs (time, Job, message, level, Job_id)
-        VALUES (?, ?, ?, ?, ?)
+        VALUES (%s, %s, %s, %s, %s)
         """,
         (
             df[0],
