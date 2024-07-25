@@ -2,7 +2,7 @@ import NavBar from '../../components/NavBar';
 import SideBar from '../../components/SideBar'
 import React, { useEffect, useState } from 'react';
 import { getCookie } from 'cookies-next';
-
+const intreValTIme = 10000
 
 export const getServerSideProps = (context) => {
     const user = getCookie('login', { req: context.req });
@@ -55,17 +55,20 @@ function Focus_drop_data({title,content}) {
 
 function CreateTableBruteForce() {
     const [rows, setRows] = useState([]);
-    useEffect(
-        () => {
+    useEffect(() => {
+        function fetchBruteForce() {
             fetch('http://127.0.0.1:223/brute_force')
                 .then(response => response.json())
                 .then(data => {
                     setRows(data);
-
                 })
-                .catch(error => console.error("Error"), [])
+                .catch(error => console.error("Error:", error));
         }
-    )
+    
+        fetchBruteForce(); // Initial fetch
+        const intervalId = setInterval(fetchBruteForce, intreValTIme); // Fetch every 5000 ms (5 seconds)
+        return () => clearInterval(intervalId);
+    }, []); 
     return (<>
         <div className="overflow-x-auto">
             <table className="table text-lg">
@@ -108,17 +111,21 @@ function CreateTableBruteForce() {
 
 function CreateTableUserAccountChanges() {
     const [rows, setRows] = useState([]);
-    useEffect(
-        () => {
+    useEffect(() => {
+        function fetchUserAccountChanges() {
             fetch('http://127.0.0.1:223/user_account_changes')
                 .then(response => response.json())
                 .then(data => {
                     setRows(data);
-
                 })
-                .catch(error => console.error("Error"), [])
+                .catch(error => console.error("Error:", error));
         }
-    )
+    
+        fetchUserAccountChanges(); // Initial fetch
+        const intervalId = setInterval(fetchUserAccountChanges, intreValTIme); // Fetch every 5000 ms (5 seconds)
+        return () => clearInterval(intervalId);
+    }, []); 
+
     return (<>
         <div className="overflow-x-auto">
             <table className="table text-lg">
@@ -160,17 +167,22 @@ function CreateTableUserAccountChanges() {
 
 function CreateTableSplPrivilegeLogons() {
     const [rows, setRows] = useState([]);
-    useEffect(
-        () => {
+    useEffect(() => {
+        function fetchUserSplPrivilegeLogons() {
             fetch('http://127.0.0.1:223/spl_privilege_logons')
                 .then(response => response.json())
                 .then(data => {
                     setRows(data);
-
                 })
-                .catch(error => console.error("Error"), [])
+                .catch(error => console.error("Error:", error));
         }
-    )
+    
+        fetchUserSplPrivilegeLogons(); // Initial fetch
+        const intervalId = setInterval(fetchUserSplPrivilegeLogons, intreValTIme); // Fetch every 5000 ms (5 seconds)
+        return () => clearInterval(intervalId);
+    }, []); 
+
+
     return (<>
         <div className="overflow-x-auto">
             <table className="table text-lg">
@@ -212,17 +224,22 @@ function CreateTableSplPrivilegeLogons() {
 
 function CreateTableExplicitCredentialLogon() {
     const [rows, setRows] = useState([]);
-    useEffect(
-        () => {
+
+    useEffect(() => {
+        function fetchUserExplicitCredentialLogon() {
             fetch('http://127.0.0.1:223/explicit_credential_logon')
                 .then(response => response.json())
                 .then(data => {
                     setRows(data);
-
                 })
-                .catch(error => console.error("Error"), [])
+                .catch(error => console.error("Error:", error));
         }
-    )
+    
+        fetchUserExplicitCredentialLogon(); // Initial fetch
+        const intervalId = setInterval(fetchUserExplicitCredentialLogon, intreValTIme); // Fetch every 5000 ms (5 seconds)
+        return () => clearInterval(intervalId);
+    }, []); 
+
     return (<>
         <div className="overflow-x-auto">
             <table className="table text-lg">
