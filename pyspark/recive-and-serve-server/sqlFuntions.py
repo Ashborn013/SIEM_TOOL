@@ -180,6 +180,49 @@ def quary_explicit_credential_logon():
         for row in rows
     ]
 
+def quary_extract_new_process_creation_logs():
+    conn = connect()
+    cursor = conn.cursor()
+    cursor.execute(
+        """
+        CREATE TABLE IF NOT EXISTS extract_new_process_creation_logs (
+            timestamp TEXT,
+            log TEXT,
+            message TEXT,
+            ecs TEXT,
+            event TEXT,
+            name TEXT,
+            id TEXT,
+            type TEXT,
+            event_id TEXT,
+            hostname TEXT,
+            email TEXT
+        )
+        """
+    )
+    cursor.execute("SELECT * FROM extract_new_process_creation_logs")
+    rows = cursor.fetchall()
+    conn.close()
+
+    return [
+        {
+            "timestamp": row[0],
+            "log": row[1],
+            "message": row[2],
+            "ecs": row[3],
+            "event": row[4],
+            "name": row[5],
+            "id": row[6],
+            "type": row[7],
+            "event_id": row[8],
+            "hostname": row[9],
+            "email": row[10],
+        }
+        for row in rows
+    ]
+
+
+
 def quary_job_details():
     conn = connect()
     cursor = conn.cursor()

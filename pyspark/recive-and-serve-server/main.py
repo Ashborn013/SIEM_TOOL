@@ -57,6 +57,11 @@ def get_explicit_credential_logon():
     data = quary_explicit_credential_logon()
     return jsonify(data), 200
 
+@app.route("/extract_new_process_creation_logs", methods=["GET"])
+def get_extract_new_process_creation_logs():
+    data = quary_extract_new_process_creation_logs()
+    return jsonify(data), 200
+
 @app.route("/Job_details", methods=["GET"])
 def get_Job_details():
     data = quary_job_details()
@@ -66,6 +71,7 @@ def get_Job_details():
 def get_userpass():
     data = query_user_data()
     return jsonify(data), 200
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", debug=True, port=223)
