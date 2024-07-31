@@ -52,7 +52,7 @@ def detect_brute_force_db_save(df):
         cursor.execute(
             """
             INSERT INTO brute_force (timestamp, log, message, ecs, event, name, id, type, event_id, hostname)
-            VALUES (%s, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             """,
             (
                 row["@timestamp"],
