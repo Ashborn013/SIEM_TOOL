@@ -1,6 +1,7 @@
 import sqlite3
 import mysql.connector
 from mysql.connector import Error
+
 DATABASE_PATH = "/DataBaseStore/database.db"
 
 def connect():
@@ -24,7 +25,6 @@ def connect():
 
 def query_data_brute_force():
     conn = connect()
-
     cursor = conn.cursor()
     cursor.execute(
         """
@@ -44,6 +44,7 @@ def query_data_brute_force():
     )
     cursor.execute("SELECT * FROM brute_force")
     rows = cursor.fetchall()
+    conn.close()
 
     return [
         {
@@ -139,7 +140,7 @@ def query_data_spl_privilege_logons():
         for row in rows
     ]
 
-def quary_explicit_credential_logon():
+def query_explicit_credential_logon():
     conn = connect()
     cursor = conn.cursor()
     cursor.execute(
@@ -180,7 +181,7 @@ def quary_explicit_credential_logon():
         for row in rows
     ]
 
-def quary_extract_new_process_creation_logs():
+def query_extract_new_process_creation_logs():
     conn = connect()
     cursor = conn.cursor()
     cursor.execute(
@@ -221,9 +222,7 @@ def quary_extract_new_process_creation_logs():
         for row in rows
     ]
 
-
-
-def quary_job_details():
+def query_job_details():
     conn = connect()
     cursor = conn.cursor()
     cursor.execute(
@@ -287,6 +286,123 @@ def query_user_data():
             "username": row[0],
             "password": row[1],
             "email": row[2],
+        }
+        for row in rows
+    ]
+
+def query_data_network_disconnection():
+    conn = connect()
+    cursor = conn.cursor()
+    cursor.execute(
+        """
+        CREATE TABLE IF NOT EXISTS network_disconnection (
+            timestamp TEXT,
+            log TEXT,
+            message TEXT,
+            ecs TEXT,
+            event TEXT,
+            name TEXT,
+            id TEXT,
+            type TEXT,
+            event_id TEXT,
+            hostname TEXT
+        )
+        """
+    )
+    cursor.execute("SELECT * FROM network_disconnection")
+    rows = cursor.fetchall()
+    conn.close()
+
+    return [
+        {
+            "timestamp": row[0],
+            "log": row[1],
+            "message": row[2],
+            "ecs": row[3],
+            "event": row[4],
+            "name": row[5],
+            "id": row[6],
+            "type": row[7],
+            "event_id": row[8],
+            "hostname": row[9],
+        }
+        for row in rows
+    ]
+
+def query_data_user_local_group_enumeration():
+    conn = connect()
+    cursor = conn.cursor()
+    cursor.execute(
+        """
+        CREATE TABLE IF NOT EXISTS user_local_group_enumeration (
+            timestamp TEXT,
+            log TEXT,
+            message TEXT,
+            ecs TEXT,
+            event TEXT,
+            name TEXT,
+            id TEXT,
+            type TEXT,
+            event_id TEXT,
+            hostname TEXT
+        )
+        """
+    )
+    cursor.execute("SELECT * FROM user_local_group_enumeration")
+    rows = cursor.fetchall()
+    conn.close()
+
+    return [
+        {
+            "timestamp": row[0],
+            "log": row[1],
+            "message": row[2],
+            "ecs": row[3],
+            "event": row[4],
+            "name": row[5],
+            "id": row[6],
+            "type": row[7],
+            "event_id": row[8],
+            "hostname": row[9],
+        }
+        for row in rows
+    ]
+
+def query_data_powershell_remote_auth():
+    conn = connect()
+    cursor = conn.cursor()
+    cursor.execute(
+        """
+        CREATE TABLE IF NOT EXISTS powershell_remote_auth (
+            timestamp TEXT,
+            log TEXT,
+            message TEXT,
+            ecs TEXT,
+            event TEXT,
+            name TEXT,
+            id TEXT,
+            type TEXT,
+            event_id TEXT,
+            hostname TEXT
+        )
+        """
+    )
+    cursor.execute("SELECT * FROM powershell_remote_auth")
+    rows = cursor.fetchall()
+    conn.close()
+
+    return [
+        {
+            "timestamp": row[0],
+            "log": row[1],
+            "message": row[2],
+            "ecs": row[3],
+            "event": row[4],
+            "name": row[5],
+            "id": row[6],
+            "type": row[7],
+            "event_id": row[8],
+            "hostname": row[9],
         }
         for row in rows
     ]

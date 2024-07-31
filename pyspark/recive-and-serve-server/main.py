@@ -1,5 +1,4 @@
 from flask import Flask, request, jsonify
-import sqlite3
 import os
 import json
 from sqlFuntions import *
@@ -35,7 +34,7 @@ def save_json():
 
 @app.route("/")
 def home():
-    return "Hello, World!"
+    return "W0rking"
 
 @app.route("/brute_force", methods=["GET"])
 def get_brute_force():
@@ -54,17 +53,17 @@ def get_spl_privilege_logons():
 
 @app.route("/explicit_credential_logon", methods=["GET"])
 def get_explicit_credential_logon():
-    data = quary_explicit_credential_logon()
+    data = query_explicit_credential_logon()
     return jsonify(data), 200
 
 @app.route("/extract_new_process_creation_logs", methods=["GET"])
 def get_extract_new_process_creation_logs():
-    data = quary_extract_new_process_creation_logs()
+    data = query_extract_new_process_creation_logs()
     return jsonify(data), 200
 
 @app.route("/Job_details", methods=["GET"])
-def get_Job_details():
-    data = quary_job_details()
+def get_job_details():
+    data = query_job_details()
     return jsonify(data), 200
 
 @app.route("/userpass", methods=["GET"])
@@ -72,6 +71,20 @@ def get_userpass():
     data = query_user_data()
     return jsonify(data), 200
 
+@app.route("/network_disconnection", methods=["GET"])
+def get_network_disconnection():
+    data = query_data_network_disconnection()
+    return jsonify(data), 200
+
+@app.route("/user_local_group_enumeration", methods=["GET"])
+def get_user_local_group_enumeration():
+    data = query_data_user_local_group_enumeration()
+    return jsonify(data), 200
+
+@app.route("/powershell_remote_auth", methods=["GET"])
+def get_powershell_remote_auth():
+    data = query_data_powershell_remote_auth()
+    return jsonify(data), 200
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", debug=True, port=223)
