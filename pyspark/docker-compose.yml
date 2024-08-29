@@ -3,8 +3,8 @@ services:
     build:
       context: pyspark-image-builder
       dockerfile: Dockerfile
-    ports:
-      - "4040:4040"  
+    # ports:
+    #   - "4040:4040"  
     volumes:
       - ./pyspark-image-builder/:/home/jovyan/work  
       - data:/saveData
