@@ -3,30 +3,44 @@
 import React, { useEffect, useState, useLayoutEffect } from 'react';
 import SideBar from '@/components/SideBar';
 import NavBar from '@/components/NavBar';
-
-import Chart from 'chart.js/auto';
+import {  BarChart } from '@mui/x-charts/BarChart';
+import { PieChart } from '@mui/x-charts/PieChart';
 
 export default function Page() {
-  function CreateGraph(labelsPlusData, elmId, graphType) {
-    const ctx = document.getElementById(elmId);
-    if (window.myChartInstance) {
-      window.myChartInstance.destroy();
-    }
 
-    window.myChartInstance = new Chart(ctx, {
-      type: graphType,
-      data: {
-        labels: Object.keys(labelsPlusData),
-        datasets: [{
-          data: Object.values(labelsPlusData)
-        }]
-      }
-    });
-  }
 
   const [rows, setRows] = useState([]);
   const [data, setData] = useState([]);
+  const [bargraphdata, setBarGraphdata] = useState([]);
+  const [piegraphdata, setPieGraphdata] = useState([]);
+  function ArrayToPieArry(rows) {
+    let dict = {};
+    rows.forEach((row) => {
+      let what = row.level;
+      dict[what] = (dict[what] || 0) + 1;
+    });
 
+    // Transform the dictionary into an array of dictionaries
+    return Object.entries(dict).map(([letter, frequency]) => ({
+      label: letter,
+      value: frequency,
+    }));
+  }
+  function ArrayToBarArray(rows) {
+    let dict = {};
+
+    rows.forEach((row) => {
+      let what = row.level;
+      dict[what] = (dict[what] || 0) + 1;
+    });
+
+    // Extract labels and frequencies into separate arrays
+    const labels = Object.keys(dict);
+    const frequencies = Object.values(dict);
+
+    // Return the arrays in the desired format
+    return [labels, frequencies];
+  }
   useEffect(() => {
     async function fetchJobDetails() {
       try {
@@ -37,6 +51,8 @@ export default function Page() {
         setRows((currentRows) => {
           if (JSON.stringify(currentRows) !== JSON.stringify(data)) {
             setData(data);
+            setBarGraphdata(ArrayToBarArray(data));
+            setPieGraphdata(ArrayToPieArry(data));
             return data;
           }
           return currentRows;
@@ -45,43 +61,54 @@ export default function Page() {
         console.error("Error fetching data:", error);
       }
     }
+    // console.log(bargraphdata)
 
     fetchJobDetails();
     const intervalId = setInterval(fetchJobDetails, 5000);
     return () => clearInterval(intervalId);
   }, []);
-
-  useLayoutEffect(() => {
-    console.log(document.getElementById("canva-doughnut")); // Check if canvas element exists
-    console.log(CountValuesInArray(data)); // Verify data is being passed correctly
-
-    CreateGraph(CountValuesInArray(data), "canva-doughnut", "doughnut");
-    CreateGraph(CountValuesInArray(data), "canva-bar", "bar");
-  }, [data]);
-
-  function CountValuesInArray(rows) {
-    let dict = {};
-    rows.forEach((row) => {
-      let what = row.level;
-      dict[what] = (dict[what] || 0) + 1;
-    });
-
-    return dict;
-  }
+  console.log(data)
+  // console.log(bargraphdata)
+  console.log(piegraphdata)
 
   return (
     <div>
       <NavBar />
 
-      <div className='flex h-screen justify-evenly '>
+      <div className='flex h-screen justify-evenly items-start '>
         <div>
-          <canvas id="canva-doughnut"  ></canvas>
-        </div>
-        <div>
-          <canvas id="canva-bar"></canvas>
-        </div>
+          {bargraphdata && piegraphdata.length > 1 && bargraphdata[0].length > 0 && bargraphdata[1].length > 0 ? (
+            <BarChart
+              width={500}
+              height={300}
+              series={[{ data: bargraphdata[1], type: 'bar' }]}
+              xAxis={[{ scaleType: 'band', data: bargraphdata[0] }]}
+            >
+            </BarChart>
+          ) : (
+            <div>Loading or No Data Available</div>
+          )}
 
+        </div>
+        <div>
+          {piegraphdata && piegraphdata.length > 1  ? (
+                <PieChart
+                series={[
+                  {
+                    data : piegraphdata ,
+                    highlightScope: { fade: 'global', highlight: 'item' },
+                    faded: { innerRadius: 30, additionalRadius: -30, color: 'gray' },
+                  },
+                ]}
+                height={450}
+                width={450} 
+              />
+          ) : (
+            <div>Loading or No Data Available</div>
+          )}
+        </div>
       </div>
+
       <SideBar />
     </div>
   );

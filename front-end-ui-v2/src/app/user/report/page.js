@@ -3,7 +3,6 @@ import React, { useEffect, useState } from 'react';
 import SideBar from '@/components/SideBar';
 import NavBar from '@/components/NavBar';
 
-import Chart from 'chart.js/auto';
 
 export default function Page() {
   const [rows, setRows] = useState([]);
@@ -40,7 +39,7 @@ export default function Page() {
     row.Job_id.toLowerCase().includes(searchQuery.toLowerCase()) ||
     new Date(row.time * 1000).toLocaleString().toLowerCase().includes(searchQuery.toLowerCase())
   );
-  
+
   console.log(filteredRows)
 
   return (
