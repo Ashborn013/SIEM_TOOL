@@ -1,5 +1,5 @@
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import col, count, to_json, lag , regexp_extract
+from pyspark.sql.functions import col, count, to_json, lag , regexp_extract , avg , hour,when
 from pyspark.sql.window import Window
 from pyspark.sql.types import TimestampType
 from datetime import datetime
@@ -216,12 +216,15 @@ def extract_new_process_creation_logs(df):
 
         if count > 0:
             print(f"Found {count} logs with new process being created.")
+            Job_Update(Job_id_create_list("extract_new_process_creation_logs",f"Found {count} logs with new process being created.","Mid"))
             df_exe.show(truncate=False)
             return df_exe
         else:
+            Job_Update(Job_id_create_list("extract_new_process_creation_logs","No logs with new process created","Low"))
             print("No logs with new process created")
             return None
     else:
+        Job_Update(Job_id_create_list("extract_new_process_creation_logs","No logs with new process created","Low"))
         print("No logs with new process created")
         return None
 
@@ -233,8 +236,11 @@ def detect_network_disconnection(df):
     if count > 0:
         print(f"Network link disconnection detected {count} times.")
         df_filtered.show(truncate=False)
+        Job_Update(Job_id_create_list("detect_network_disconnection",f"Network link disconnection detected {count} times.","Mid"))
+
         return df_filtered
     else:
+        Job_Update(Job_id_create_list("detect_network_disconnection",f"No network link disconnection detected.","Low"))        
         print("No network link disconnection detected.")
         return None
 
@@ -245,10 +251,13 @@ def detect_user_local_group_enumeration(df):
     count = df_filtered.count()
     
     if count > 0:
+        Job_Update(Job_id_create_list("detect_user_local_group_enumeration",f"A user's local group membership was enumerated {count} times.","High"))        
+
         print(f"A user's local group membership was enumerated {count} times.")
         df_filtered.show(truncate=False)
         return df_filtered
     else:
+        Job_Update(Job_id_create_list("detect_user_local_group_enumeration",f"No user local group membership enumeration detected.","Low"))        
         print("No user local group membership enumeration detected.")
         return None
 
@@ -326,13 +335,18 @@ def user_behavior_anomaly(df):
         return None    
 
 
-
+def cout_UseNameAndSystem(df):
+    unique_hostnames = df.select("hostname").distinct().rdd.flatMap(lambda x: x).collect()
+    unique_hostnames = list(set(unique_hostnames))
+    save_unique_hostnames(unique_hostnames)
 
 
 
 
 
 def rule_engine(df, rules):
+    cout_UseNameAndSystem(df)
+
     for rule in rules:
         if df is None:
             print("DataFrame is None, skipping rule:", rule)
@@ -405,6 +419,14 @@ result_df = rule_engine(df_selected, rules)
 # output_path = f"/home/jovyan/work/categorized_winlogbeat-{datetime.now().isoformat()}"
 # result_df.coalesce(1).write.json(output_path)
 
+
+"""
+Things to Do
+-------------
+
+
+
+"""
 
 
 

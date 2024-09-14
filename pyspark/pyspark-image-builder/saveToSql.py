@@ -203,6 +203,34 @@ def explicit_credential_logon_db_save(df):
     cursor.close()
 
 
+def save_unique_hostnames(hostnames):
+    connection = connect()
+    cursor = connection.cursor()
+
+    cursor.execute(
+        """
+        CREATE TABLE IF NOT EXISTS hostname (
+            hostname TEXT UNIQUE
+        )
+        """
+    )
+
+    unique_hostnames = set(hostnames)  # Ensure uniqueness
+
+    for hostname in unique_hostnames:
+        cursor.execute(
+            """
+            INSERT  IGNORE INTO hostname (hostname)
+            VALUES (%s)
+            """,
+            (hostname,)
+        )
+
+    connection.commit()
+    cursor.close()
+
+
+
 
 def Job_id_create_list(job,message,level):
     return [time.time(), job, message, level,uuid.uuid4() ]
