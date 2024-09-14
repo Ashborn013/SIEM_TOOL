@@ -406,3 +406,25 @@ def query_data_powershell_remote_auth():
         }
         for row in rows
     ]
+
+
+def quary_user_hostnames():
+    conn = connect()
+    cursor = conn.cursor()
+    cursor.execute(
+        """
+        CREATE TABLE IF NOT EXISTS hostname (
+            hostname TEXT UNIQUE
+        )
+        """
+    )
+    cursor.execute("SELECT * FROM hostname")
+    rows = cursor.fetchall()
+    conn.close()
+    print(rows)
+    return [
+        {
+            "hostname" : row[0]
+        }
+        for row in rows
+    ]

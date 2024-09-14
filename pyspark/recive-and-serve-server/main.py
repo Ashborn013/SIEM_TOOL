@@ -86,5 +86,12 @@ def get_powershell_remote_auth():
     data = query_data_powershell_remote_auth()
     return jsonify(data), 200
 
+@app.route("/hostnames",methods=["GET"])
+def get_hostnames():
+    data = quary_user_hostnames()
+    return jsonify(data) , 200
+
+
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", debug=True, port=223)
