@@ -3,16 +3,19 @@
 import React, { useEffect, useState, useLayoutEffect } from 'react';
 import SideBar from '@/components/SideBar';
 import NavBar from '@/components/NavBar';
-import {  BarChart } from '@mui/x-charts/BarChart';
+import { BarChart } from '@mui/x-charts/BarChart';
 import { PieChart } from '@mui/x-charts/PieChart';
+import { styled } from '@mui/material/styles';
+import { LineChart } from '@mui/x-charts/LineChart';
 
 export default function Page() {
-
 
   const [rows, setRows] = useState([]);
   const [data, setData] = useState([]);
   const [bargraphdata, setBarGraphdata] = useState([]);
   const [piegraphdata, setPieGraphdata] = useState([]);
+  const [lineChartData, setLineChartData] = useState({ times: [], incidents: [] });
+
   function ArrayToPieArry(rows) {
     let dict = {};
     rows.forEach((row) => {
@@ -26,6 +29,7 @@ export default function Page() {
       value: frequency,
     }));
   }
+
   function ArrayToBarArray(rows) {
     let dict = {};
 
@@ -34,13 +38,27 @@ export default function Page() {
       dict[what] = (dict[what] || 0) + 1;
     });
 
-    // Extract labels and frequencies into separate arrays
     const labels = Object.keys(dict);
     const frequencies = Object.values(dict);
 
-    // Return the arrays in the desired format
     return [labels, frequencies];
   }
+
+
+  function ArrayToLineChartData(rows) {
+      const eventsPerDay = {};
+    
+      rows.forEach(row => {
+        const date = new Date(row.time * 1000).toISOString().split('T')[0]; // Convert epoch to date string (YYYY-MM-DD)
+        eventsPerDay[date] = (eventsPerDay[date] || 0) + 1;
+      })
+      console.log(eventsPerDay);
+    const times = Object.keys(eventsPerDay);
+    const incidents = Object.values(eventsPerDay);
+    // console.log(times, incidents);
+    return { times ,incidents };
+  }
+
   useEffect(() => {
     async function fetchJobDetails() {
       try {
@@ -53,6 +71,7 @@ export default function Page() {
             setData(data);
             setBarGraphdata(ArrayToBarArray(data));
             setPieGraphdata(ArrayToPieArry(data));
+            setLineChartData(ArrayToLineChartData(data));
             return data;
           }
           return currentRows;
@@ -61,20 +80,25 @@ export default function Page() {
         console.error("Error fetching data:", error);
       }
     }
-    // console.log(bargraphdata)
 
     fetchJobDetails();
     const intervalId = setInterval(fetchJobDetails, 5000);
     return () => clearInterval(intervalId);
   }, []);
-  console.log(data)
-  // console.log(bargraphdata)
-  console.log(piegraphdata)
 
+  // console.log(data);
+  // console.log(piegraphdata);
+  console.log(lineChartData)
   return (
     <div>
       <NavBar />
-
+      <div className='flex justify-evenly items-center '>
+        {lineChartData && lineChartData.incidents.length > 1 && lineChartData.times.length > 1 ? (
+          <BasicLineChart data={lineChartData} />
+        ) : (
+          <div>Loading or No Data Available</div>
+        )}
+      </div>
       <div className='flex h-screen justify-evenly items-start '>
         <div>
           {bargraphdata && piegraphdata.length > 1 && bargraphdata[0].length > 0 && bargraphdata[1].length > 0 ? (
@@ -88,28 +112,60 @@ export default function Page() {
           ) : (
             <div>Loading or No Data Available</div>
           )}
-
         </div>
         <div>
-          {piegraphdata && piegraphdata.length > 1  ? (
-                <PieChart
-                series={[
-                  {
-                    data : piegraphdata ,
-                    highlightScope: { fade: 'global', highlight: 'item' },
-                    faded: { innerRadius: 30, additionalRadius: -30, color: 'gray' },
-                  },
-                ]}
-                height={450}
-                width={450} 
-              />
+          {piegraphdata && piegraphdata.length > 1 ? (
+            <PieChart
+              series={[
+                {
+                  data: piegraphdata,
+                  highlightScope: { fade: 'global', highlight: 'item' },
+                  faded: { innerRadius: 30, additionalRadius: -30, color: 'gray' },
+                },
+              ]}
+              height={450}
+              width={450}
+            />
           ) : (
             <div>Loading or No Data Available</div>
           )}
         </div>
+        <div>
+          {/* Additional content can go here */}
+        </div>
       </div>
-
       <SideBar />
     </div>
+  );
+}
+
+const LoadingReact = styled('rect')({
+  opacity: 0.2,
+  fill: 'lightgray',
+});
+
+const LoadingText = styled('text')(({ theme }) => ({
+  stroke: 'none',
+  fill: theme.palette.text.primary,
+  shapeRendering: 'crispEdges',
+  textAnchor: 'middle',
+  dominantBaseline: 'middle',
+}));
+
+function BasicLineChart({ data }) {
+  console.log(data.incidents);
+  // console.log(data);
+  return (
+    <LineChart
+      xAxis={[{ data: data.times , scaleType: 'band' }]}
+      series={[
+        {
+          data: data.incidents,
+
+        },
+      ]}
+      width={500}
+      height={300}
+    />
   );
 }
