@@ -117,12 +117,6 @@ def all_notable_event_id(df):
 
 
 
-
-
-
-
-
-
 def detect_brute_force(df):
     df = df.withColumn("@timestamp", col("@timestamp").cast(TimestampType()))
     out_put = filter_logs_by_event_id(df, 4625)
