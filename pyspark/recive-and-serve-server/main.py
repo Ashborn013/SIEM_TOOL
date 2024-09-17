@@ -91,6 +91,15 @@ def get_hostnames():
     data = quary_user_hostnames()
     return jsonify(data) , 200
 
+@app.route("/track_user_activity", methods=["GET"])
+def get_track_user_activity():
+    data = query_user_activity()
+    return jsonify(data), 200
+
+@app.route("/unusual_login_times", methods=["GET"])
+def get_unusual_login_times():
+    data = query_unusual_login_times()
+    return jsonify(data), 200
 
 
 if __name__ == "__main__":
