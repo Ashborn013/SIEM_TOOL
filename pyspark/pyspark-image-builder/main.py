@@ -336,7 +336,7 @@ def user_behavior_anomaly(df):
 
 
 def cout_UseNameAndSystem(df):
-    unique_hostnames = df.select("hostname").distinct().rdd.flatMap(lambda x: x).collect()
+    unique_hostnames = df.select("name").distinct().rdd.flatMap(lambda x: x).collect()
     unique_hostnames = list(set(unique_hostnames))
     save_unique_hostnames(unique_hostnames)
 
@@ -345,7 +345,7 @@ def cout_UseNameAndSystem(df):
 
 
 def rule_engine(df, rules):
-    cout_UseNameAndSystem(df)
+    cout_UseNameAndSystem(df_selected)
 
     for rule in rules:
         if df is None:
@@ -400,6 +400,7 @@ rules = [
 ]
 
 # Apply rules using the rule engine
+
 result_df = rule_engine(df_selected, rules)
 # result_df.show(truncate=True)
 
