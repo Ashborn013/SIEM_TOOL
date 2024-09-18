@@ -329,6 +329,21 @@ def user_behavior_anomaly(df):
         return None    
 
 
+def detect_brute_force_with_success(df):
+    failed_logon_df = detect_brute_force(df)
+    if failed_logon_df is not None:
+        success_logon_df = filter_logs_by_event_id(df, 4624)
+        correlated_df = success_logon_df.join(failed_logon_df, ["hostname"], "inner")
+        if correlated_df.count() > 0:
+            print("Brute Force followed by a successful logon detected.")
+            correlated_df.show()
+            return correlated_df
+        else:
+            print("No successful logon after brute force attack.")
+            return None
+
+
+
 def cout_UseNameAndSystem(df):
     unique_hostnames = df.select("name").distinct().rdd.flatMap(lambda x: x).collect()
     unique_hostnames = list(set(unique_hostnames))
@@ -374,6 +389,8 @@ def rule_engine(df, rules):
             track_user_activity(df,"47c6da14-cd88-47c0-b99b-9096a7bde971")
         elif rule["type"] == "user_behavior_anomaly":
             df = user_behavior_anomaly(df)
+        elif rule["type"] == "correlate_brute_force_logon":
+            df = detect_brute_force_with_success(df)
     # return df
 
 
@@ -391,6 +408,7 @@ rules = [
     {"type": "powershell_remote_auth"},
     {"type": "track_activity"},
     {"type": "user_behavior_anomaly"},
+    {"type": "correlate_brute_force_logon"},
 ]
 
 # Apply rules using the rule engine
