@@ -134,10 +134,10 @@ def detect_brute_force(df):
 
     if count > 10:
         detect_brute_force_db_save(logs_under_one_min)
-        Job_Update(Job_id_create_list("Brute Force", "Brute Force detected", "Critical"))
+        job_update(job_id_create_list("Brute Force", "Brute Force detected", "Critical"))
         return logs_under_one_min
     else:
-        Job_Update(Job_id_create_list("Brute Force", "Brute Force Not detected", "Low"))
+        job_update(job_id_create_list("Brute Force", "Brute Force Not detected", "Low"))
         return None
 
 
@@ -149,11 +149,11 @@ def detect_special_privilege_logon(df):
         print("Special privilege logon detected .. !")
         df_filtered.show()
         spl_privilege_logon_db_save(df_filtered) # db save function
-        Job_Update(Job_id_create_list("Special privilege logon", "Special privilege logon detected .. !", "Critical"))
+        job_update(job_id_create_list("Special privilege logon", "Special privilege logon detected .. !", "Critical"))
         return df_filtered
     else:
         print("No special privilege logon detected.")
-        Job_Update(Job_id_create_list("Special privilege logon", "No Special privilege ", "Low"))
+        job_update(job_id_create_list("Special privilege logon", "No Special privilege ", "Low"))
         return None
 
 
@@ -163,12 +163,12 @@ def detect_user_account_changed(df):
     user_account_change_db_save(df_filtered) # db save function
     if count > 0:
         print(f"User account change detected {count} times .. !")
-        Job_Update(Job_id_create_list(f"User account change", f"User account change detected {count} times", "Mid"))
+        job_update(job_id_create_list(f"User account change", f"User account change detected {count} times", "Mid"))
         df_filtered.show()
         return df_filtered
     else:
         print("No user account change detected.")
-        Job_Update(Job_id_create_list(f"User account change", f"No User account change detected", "Low"))
+        job_update(job_id_create_list(f"User account change", f"No User account change detected", "Low"))
 
         return None
 
@@ -182,20 +182,20 @@ def explicit_credential_logon(df):
         count = df_valid.count()
 
         if count > 0:
-            Job_Update(Job_id_create_list("Explicit credentials logon", f"Logon with explicit credentials detected {count} times (Event ID 4648) with valid email addresses.. !", "High"))
+            job_update(job_id_create_list("Explicit credentials logon", f"Logon with explicit credentials detected {count} times (Event ID 4648) with valid email addresses.. !", "High"))
             print(f"Logon with explicit credentials detected {count} times (Event ID 4648) with valid email addresses.. !")
             # event_4648_db_save(df_valid)  # db save function
-            # Job_Update(Job_id_create_list("Event ID 4648", f"Logon with explicit credentials detected {count} times with valid email addresses", "High"))
+            # job_update(job_id_create_list("Event ID 4648", f"Logon with explicit credentials detected {count} times with valid email addresses", "High"))
             df_valid.show()
             explicit_credential_logon_db_save(df_valid)
             # return df_valid
         else:
             print("No valid logon with explicit credentials detected (Event ID 4648).")
-            Job_Update(Job_id_create_list("Explicit credentials logon", "No valid logon with explicit credentials detected", "Low"))
+            job_update(job_id_create_list("Explicit credentials logon", "No valid logon with explicit credentials detected", "Low"))
             # return None
     else:
         print("No valid logon with explicit credentials detected (Event ID 4648).")
-        Job_Update(Job_id_create_list("Explicit credentials logon", "No valid logon with explicit credentials detected", "Low"))
+        job_update(job_id_create_list("Explicit credentials logon", "No valid logon with explicit credentials detected", "Low"))
         # return None
 
 
@@ -210,15 +210,16 @@ def extract_new_process_creation_logs(df):
 
         if count > 0:
             print(f"Found {count} logs with new process being created.")
-            Job_Update(Job_id_create_list("extract_new_process_creation_logs",f"Found {count} logs with new process being created.","Mid"))
+            job_update(job_id_create_list("extract_new_process_creation_logs",f"Found {count} logs with new process being created.","Mid"))
             df_exe.show(truncate=False)
+            new_process_creation_log_db_save(df_exe)
             return df_exe
         else:
-            Job_Update(Job_id_create_list("extract_new_process_creation_logs","No logs with new process created","Low"))
+            job_update(job_id_create_list("extract_new_process_creation_logs","No logs with new process created","Low"))
             print("No logs with new process created")
             return None
     else:
-        Job_Update(Job_id_create_list("extract_new_process_creation_logs","No logs with new process created","Low"))
+        job_update(job_id_create_list("extract_new_process_creation_logs","No logs with new process created","Low"))
         print("No logs with new process created")
         return None
 
@@ -230,11 +231,11 @@ def detect_network_disconnection(df):
     if count > 0:
         print(f"Network link disconnection detected {count} times.")
         df_filtered.show(truncate=False)
-        Job_Update(Job_id_create_list("detect_network_disconnection",f"Network link disconnection detected {count} times.","Mid"))
-
+        job_update(job_id_create_list("detect_network_disconnection",f"Network link disconnection detected {count} times.","Mid"))
+        detect_network_disconnection_db_save(df_filtered)
         return df_filtered
     else:
-        Job_Update(Job_id_create_list("detect_network_disconnection",f"No network link disconnection detected.","Low"))        
+        job_update(job_id_create_list("detect_network_disconnection",f"No network link disconnection detected.","Low"))        
         print("No network link disconnection detected.")
         return None
 
@@ -245,13 +246,14 @@ def detect_user_local_group_enumeration(df):
     count = df_filtered.count()
     
     if count > 0:
-        Job_Update(Job_id_create_list("detect_user_local_group_enumeration",f"A user's local group membership was enumerated {count} times.","High"))        
+        job_update(job_id_create_list("detect_user_local_group_enumeration",f"A user's local group membership was enumerated {count} times.","High"))        
 
         print(f"A user's local group membership was enumerated {count} times.")
         df_filtered.show(truncate=False)
+        detect_user_local_group_enumeration_db_save(df_filtered)
         return df_filtered
     else:
-        Job_Update(Job_id_create_list("detect_user_local_group_enumeration",f"No user local group membership enumeration detected.","Low"))        
+        job_update(job_id_create_list("detect_user_local_group_enumeration",f"No user local group membership enumeration detected.","Low"))        
         print("No user local group membership enumeration detected.")
         return None
 
@@ -263,6 +265,7 @@ def powershell_remote_auth(df):
     if count > 0:
         print(f"PowerShell remote authentication detected {count} times!")
         df_filtered.show()
+        powershell_remote_auth_db_save(df_filtered)
         return df_filtered
     else:
         print("No PowerShell remote authentication detected.")
@@ -275,6 +278,7 @@ def track_user_activity(df, agent_id):
     
     if df_user_activity.count() > 0:
         df_user_activity.orderBy("@timestamp").show()
+        track_user_activity_db_save(df_user_activity)
         return df_user_activity
     else:
         print(f"No activity found for agent ID: {agent_id}")
@@ -318,6 +322,7 @@ def user_behavior_anomaly(df):
         flagged_users = anomaly_df.select("id").rdd.flatMap(lambda x: x).collect()
         print(f"Flagged users with unusual event counts: {flagged_users}")
         anomaly_df.show()
+        user_behavior_anomaly_db_save(anomaly_df)
         flagged_unusual_login_df = anomaly_df.join(unusual_login_df, "id", "inner")
         if flagged_unusual_login_df.count() > 0:
             print("Flagged users with unusual login times:")

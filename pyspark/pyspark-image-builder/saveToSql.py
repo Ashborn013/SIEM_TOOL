@@ -1,268 +1,136 @@
-import sqlite3
+import os
 import uuid 
 import time
+from mysql.connector import pooling, Error
+from pyspark.sql import DataFrame
+from typing import List, Any
 
-import mysql.connector
-from mysql.connector import Error
+#ENV variables
+DB_HOST = os.getenv('DB_HOST', 'db')
+DB_PORT = int(os.getenv('DB_PORT', '3306'))
+DB_NAME = os.getenv('DB_NAME', 'pyspark')
+DB_USER = os.getenv('DB_USER', 'root')
+DB_PASS = os.getenv('DB_PASS', 'root')
 
-def connect():
-    # return sqlite3.connect("/home/jovyan/DataBaseStore/database.db")
+# Efficient Connection Mangement
+connection_pool = pooling.MySQLConnectionPool(
+    pool_name="ConnectionPool1",
+    pool_size=5,
+    pool_reset_session=True, # reset session variables after connection is closed.
+    host=DB_HOST,
+    port=DB_PORT,
+    database=DB_NAME,
+    user=DB_USER,
+    password=DB_PASS
+)
+
+def get_connection():
+    return connection_pool.get_connection()
+
+def execute_query(query: str, params: tuple = None, many: bool = False):
+    conn = get_connection()
     try:
-        connection = mysql.connector.connect(
-            # host="localhost",
-            database="pyspark",
-            # user="root",
-            # password="root"
-            host='db',  # Assuming the script runs on the same machine as the Docker container
-            port=3306,
-            user='root',
-            password='root'
-        )
-        
-        if connection.is_connected():
-            print("Connected to MySQL Server")
-            return connection
-
+        with conn.cursor() as cursor:
+            if many:
+                cursor.executemany(query, params)
+            else:
+                cursor.execute(query, params)
+            conn.commit()
     except Error as e:
-        print("Error while connecting to MySQL", e)
-        return None
+        print(f"An error occurred: {e}")
+        conn.rollback()
+    finally:
+        conn.close()
 
-def detect_brute_force_db_save(df):
-    conn = connect()  
-    cursor = conn.cursor()
-
-    cursor.execute(
-        """
-        CREATE TABLE IF NOT EXISTS brute_force (
-            timestamp TEXT,
-            log TEXT,
-            message TEXT,
-            ecs TEXT,
-            event TEXT,
-            name TEXT,
-            id TEXT,
-            type TEXT,
-            event_id TEXT,
-            hostname TEXT
-        )
-        """
+def create_table(table_name: str, columns: List[str]):
+    query = f"""
+    CREATE TABLE IF NOT EXISTS {table_name} (
+        {', '.join(columns)}
     )
-    pandas_df = df.toPandas()
-    for _, row in pandas_df.iterrows():
-        cursor.execute(
-            """
-            INSERT INTO brute_force (timestamp, log, message, ecs, event, name, id, type, event_id, hostname)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-            """,
-            (
-                row["@timestamp"],
-                str(row["log"]),
-                row["message"],
-                str(row["ecs"]),
-                str(row["event"]),
-                row["name"],
-                row["id"],
-                row["type"],
-                row["event_id"],
-                row["hostname"],
-            ),
-        )
-    conn.commit()
-    cursor.close()
+    """
+    execute_query(query)
 
-def user_account_change_db_save(df):
-    connection = connect()
-    cursor = connection.cursor()
-
-    cursor.execute(
-        """
-        CREATE TABLE IF NOT EXISTS user_account_changes (
-            timestamp TEXT,
-            log TEXT,
-            message TEXT,
-            ecs TEXT,
-            event TEXT,
-            name TEXT,
-            id TEXT,
-            type TEXT,
-            event_id TEXT,
-            hostname TEXT
-        )
-        """
-    )
-    pandas_df = df.toPandas()
-    for _, row in pandas_df.iterrows():
-        cursor.execute(
-            """
-            INSERT INTO user_account_changes (timestamp, log, message, ecs, event, name, id, type, event_id, hostname)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-            """,
-            (
-                row["@timestamp"],
-                str(row["log"]),
-                row["message"],
-                str(row["ecs"]),
-                str(row["event"]),
-                row["name"],
-                row["id"],
-                row["type"],
-                row["event_id"],
-                row["hostname"],
-            ),
-        )
-    connection.commit()
-    cursor.close()
-
-
-def spl_privilege_logon_db_save(df):
-    connection = connect()
-    cursor = connection.cursor()
-
-    cursor.execute(
-        """
-        CREATE TABLE IF NOT EXISTS spl_privilege_logons (
-            timestamp TEXT,
-            log TEXT,
-            message TEXT,
-            ecs TEXT,
-            event TEXT,
-            name TEXT,
-            id TEXT,
-            type TEXT,
-            event_id TEXT,
-            hostname TEXT
-        )
-        """
-    )
-    pandas_df = df.toPandas()
-    for _, row in pandas_df.iterrows():
-        cursor.execute(
-            """
-            INSERT INTO spl_privilege_logons (timestamp, log, message, ecs, event, name, id, type, event_id, hostname)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-            """,
-            (
-                row["@timestamp"],
-                str(row["log"]),
-                row["message"],
-                str(row["ecs"]),
-                str(row["event"]),
-                row["name"],
-                row["id"],
-                row["type"],
-                row["event_id"],
-                row["hostname"],
-            ),
-        )
-    connection.commit()
-    cursor.close()
-
-def explicit_credential_logon_db_save(df):
-    connection = connect()
-    cursor = connection.cursor()
-
-    cursor.execute(
-        """
-        CREATE TABLE IF NOT EXISTS explicit_credential_logon (
-            timestamp TEXT,
-            log TEXT,
-            message TEXT,
-            ecs TEXT,
-            event TEXT,
-            name TEXT,
-            id TEXT,
-            type TEXT,
-            event_id TEXT,
-            hostname TEXT,
-            email TEXT
-        )
-        """
-    )
-    pandas_df = df.toPandas()
-    for _, row in pandas_df.iterrows():
-        cursor.execute(
-            """
-            INSERT INTO explicit_credential_logon (timestamp, log, message, ecs, event, name, id, type, event_id, hostname,email)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s,%s)
-            """,
-            (
-                row["@timestamp"],
-                str(row["log"]),
-                row["message"],
-                str(row["ecs"]),
-                str(row["event"]),
-                row["name"],
-                row["id"],
-                row["type"],
-                row["event_id"],
-                row["hostname"],
-                row['email']
-            ),
-        )
-    connection.commit()
-    cursor.close()
-
-
-def save_unique_hostnames(hostnames):
-    connection = connect()
-    cursor = connection.cursor()
-
-    cursor.execute(
-        """
-        CREATE TABLE IF NOT EXISTS hostname (
-            hostname TEXT UNIQUE
-        )
-        """
-    )
-
-    unique_hostnames = set(hostnames)  # Ensure uniqueness
-
-    for hostname in unique_hostnames:
-        cursor.execute(
-            """
-            INSERT  IGNORE INTO hostname (hostname)
-            VALUES (%s)
-            """,
-            (hostname,)
-        )
-
-    connection.commit()
-    cursor.close()
-
-
-
-
-def Job_id_create_list(job,message,level):
-    return [time.time(), job, message, level,uuid.uuid4() ]
-
-def Job_Update(df):
-    connection = connect()
-    cursor = connection.cursor()
-
-    cursor.execute(
-        """
-        CREATE TABLE IF NOT EXISTS Jobs (
-            time TEXT,
-            Job TEXT,
-            message TEXT,
-            level TEXT,
-            Job_id TEXT
-        )
-        """
-    )
-    cursor.execute(
-        """
-        INSERT INTO Jobs (time, Job, message, level, Job_id)
-        VALUES (%s, %s, %s, %s, %s)
-        """,
-        (
-            df[0],
-            df[1],
-            df[2],
-            df[3],
-            str(df[4]),
-        ),
-    )
-    connection.commit()
-    cursor.close()
+def insert_data(table_name: str, df: DataFrame):
+    columns = df.columns
+    placeholders = ', '.join(['%s'] * len(columns))
+    query = f"""
+    INSERT INTO {table_name} ({', '.join(columns)})
+    VALUES ({placeholders})
+    """
     
+    pandas_df = df.toPandas()
+    rows = [tuple(row) for row in pandas_df.to_numpy()]
+    execute_query(query, rows, many=True)
+
+def save_to_db(df: DataFrame, table_name: str):
+    columns = [
+        "timestamp TEXT",
+        "log TEXT",
+        "message TEXT",
+        "ecs TEXT",
+        "event TEXT",
+        "name TEXT",
+        "id TEXT",
+        "type TEXT",
+        "event_id TEXT",
+        "hostname TEXT"
+    ]
+    if table_name == "explicit_credential_logon":
+        columns.append("email TEXT")
+    elif table_name == "new_process_creation_log":
+        columns.append("exe_files TEXT")
+    
+    create_table(table_name, columns)
+    insert_data(table_name, df)
+
+def detect_brute_force_db_save(df: DataFrame):
+    save_to_db(df, "brute_force")
+
+def user_account_change_db_save(df: DataFrame):
+    save_to_db(df, "user_account_changes")
+
+def spl_privilege_logon_db_save(df: DataFrame):
+    save_to_db(df, "spl_privilege_logons")
+
+def explicit_credential_logon_db_save(df: DataFrame):
+    save_to_db(df, "explicit_credential_logon")
+
+def new_process_creation_log_db_save(df: DataFrame):
+    save_to_db(df,"new_process_creation_log")
+
+def detect_network_disconnection_db_save(df: DataFrame):
+    save_to_db(df,"network_disconnection")
+
+def detect_user_local_group_enumeration_db_save(df: DataFrame):
+    save_to_db(df,"user_local_group_enum")
+
+def powershell_remote_auth_db_save(df: DataFrame):
+    save_to_db(df,"powershell_remote_auth")
+
+def track_user_activity_db_save(df: DataFrame):
+    save_to_db(df,"tract_user_activity")
+
+def user_behavior_anomaly_db_save(df: DataFrame):
+    save_to_db(df,"user_behavior_anomaly")
+
+def save_unique_hostnames(hostnames: List[str]):
+    create_table("hostname", ["hostname TEXT UNIQUE"])
+    query = "INSERT IGNORE INTO hostname (hostname) VALUES (%s)"
+    execute_query(query, [(hostname,) for hostname in set(hostnames)], many=True)
+
+def job_id_create_list(job: str, message: str, level: str) -> List[Any]:
+    return [time.time(), job, message, level, str(uuid.uuid4())]
+
+def job_update(df: List[Any]):
+    create_table("Jobs", [
+        "time TEXT",
+        "Job TEXT",
+        "message TEXT",
+        "level TEXT",
+        "Job_id TEXT"
+    ])
+    query = """
+    INSERT INTO Jobs (time, Job, message, level, Job_id)
+    VALUES (%s, %s, %s, %s, %s)
+    """
+    execute_query(query, tuple(df))
