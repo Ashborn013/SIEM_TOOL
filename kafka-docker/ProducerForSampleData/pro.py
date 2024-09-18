@@ -10,7 +10,7 @@ load_dotenv()
 # topic = os.getenv('KAFKA_TOPIC')
 topic = "topic1"
 producer = KafkaProducer(
-    bootstrap_servers=["192.168.1.9:9092"],
+    bootstrap_servers=["172.27.240.1:9092"],
     value_serializer=lambda x: dumps(x).encode("utf-8"),
 )
 

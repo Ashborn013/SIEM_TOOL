@@ -10,7 +10,7 @@ topic = os.getenv("KAFKA_TOPIC")
 consumer = KafkaConsumer(
     f"{topic}",
     # bootstrap_servers=["localhost:9092"],
-    bootstrap_servers=["192.168.1.9:9092"],
+    bootstrap_servers=["172.27.240.1:9092"],
     value_deserializer=lambda x: loads(x.decode("utf-8")),
 )
 
@@ -35,6 +35,7 @@ def updateFromBufferToFile():
     buffer = []
 
 while True:
+    # print(topic)
     messages = consumer.poll(timeout_ms=1000)  # wait for 5 seconds
 
     if not messages:

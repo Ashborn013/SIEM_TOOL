@@ -1,2 +1,2 @@
 #!/bin/bash
-kafka-topics --create --topic topic1 --bootstrap-server  192.168.1.11:9092
+kafka-topics --create --topic topic1 --bootstrap-server  172.27.240.1:9092
