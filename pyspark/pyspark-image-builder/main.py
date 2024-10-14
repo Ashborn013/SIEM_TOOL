@@ -1,5 +1,5 @@
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import col, count, to_json, lag , regexp_extract , avg , hour,when
+from pyspark.sql.functions import col, count, to_json, lag , regexp_extract , avg , hour,when, window, collect_list, lit
 from pyspark.sql.window import Window
 from pyspark.sql.types import TimestampType
 from datetime import datetime
@@ -348,6 +348,52 @@ def detect_brute_force_with_success(df):
             return None
 
 
+def correlate_execution_policy_attack(df):
+    if df is None or df.rdd.isEmpty():
+        print("Input DataFrame is empty or None, skipping rule.")
+        return None
+    
+    df_4104 = df.filter(col("event_id") == "4104")
+    df_4672 = df.filter(col("event_id") == "4672")
+    df_4798 = df.filter(col("event_id") == "4798")
+
+    count_4104 = df_4104.count()
+    count_4672 = df_4672.count()
+    count_4798 = df_4798.count()
+
+    if count_4104 > 0 and count_4672 > 0 and count_4798 > 0:
+        df_filtered = df_4104.union(df_4672).union(df_4798)
+        common_timestamp = df_filtered.agg({"@timestamp": "min"}).collect()[0][0]
+        # print(common_timestamp)
+        total_count = count_4104 + count_4672 + count_4798
+        job_update(job_id_create_list(
+            "Execution_Policy_Attack",
+            f"Detected potential execution policy attack with {total_count} events.",
+            "Critical"
+        ))
+        print(f"Detected potential execution policy attack with {total_count} events at {common_timestamp}.")
+
+        # Show relevant details with the common timestamp
+        df_filtered.select(
+            lit(common_timestamp).alias("Common_Timestamp"),  # Use the common timestamp
+            col("event_id"),
+            col("hostname"),
+            col("message")
+        ).show(truncate=False)
+
+        # Save filtered results to the database
+        #detect_execution_policy_attack_db_save(df_filtered)
+        return df_filtered
+    else:
+        # No attack detected, update the job and print a message
+        job_update(job_id_create_list(
+            "Execution_Policy_Attack",
+            "No execution policy attack detected.",
+            "Low"
+        ))
+        print("No execution policy attack detected.")
+        return None
+
 
 def cout_UseNameAndSystem(df):
     unique_hostnames = df.select("name").distinct().rdd.flatMap(lambda x: x).collect()
@@ -396,6 +442,8 @@ def rule_engine(df, rules):
             df = user_behavior_anomaly(df)
         elif rule["type"] == "correlate_brute_force_logon":
             df = detect_brute_force_with_success(df)
+        elif rule["type"] == "correlate_powershell":
+            df = correlate_execution_policy_attack(df)
     # return df
 
 
@@ -414,6 +462,7 @@ rules = [
     {"type": "track_activity"},
     {"type": "user_behavior_anomaly"},
     {"type": "correlate_brute_force_logon"},
+    {"type": "correlate_powershell"},
 ]
 
 # Apply rules using the rule engine
