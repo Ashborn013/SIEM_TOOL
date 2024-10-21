@@ -35,6 +35,12 @@ df_selected = df.select(
 def filter_logs_by_event_id(df, event_id):
     return df.filter(col("event_id") == event_id)
 
+def group_logs_by_date_latest(df):
+    df_with_day = df.withColumn("day", date_format(col("@timestamp"), "yyyy-MM-dd"))
+    latest_day = df_with_day.agg(spark_max("day")).collect()[0][0]
+    #print(latest_day)
+    df_latest_day = df_with_day.filter(col("day") == latest_day)
+    return df_latest_day
 
 def count_logs_by_hostname(df):
     return df.groupBy("hostname").agg(count("*").alias("log_count"))
@@ -352,15 +358,8 @@ def correlate_execution_policy_attack(df):
     if df is None or df.rdd.isEmpty():
         print("Input DataFrame is empty or None, skipping rule.")
         return
-
-    #Add a new column "day" to the DataFrame
-    df_with_day = df.withColumn("day", date_format(col("@timestamp"), "yyyy-MM-dd"))
-
-    #latest day in the logs
-    latest_day = df_with_day.agg(spark_max("day")).collect()[0][0]
-    print(f"Latest day in the logs: {latest_day}")
-
-    df_latest_day = df_with_day.filter(col("day") == latest_day)
+        
+    df_latest_day= group_logs_by_date_latest(df)
 
     df_4104 = df_latest_day.filter(col("event_id") == "4104")
     df_4672 = df_latest_day.filter(col("event_id") == "4672")
@@ -378,10 +377,10 @@ def correlate_execution_policy_attack(df):
         total_count = count_4104 + count_4672 + count_4798
         job_update(job_id_create_list(
             "Execution_Policy_Attack",
-            f"Detected potential execution policy attack with {total_count} events on {latest_day}.",
+            f"Detected potential execution policy attack with {total_count}",
             "Critical"
         ))
-        print(f"Detected potential execution policy attack with {total_count} events on {latest_day} at {common_timestamp}.")
+        print(f"Detected potential execution policy attack with {total_count} events at {common_timestamp}.")
 
         df_filtered.select(
             lit(common_timestamp).alias("Common_Timestamp"),  # Common timestamp
@@ -391,8 +390,8 @@ def correlate_execution_policy_attack(df):
         ).show(truncate=False)
 
     else:
-        job_update(job_id_create_list("Execution_Policy_Attack",f"No execution policy attack detected on {latest_day}.","Low"))
-        print(f"No execution policy attack detected on {latest_day}.")
+        job_update(job_id_create_list("Execution_Policy_Attack",f"No execution policy attack detected.","Low"))
+        print(f"No execution policy attack detected.")
 
 
 def cout_UseNameAndSystem(df):
