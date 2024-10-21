@@ -1,5 +1,5 @@
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import col, count, to_json, lag , regexp_extract , avg , hour,when, window, collect_list, lit
+from pyspark.sql.functions import col, count, to_json, lag , regexp_extract , avg , hour,when, window, collect_list, lit, date_format, max as spark_max
 from pyspark.sql.window import Window
 from pyspark.sql.types import TimestampType
 from datetime import datetime
@@ -351,11 +351,20 @@ def detect_brute_force_with_success(df):
 def correlate_execution_policy_attack(df):
     if df is None or df.rdd.isEmpty():
         print("Input DataFrame is empty or None, skipping rule.")
-        return None
-    
-    df_4104 = df.filter(col("event_id") == "4104")
-    df_4672 = df.filter(col("event_id") == "4672")
-    df_4798 = df.filter(col("event_id") == "4798")
+        return
+
+    #Add a new column "day" to the DataFrame
+    df_with_day = df.withColumn("day", date_format(col("@timestamp"), "yyyy-MM-dd"))
+
+    #latest day in the logs
+    latest_day = df_with_day.agg(spark_max("day")).collect()[0][0]
+    print(f"Latest day in the logs: {latest_day}")
+
+    df_latest_day = df_with_day.filter(col("day") == latest_day)
+
+    df_4104 = df_latest_day.filter(col("event_id") == "4104")
+    df_4672 = df_latest_day.filter(col("event_id") == "4672")
+    df_4798 = df_latest_day.filter(col("event_id") == "4798")
 
     count_4104 = df_4104.count()
     count_4672 = df_4672.count()
@@ -363,36 +372,27 @@ def correlate_execution_policy_attack(df):
 
     if count_4104 > 0 and count_4672 > 0 and count_4798 > 0:
         df_filtered = df_4104.union(df_4672).union(df_4798)
+
         common_timestamp = df_filtered.agg({"@timestamp": "min"}).collect()[0][0]
-        # print(common_timestamp)
+
         total_count = count_4104 + count_4672 + count_4798
         job_update(job_id_create_list(
             "Execution_Policy_Attack",
-            f"Detected potential execution policy attack with {total_count} events.",
+            f"Detected potential execution policy attack with {total_count} events on {latest_day}.",
             "Critical"
         ))
-        print(f"Detected potential execution policy attack with {total_count} events at {common_timestamp}.")
+        print(f"Detected potential execution policy attack with {total_count} events on {latest_day} at {common_timestamp}.")
 
-        # Show relevant details with the common timestamp
         df_filtered.select(
-            lit(common_timestamp).alias("Common_Timestamp"),  # Use the common timestamp
+            lit(common_timestamp).alias("Common_Timestamp"),  # Common timestamp
             col("event_id"),
             col("hostname"),
             col("message")
         ).show(truncate=False)
 
-        # Save filtered results to the database
-        #detect_execution_policy_attack_db_save(df_filtered)
-        return df_filtered
     else:
-        # No attack detected, update the job and print a message
-        job_update(job_id_create_list(
-            "Execution_Policy_Attack",
-            "No execution policy attack detected.",
-            "Low"
-        ))
-        print("No execution policy attack detected.")
-        return None
+        job_update(job_id_create_list("Execution_Policy_Attack",f"No execution policy attack detected on {latest_day}.","Low"))
+        print(f"No execution policy attack detected on {latest_day}.")
 
 
 def cout_UseNameAndSystem(df):
