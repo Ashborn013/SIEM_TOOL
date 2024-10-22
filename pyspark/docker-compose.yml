@@ -14,6 +14,8 @@ services:
     command: [ "python" ,"/home/jovyan/work/main.py" ]
     # command: ["tail", "-f", "/dev/null"]
 
+    depends_on:
+      - db 
 
   flask-server:
     build:
@@ -26,6 +28,9 @@ services:
       - data:/saveData
       - ./saveData:/saveData
       - sql_db:/DataBaseStore
+    
+    depends_on:
+      - db 
 
   db:
     image: mariadb:10.6
@@ -55,7 +60,9 @@ services:
       - 8080:80
     environment:
       - PMA_ARBITRARY=1
-
+    
+    depends_on:
+      - db 
 
 volumes:
   data:
