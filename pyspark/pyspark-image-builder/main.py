@@ -514,7 +514,11 @@ def rdp(df):
             ip_addresses = [row.RemoteIpAddress for row in ip_rows if row.RemoteIpAddress is not None]
             unique_ip_addresses = set(ip_addresses)
             print(f"{unique_ip_addresses} brute forced and has loged in")
+            # user_behavior_anomaly(fromAttackTime)
+            detect_special_privilege_logon(fromAttackTime)
+            detect_user_account_changed(fromAttackTime)
             data.show()
+            
 
         # result.show()
     else:
