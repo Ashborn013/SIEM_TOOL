@@ -37,7 +37,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-           <AlertComponent />
+           {/* <AlertComponent /> */}
           {children}
           <Toaster />
         </ThemeProvider>

@@ -12,7 +12,7 @@ export function AlertComponent() {
     eventSource.onmessage = (event) => {
       const data = JSON.parse(event.data)
       toast({
-        title: "Alert",
+        title: data.title,
         description: data.message,
         variant: data.threat === 'high' ? 'destructive' : 'default',
       })

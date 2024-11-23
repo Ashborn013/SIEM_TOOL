@@ -3,16 +3,16 @@ import { NextResponse } from 'next/server';
 let clients: Set<ReadableStreamDefaultController> = new Set();
 
 export async function POST(req: Request) {
-  const { message, threat } = await req.json();
+  const { message, threat , title } = await req.json();
 
   // Validate input
-  if (typeof message !== 'string' || typeof threat !== 'string') {
+  if (typeof message !== 'string' || typeof threat !== 'string' || typeof title !== 'string') {
     return NextResponse.json({ error: 'Invalid input' }, { status: 400 });
   }
 
   // Send the alert to all connected clients
   clients.forEach(client => {
-    client.enqueue(`data: ${JSON.stringify({ message, threat })}\n\n`);
+    client.enqueue(`data: ${JSON.stringify({ message, threat , title })}\n\n`);
   });
 
   return NextResponse.json({ success: true });
