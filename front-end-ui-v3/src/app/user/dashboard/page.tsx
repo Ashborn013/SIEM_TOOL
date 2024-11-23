@@ -194,8 +194,6 @@ export default function Dashboard() {
         <div className="shadow ">
           <RiskChart data={chartData} />
         </div>
-        <h2 className="text-2xl font-semibold my-4">Recent Scans</h2>
-        <LogsTable logs={logs} />
       </div>
     </div>
   );

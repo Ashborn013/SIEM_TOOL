@@ -1,9 +1,11 @@
-import React from 'react'
+import HostnameCards from '@/components/hostname-cards'
 
-export default function page() {
+export default function Page() {
   return (
-    <div>
-      
+    <div className="container mx-auto py-8">
+      <h1 className="text-3xl font-bold mb-6">Host Names</h1>
+      <HostnameCards />
     </div>
   )
 }
+

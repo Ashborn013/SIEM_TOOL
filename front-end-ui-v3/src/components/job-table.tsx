@@ -1,0 +1,63 @@
+import React from 'react'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
+import { Badge } from "@/components/ui/badge"
+
+export function JobTable({ rows }) {
+  return (
+    <div className="rounded-md border">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead className="w-[50px]">Sl No</TableHead>
+            <TableHead>Job</TableHead>
+            <TableHead>Message</TableHead>
+            <TableHead>Level</TableHead>
+            <TableHead>Job ID</TableHead>
+            <TableHead>Time</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {rows.map((row, index) => (
+            <TableRow key={index}>
+              <TableCell>{index + 1}</TableCell>
+              <TableCell>{row.Job}</TableCell>
+              <TableCell>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger>
+                      {row.message.length > 50 ? `${row.message.substring(0, 50)}...` : row.message}
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>{row.message}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </TableCell>
+              <TableCell>
+                <Badge variant={row.level.toLowerCase() === 'error' ? 'destructive' : 'default'}>
+                  {row.level}
+                </Badge>
+              </TableCell>
+              <TableCell>{row.Job_id}</TableCell>
+              <TableCell>{new Date(row.time * 1000).toLocaleString()}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
+  )
+}
+

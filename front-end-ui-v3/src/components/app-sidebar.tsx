@@ -9,8 +9,7 @@ import {
   CreditCard,
   LogOut,
   MoreHorizontal,
-  Tags,
-  Trash,
+  Grip,
   SunMoon,
   Sun,
   Moon,
@@ -55,6 +54,14 @@ import {logout} from "@/actions/authActions"
 // Menu items.
 const items = [
   {
+
+    title: "Dashboard",
+    url: "/user/dashboard",
+    icon: Grip,
+  },
+
+  {
+
     title: "Report",
     url: "/user/report",
     icon: ClipboardPlus,
@@ -64,21 +71,17 @@ const items = [
     url: "/user/risk",
     icon: Inbox,
   },
-  {
-    title: "Scans",
-    url: "/user/scans",
-    icon: Calendar,
-  },
+  // {
+  //   title: "Scans",
+  //   url: "/user/scans",
+  //   icon: Calendar,
+  // },
   {
     title: "targets",
     url: "/user/targets",
     icon: Search,
   },
-  {
-    title: "Settings",
-    url: "#",
-    icon: Settings,
-  },
+  
 ];
 export function AppSidebar() {
 
