@@ -61,3 +61,58 @@ export function JobTable({ rows }) {
   )
 }
 
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { ScrollArea } from "@/components/ui/scroll-area"
+
+export function JobTableScroll({ rows }) {
+  const displayRows = rows.slice(0, 5)
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Job Details (Top 5)</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <ScrollArea className="h-[300px]">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Job ID</TableHead>
+                <TableHead>Level</TableHead>
+                <TableHead>Status</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+          {rows.map((row, index) => (
+            <TableRow key={index}>
+              <TableCell>{index + 1}</TableCell>
+              <TableCell>{row.Job}</TableCell>
+              <TableCell>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger>
+                      {row.message.length > 50 ? `${row.message.substring(0, 50)}...` : row.message}
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>{row.message}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </TableCell>
+              <TableCell>
+                <Badge variant={row.level.toLowerCase() === 'error' ? 'destructive' : 'default'}>
+                  {row.level}
+                </Badge>
+              </TableCell>
+              <TableCell>{row.Job_id}</TableCell>
+              <TableCell>{new Date(row.time * 1000).toLocaleString()}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+          </Table>
+        </ScrollArea>
+      </CardContent>
+    </Card>
+  )
+}
+
