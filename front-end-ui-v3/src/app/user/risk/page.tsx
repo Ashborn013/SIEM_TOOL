@@ -167,15 +167,17 @@ export default function RiskInfoPage() {
           />
         </div>
         <AlertsByServerity tableData={AlertTableData} />
-        <SampleCard />
+        {/* <SampleCard />
+        <SampleCard /> */}
+
       </div>
       <div className="flex flex-col gap-3  ">
-        <SampleCard />
+        {/* <SampleCard /> */}
         <BarChartData />
         
         <div className="flex gap-3 ">
           <PieChartRisk chartData={defaultChartData} />
-          <AdvasaryTech tableData={AdvryTableData.slice(0,5)} />
+          <AdvasaryTech tableData={AdvryTableData.slice(3,7)} />
           {/* <SampleCard /> */}
         </div>
       </div>

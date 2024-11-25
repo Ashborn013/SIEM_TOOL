@@ -20,21 +20,21 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart"
 const chartData = [
-  { month: "January", desktop: 186, mobile: 80 },
-  { month: "February", desktop: 305, mobile: 200 },
-  { month: "March", desktop: 237, mobile: 120 },
-  { month: "April", desktop: 73, mobile: 190 },
-  { month: "May", desktop: 209, mobile: 130 },
-  { month: "June", desktop: 214, mobile: 140 },
+  { month: "January", A: 200, B: 80 },
+  { month: "February", A: 305, B: 200 },
+  { month: "March", A: 237, B: 120 },
+  { month: "April", A: 73, B: 190 },
+  { month: "May", A: 209, B: 130 },
+  { month: "June", A: 214, B: 140 },
 ]
 
 const chartConfig = {
-  desktop: {
-    label: "Desktop",
+  A: {
+    label: "A",
     color: "hsl(var(--chart-1))",
   },
-  mobile: {
-    label: "Mobile",
+  B: {
+    label: "B",
     color: "hsl(var(--chart-2))",
   },
 } satisfies ChartConfig
@@ -43,7 +43,7 @@ export function BarChartData() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Bar Chart - Stacked + Legend</CardTitle>
+        <CardTitle>Data</CardTitle>
         <CardDescription>January - June 2024</CardDescription>
       </CardHeader>
       <CardContent>
@@ -60,34 +60,22 @@ export function BarChartData() {
             <ChartTooltip content={<ChartTooltipContent hideLabel />} />
             <ChartLegend content={<ChartLegendContent />} />
             <Bar
-              dataKey="desktop"
+              dataKey="A"
               stackId="a"
-              fill="var(--color-desktop)"
+              fill="var(--color-A)"
               radius={[0, 0, 4, 4]}
             />
             <Bar
-              dataKey="mobile"
+              dataKey="B"
               stackId="a"
-              fill="var(--color-mobile)"
+              fill="var(--color-B)"
               radius={[4, 4, 0, 0]}
             />
-            <Bar
-              dataKey="mobile"
-              stackId="a"
-              fill="red"
-              radius={[4, 4, 0, 0]}
-            />
+
           </BarChart>
         </ChartContainer>
       </CardContent>
-      <CardFooter className="flex-col items-start gap-2 text-sm">
-        <div className="flex gap-2 font-medium leading-none">
-          Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
-        </div>
-        <div className="leading-none text-muted-foreground">
-          Showing total visitors for the last 6 months
-        </div>
-      </CardFooter>
+
     </Card>
   )
 }

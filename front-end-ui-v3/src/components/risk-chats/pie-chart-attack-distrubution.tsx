@@ -58,7 +58,7 @@ export function PieChartRisk({chartData = defaultChartData}) {
   return (
     <Card className="flex flex-col min-w-[500px] ">
       <CardHeader className="items-center pb-0">
-        <CardTitle>Pie Chart - Donut with Text</CardTitle>
+        <CardTitle>Data</CardTitle>
         <CardDescription>January - June 2024</CardDescription>
       </CardHeader>
       <CardContent className="flex-1 pb-0">
