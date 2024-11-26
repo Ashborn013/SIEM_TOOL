@@ -141,12 +141,13 @@ const defaultChartData  = [
   { attackType: "other", attack: 4, fill: "var(--color-other)" },
 ]
 export default function RiskInfoPage() {
-  const [AlertValue, setAlertValue] = useState(0);
-  const [HighSeverityValue, setHighSeverityValue] = useState(0);
-  const [CriticalAssestsValue, setCriticalAssestsValue] = useState(0);
+  const [AlertValue, setAlertValue] = useState(2);
+  const [HighSeverityValue, setHighSeverityValue] = useState(3);
+  const [CriticalAssestsValue, setCriticalAssestsValue] = useState(1);
   const [AlertTableData, setAlertTableData] = useState(basicAlertTableData);
   const [AdvryTableData, setAdvryTableData] = useState(basicAdverTableData);
   return (
+
     <div className="flex justify-evenly gap-3 pt-5">
       <div className="flex flex-col gap-3">
         <div className="flex gap-3">
@@ -160,11 +161,14 @@ export default function RiskInfoPage() {
             disc={`${HighSeverityValue}`}
             color="text-cyan-500"
           />
+          
           <AlertThreatCard
             title="Critical Assets"
             disc={`${CriticalAssestsValue}`}
             color="text-gray-500"
           />
+          
+          
         </div>
         <AlertsByServerity tableData={AlertTableData} />
         {/* <SampleCard />
@@ -186,9 +190,11 @@ export default function RiskInfoPage() {
 }
 
 function AlertThreatCard({ title, disc, color }) {
+  
   return (
     <Card>
       <CardHeader>
+        
         <CardTitle className={`${color}`}>{title}</CardTitle>
         <CardDescription></CardDescription>
       </CardHeader>

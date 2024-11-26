@@ -43,7 +43,7 @@ export function BarChartData() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Data</CardTitle>
+        {/* <CardTitle>Data</CardTitle> */}
         <CardDescription>January - June 2024</CardDescription>
       </CardHeader>
       <CardContent>

@@ -46,7 +46,7 @@ export default function Page() {
     <div className="container mx-auto py-10">
       <Card>
         <CardHeader>
-          <CardTitle>Job Details Dashboard</CardTitle>
+          <CardTitle></CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex flex-col space-y-4">
