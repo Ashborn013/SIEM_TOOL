@@ -1,3 +1,4 @@
+
 services:
   zoo1:
     image: confluentinc/cp-zookeeper:7.3.2
@@ -34,29 +35,8 @@ services:
       KAFKA_ALLOW_EVERYONE_IF_NO_ACL_FOUND: "true"
     depends_on:
       - zoo1
-    # volumes:
-      # - ./data:/var/lib/kafka/data
-      # - ./script:/var/script
-    # restart: on-failure
 
-#   kafka-data-saver:
-#     build: ./kafka-data-saver
-#     volumes:
-#       - ./kafka-data-saver:/dataSaveApp
-#       - data_volume:/dataStore
-#     restart: on-failure
-#     depends_on:
-#       - kafka1
 
-#   kafka-data-process:
-#     build: ./kafka-data-process
-#     volumes:
-#       - ./kafka-data-process:/dataProcessApp
-#       - data_volume:/dataStore
-#     restart: on-failure
-#     depends_on:
-#       - kafka1
-#       - kafka-data-saver
 
 # volumes:
 #   data_volume:

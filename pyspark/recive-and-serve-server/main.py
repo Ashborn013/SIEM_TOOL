@@ -9,29 +9,48 @@ CORS(app)
 
 FILE_PATH = "/saveData/data.json"
 
+# @app.route("/save_json", methods=["POST"])
+# def save_json():
+#     data = request.get_json()
+#     if not data:
+#         return jsonify({"error": "Invalid JSON data"}), 400
+
+#     if not os.path.exists(FILE_PATH):
+#         with open(FILE_PATH, "w") as json_file:
+#             json.dump([], json_file)
+
+#     with open(FILE_PATH, "r") as json_file:
+#         try:
+#             existing_data = json.load(json_file)
+#         except json.JSONDecodeError:
+#             existing_data = []
+
+#     existing_data.append(data)
+
+#     with open(FILE_PATH, "a") as json_file:
+#         json.dump(existing_data, json_file)
+
+#     return jsonify({"message": "JSON data saved successfully"}), 200
 @app.route("/save_json", methods=["POST"])
 def save_json():
+    # Get JSON data from the request
     data = request.get_json()
     if not data:
         return jsonify({"error": "Invalid JSON data"}), 400
 
+    # Ensure the file exists
     if not os.path.exists(FILE_PATH):
         with open(FILE_PATH, "w") as json_file:
-            json.dump([], json_file)
+            pass  # Create the file if it doesn't exist
 
-    with open(FILE_PATH, "r") as json_file:
-        try:
-            existing_data = json.load(json_file)
-        except json.JSONDecodeError:
-            existing_data = []
-
-    existing_data.append(data)
-
-    with open(FILE_PATH, "w") as json_file:
-        json.dump(existing_data, json_file, indent=4)
+    # Write the JSON object as a new line in the file
+    try:
+        with open(FILE_PATH, "a") as json_file:
+            json_file.write(json.dumps(data) + "\n")
+    except Exception as e:
+        return jsonify({"error": f"Failed to write to file: {e}"}), 500
 
     return jsonify({"message": "JSON data saved successfully"}), 200
-
 @app.route("/")
 def home():
     return "W0rking"

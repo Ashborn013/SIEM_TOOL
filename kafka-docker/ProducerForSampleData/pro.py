@@ -3,14 +3,20 @@ from json import dumps
 from kafka import KafkaProducer
 import os
 from dotenv import load_dotenv
-
+import socket
 
 load_dotenv()
+def get_ip():
+    hostname = socket.gethostname()
+    ip_address = socket.gethostbyname(hostname)
+    return ip_address
 
+
+system_ip = get_ip()
 # topic = os.getenv('KAFKA_TOPIC')
 topic = "topic1"
 producer = KafkaProducer(
-    bootstrap_servers=["172.27.240.1:9092"],
+    bootstrap_servers=[f"{system_ip}:9092"],
     value_serializer=lambda x: dumps(x).encode("utf-8"),
 )
 
