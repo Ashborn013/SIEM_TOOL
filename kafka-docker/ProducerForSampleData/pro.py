@@ -12,7 +12,7 @@ def get_ip():
     return ip_address
 
 
-system_ip = get_ip()
+system_ip = '127.0.0.1'
 # topic = os.getenv('KAFKA_TOPIC')
 topic = "topic1"
 producer = KafkaProducer(

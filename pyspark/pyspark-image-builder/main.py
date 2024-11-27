@@ -9,14 +9,13 @@ from saveToSql import *
 import uuid # for generating unique id for each Job entry
 
 spark = SparkSession.builder.appName("Read JSON File").getOrCreate()
-
+file_path_rdp = "/home/jovyan/work/rdp-brute.json"
 file_path = "/home/jovyan/work/altered.json"
 
 text_data = spark.read.text(file_path)
 json_data = text_data.rdd.map(lambda row: json.loads(row.value))
 df = spark.createDataFrame(json_data)
 
-df_rdp = spark.read.json(file_path)
 
 
 # Select necessary columns
@@ -32,7 +31,7 @@ df_selected = df.select(
     col("winlog").getItem("event_id").alias("event_id"),
     col("host").getItem("hostname").alias("hostname"),
 )
-
+df_rdp = spark.read.json(file_path_rdp)
 df_selected_rdp = df_rdp.select(
     "@timestamp",
     "log",
@@ -566,8 +565,11 @@ def rule_engine(df, rules):
             df = detect_brute_force_with_success(df)
         elif rule["type"] == "correlate_powershell":
             df = correlate_execution_policy_attack(df)
+        elif rule["type"] == "rdp_attack_detact":
+            rdp(df_selected_rdp)
         elif rule["type"] == "correlate_windows_firewall":
             df = correlate_windows_firewall_attack(df)
+        
     # return df
     
     
@@ -590,15 +592,18 @@ rules = [
     # {"type": "user_behavior_anomaly"},
     # {"type": "correlate_brute_force_logon"},
     # {"type": "correlate_powershell"},
-    {"type": "correlate_windows_firewall"},
+    # {"type": "correlate_windows_firewall"},
+    {"type" : "rdp_attack_detact"}
 ]
 
 # Apply rules using the rule engine
 
 # rdp(df_selected_rdp)
 result_df = rule_engine(df_selected, rules)
-result_df.show(truncate=True)
-
+# result_df.show(truncate=True)
+"""
+No need of Show since you are not returning anything
+"""
 # output = detect_brute_force(df_selected)
 # if output is not None:
     # print("Brute Force attempt detected .. !")

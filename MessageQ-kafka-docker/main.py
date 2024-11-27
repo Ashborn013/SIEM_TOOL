@@ -12,7 +12,7 @@ load_dotenv()
 # Constants
 topic = 'topic1'
 URL = 'http://localhost:223/save_json'
-MAX_WORKERS = 5  # Number of threads
+MAX_WORKERS = 25  # Number of threads
 
 # Kafka Consumer setup
 consumer = KafkaConsumer(
@@ -32,7 +32,7 @@ def sendData(url, data):
 
 # Function to preprocess data
 def preProcessData(data):
-    data = loads(data)
+    # data = loads(data)
     if "@metadata" in data:
         del data["@metadata"]
     if "winlog" in data:
