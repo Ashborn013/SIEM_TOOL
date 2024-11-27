@@ -11,8 +11,6 @@ import uuid # for generating unique id for each Job entry
 spark = SparkSession.builder.appName("Read JSON File").getOrCreate()
 
 file_path = "/home/jovyan/work/altered.json"
-file_path = "/home/jovyan/work/rdp-brute.json"
-# file_path = "/home/jovyan/work/firewall.ndjson"
 
 text_data = spark.read.text(file_path)
 json_data = text_data.rdd.map(lambda row: json.loads(row.value))
@@ -422,7 +420,7 @@ def cout_UseNameAndSystem(df):
     save_unique_hostnames(unique_hostnames)
 
 
-'''
+
 def correlate_windows_firewall_attack(df):
     if df is None or df.rdd.isEmpty():
         print("Input DataFrame is empty or None, skipping rule.")
@@ -466,7 +464,7 @@ def correlate_windows_firewall_attack(df):
 
     else:
         print("No malicious activity detected in Windows Firewall logs.")
-'''
+
 
 
 def detect_rdp_brute_force(df):
@@ -568,8 +566,8 @@ def rule_engine(df, rules):
             df = detect_brute_force_with_success(df)
         elif rule["type"] == "correlate_powershell":
             df = correlate_execution_policy_attack(df)
-        # elif rule["type"] == "correlate_windows_firewall":
-        #     df = correlate_windows_firewall_attack(df)
+        elif rule["type"] == "correlate_windows_firewall":
+            df = correlate_windows_firewall_attack(df)
     # return df
     
     
@@ -579,20 +577,20 @@ def rule_engine(df, rules):
 # ----------------- Main -----------------------
 
 rules = [
-    {"type": "filter_by_event_id", "event_id": "4738"},
-    {"type": "brute_force_detection"},
-    {"type": "special_privilege_logon_detection"},
-    {"type": "user_account_change"},
-    {"type": "explicit_credential_logon"},
-    {"type": "new_process_creation"},
-    {"type": "net_link_disconnection"},
-    {"type": "user_grp_enum"},
-    {"type": "powershell_remote_auth"},
-    {"type": "track_activity"},
-    {"type": "user_behavior_anomaly"},
-    {"type": "correlate_brute_force_logon"},
-    {"type": "correlate_powershell"},
-    # {"type": "correlate_windows_firewall"},
+    # {"type": "filter_by_event_id", "event_id": "4738"},
+    # {"type": "brute_force_detection"},
+    # {"type": "special_privilege_logon_detection"},
+    # {"type": "user_account_change"},
+    # {"type": "explicit_credential_logon"},
+    # {"type": "new_process_creation"},
+    # {"type": "net_link_disconnection"},
+    # {"type": "user_grp_enum"},
+    # {"type": "powershell_remote_auth"},
+    # {"type": "track_activity"},
+    # {"type": "user_behavior_anomaly"},
+    # {"type": "correlate_brute_force_logon"},
+    # {"type": "correlate_powershell"},
+    {"type": "correlate_windows_firewall"},
 ]
 
 # Apply rules using the rule engine
