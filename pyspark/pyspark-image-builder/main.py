@@ -7,7 +7,7 @@ from datetime import datetime
 import json
 from saveToSql import *
 import uuid # for generating unique id for each Job entry
-
+from interactwithUi import alertUi
 spark = SparkSession.builder.appName("Read JSON File").getOrCreate()
 file_path_rdp = "/home/jovyan/work/rdp-brute.json"
 file_path = "/home/jovyan/work/altered.json"
@@ -513,6 +513,7 @@ def rdp(df):
             ip_addresses = [row.RemoteIpAddress for row in ip_rows if row.RemoteIpAddress is not None]
             unique_ip_addresses = set(ip_addresses)
             print(f"{unique_ip_addresses} brute forced and has loged in")
+            alertUi("RDP Attack",f"{unique_ip_addresses} brute forced and has loged in","high")
             # user_behavior_anomaly(fromAttackTime)
             detect_special_privilege_logon(fromAttackTime)
             detect_user_account_changed(fromAttackTime)
