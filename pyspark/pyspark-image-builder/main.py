@@ -432,14 +432,14 @@ def correlate_windows_firewall_attack(df):
     df_2052 = df_latest_day.filter(col("event_id") == "2052")
     df_2059 = df_latest_day.filter(col("event_id") == "2059")
     df_5001 = df_latest_day.filter(col("event_id") == "5001")
-    df_4104 = df_latest_day.filter(col("event_id") == "4104")  # Added event_id 4104
+    df_4104 = df_latest_day.filter(col("event_id") == "4104")  
 
     count_2097 = df_2097.count()
     count_2099 = df_2099.count()
     count_2052 = df_2052.count()
     count_2059 = df_2059.count()
     count_5001 = df_5001.count()
-    count_4104 = df_4104.count()  # Count for event_id 4104
+    count_4104 = df_4104.count()  
 
     if count_2097 > 0 or count_2099 > 0 or count_2052 > 0 or count_2059 > 0 or count_5001 > 0 or count_4104 > 0:
         df_filtered = df_2097.union(df_2099).union(df_2052).union(df_2059).union(df_5001).union(df_4104)
