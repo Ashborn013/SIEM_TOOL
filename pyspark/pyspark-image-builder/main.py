@@ -12,6 +12,7 @@ spark = SparkSession.builder.appName("Read JSON File").getOrCreate()
 
 file_path = "/home/jovyan/work/altered.json"
 file_path = "/home/jovyan/work/rdp-brute.json"
+# file_path = "/home/jovyan/work/firewall.ndjson"
 
 text_data = spark.read.text(file_path)
 json_data = text_data.rdd.map(lambda row: json.loads(row.value))
@@ -421,52 +422,53 @@ def cout_UseNameAndSystem(df):
     save_unique_hostnames(unique_hostnames)
 
 
+'''
+def correlate_windows_firewall_attack(df):
+    if df is None or df.rdd.isEmpty():
+        print("Input DataFrame is empty or None, skipping rule.")
+        return
+
+    df_latest_day = group_logs_by_date_latest(df)
+
+    df_2097 = df_latest_day.filter(col("event_id") == "2097")
+    df_2099 = df_latest_day.filter(col("event_id") == "2099")
+    df_2052 = df_latest_day.filter(col("event_id") == "2052")
+    df_2059 = df_latest_day.filter(col("event_id") == "2059")
+    df_5001 = df_latest_day.filter(col("event_id") == "5001")
+    df_4104 = df_latest_day.filter(col("event_id") == "4104")  # Added event_id 4104
+
+    count_2097 = df_2097.count()
+    count_2099 = df_2099.count()
+    count_2052 = df_2052.count()
+    count_2059 = df_2059.count()
+    count_5001 = df_5001.count()
+    count_4104 = df_4104.count()  # Count for event_id 4104
+
+    if count_2097 > 0 or count_2099 > 0 or count_2052 > 0 or count_2059 > 0 or count_5001 > 0 or count_4104 > 0:
+        df_filtered = df_2097.union(df_2099).union(df_2052).union(df_2059).union(df_5001).union(df_4104)
+
+        common_timestamp = df_filtered.agg({"@timestamp": "min"}).collect()[0][0]
+
+        total_count = count_2097 + count_2099 + count_2052 + count_2059 + count_5001 + count_4104
+        job_update(job_id_create_list(
+            "Windows_Firewall_Attack",
+            f"Detected potential Windows Firewall attack with {total_count} events",
+            "Critical"
+        ))
+        print(f"Detected potential Windows Firewall attack with {total_count} events at {common_timestamp}.")
+
+        df_filtered.select(
+            lit(common_timestamp).alias("Common_Timestamp"),  # Common timestamp
+            col("event_id"),
+            col("hostname"),
+            col("message")
+        ).show(truncate=False)
+
+    else:
+        print("No malicious activity detected in Windows Firewall logs.")
+'''
 
 
-
-def rule_engine(df, rules):
-    cout_UseNameAndSystem(df_selected)
-
-    for rule in rules:
-        if df is None:
-            print("DataFrame is None, skipping rule:", rule)
-            continue
-
-        if rule["type"] == "filter_by_event_id":
-            filter_logs_by_event_id(df, rule["event_id"])
-        elif rule["type"] == "count_by_hostname":
-            count_logs_by_hostname(df)
-        elif rule["type"] == "regex_query_test":
-            regex_query(df, ["failed login", "error", "critical"])
-        elif rule["type"] == "main_event_ids":
-            all_notable_event_id(df)
-        elif rule["type"] == "brute_force_detection":
-            detect_brute_force(df)
-        elif rule["type"] == "special_privilege_logon_detection":
-            detect_special_privilege_logon(df)
-        elif rule["type"] == "user_account_change":
-            detect_user_account_changed(df)
-        elif rule["type"] == "explicit_credential_logon":
-            explicit_credential_logon(df)
-        elif rule["type"] == "new_process_creation":
-            extract_new_process_creation_logs(df)
-        elif rule["type"] == "net_link_disconnection":
-            detect_network_disconnection(df)
-        elif rule["type"] == "user_grp_enum":
-            detect_user_local_group_enumeration(df)
-        elif rule["type"] == "powershell_remote_auth":
-            powershell_remote_auth(df)
-        elif rule["type"] == "track_activity":
-            track_user_activity(df,"47c6da14-cd88-47c0-b99b-9096a7bde971")
-        elif rule["type"] == "user_behavior_anomaly":
-            df = user_behavior_anomaly(df)
-        elif rule["type"] == "correlate_brute_force_logon":
-            df = detect_brute_force_with_success(df)
-        elif rule["type"] == "correlate_powershell":
-            df = correlate_execution_policy_attack(df)
-    # return df
-    
-    
 def detect_rdp_brute_force(df):
     df = df.withColumn("@timestamp", col("@timestamp").cast(TimestampType()))
     out_put = filter_logs_by_event_id(df, 4625)
@@ -525,6 +527,55 @@ def rdp(df):
         print("No brute force attack detected")
 
 
+
+def rule_engine(df, rules):
+    cout_UseNameAndSystem(df_selected)
+
+    for rule in rules:
+        if df is None:
+            print("DataFrame is None, skipping rule:", rule)
+            continue
+
+        if rule["type"] == "filter_by_event_id":
+            filter_logs_by_event_id(df, rule["event_id"])
+        elif rule["type"] == "count_by_hostname":
+            count_logs_by_hostname(df)
+        elif rule["type"] == "regex_query_test":
+            regex_query(df, ["failed login", "error", "critical"])
+        elif rule["type"] == "main_event_ids":
+            all_notable_event_id(df)
+        elif rule["type"] == "brute_force_detection":
+            detect_brute_force(df)
+        elif rule["type"] == "special_privilege_logon_detection":
+            detect_special_privilege_logon(df)
+        elif rule["type"] == "user_account_change":
+            detect_user_account_changed(df)
+        elif rule["type"] == "explicit_credential_logon":
+            explicit_credential_logon(df)
+        elif rule["type"] == "new_process_creation":
+            extract_new_process_creation_logs(df)
+        elif rule["type"] == "net_link_disconnection":
+            detect_network_disconnection(df)
+        elif rule["type"] == "user_grp_enum":
+            detect_user_local_group_enumeration(df)
+        elif rule["type"] == "powershell_remote_auth":
+            powershell_remote_auth(df)
+        elif rule["type"] == "track_activity":
+            track_user_activity(df,"47c6da14-cd88-47c0-b99b-9096a7bde971")
+        elif rule["type"] == "user_behavior_anomaly":
+            df = user_behavior_anomaly(df)
+        elif rule["type"] == "correlate_brute_force_logon":
+            df = detect_brute_force_with_success(df)
+        elif rule["type"] == "correlate_powershell":
+            df = correlate_execution_policy_attack(df)
+        # elif rule["type"] == "correlate_windows_firewall":
+        #     df = correlate_windows_firewall_attack(df)
+    # return df
+    
+    
+
+
+
 # ----------------- Main -----------------------
 
 rules = [
@@ -541,13 +592,14 @@ rules = [
     {"type": "user_behavior_anomaly"},
     {"type": "correlate_brute_force_logon"},
     {"type": "correlate_powershell"},
+    # {"type": "correlate_windows_firewall"},
 ]
 
 # Apply rules using the rule engine
 
-rdp(df_selected_rdp)
-# result_df = rule_engine(df_selected, rules)
-# result_df.show(truncate=True)
+# rdp(df_selected_rdp)
+result_df = rule_engine(df_selected, rules)
+result_df.show(truncate=True)
 
 # output = detect_brute_force(df_selected)
 # if output is not None:
