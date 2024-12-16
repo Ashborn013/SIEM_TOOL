@@ -11,7 +11,7 @@ services:
       - sql_db:/home/jovyan/DataBaseStore
     # environment:
     #   JUPYTER_ENABLE_LAB: "yes"  # Enable JupyterLab interface (optional)
-    command: [ "python" ,"/home/jovyan/work/main.py" ]
+    command: [ "python" ,"/home/jovyan/work/main-app.py" ]
     # command: ["tail", "-f", "/dev/null"]
 
     depends_on:

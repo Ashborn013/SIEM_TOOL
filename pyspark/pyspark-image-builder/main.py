@@ -1,13 +1,29 @@
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import col, count, to_json, lag , regexp_extract , avg , hour,when, window, collect_list, lit, date_format, max as spark_max , from_json
+from pyspark.sql.functions import (
+    col,
+    count,
+    to_json,
+    lag,
+    regexp_extract,
+    avg,
+    hour,
+    when,
+    window,
+    collect_list,
+    lit,
+    date_format,
+    max as spark_max,
+    from_json,
+)
 from pyspark.sql.types import StructType, StructField, StringType
 from pyspark.sql.window import Window
 from pyspark.sql.types import TimestampType
 from datetime import datetime
 import json
 from saveToSql import *
-import uuid # for generating unique id for each Job entry
+import uuid  # for generating unique id for each Job entry
 from interactwithUi import alertUi
+
 spark = SparkSession.builder.appName("Read JSON File").getOrCreate()
 file_path_rdp = "/home/jovyan/work/rdp-brute.json"
 file_path = "/home/jovyan/work/altered.json"
@@ -15,7 +31,6 @@ file_path = "/home/jovyan/work/altered.json"
 text_data = spark.read.text(file_path)
 json_data = text_data.rdd.map(lambda row: json.loads(row.value))
 df = spark.createDataFrame(json_data)
-
 
 
 # Select necessary columns
@@ -45,7 +60,7 @@ df_selected_rdp = df_rdp.select(
     col("host.name").alias("hostname"),
     col("winlog.event_data.LogonType").alias("LogonType"),
     col("winlog.event_data.WorkstationName").alias("RemoteUserWorkStation"),
-    col("winlog.event_data.IpAddress").alias("RemoteIpAddress")
+    col("winlog.event_data.IpAddress").alias("RemoteIpAddress"),
 )
 
 # ----------------- Functions -----------------
@@ -54,12 +69,14 @@ df_selected_rdp = df_rdp.select(
 def filter_logs_by_event_id(df, event_id):
     return df.filter(col("event_id") == event_id)
 
+
 def group_logs_by_date_latest(df):
     df_with_day = df.withColumn("day", date_format(col("@timestamp"), "yyyy-MM-dd"))
     latest_day = df_with_day.agg(spark_max("day")).collect()[0][0]
-    #print(latest_day)
+    # print(latest_day)
     df_latest_day = df_with_day.filter(col("day") == latest_day)
     return df_latest_day
+
 
 def count_logs_by_hostname(df):
     return df.groupBy("hostname").agg(count("*").alias("log_count"))
@@ -141,7 +158,6 @@ def all_notable_event_id(df):
     return union_df
 
 
-
 def detect_brute_force(df):
     df = df.withColumn("@timestamp", col("@timestamp").cast(TimestampType()))
     out_put = filter_logs_by_event_id(df, 4625)
@@ -159,7 +175,9 @@ def detect_brute_force(df):
 
     if count > 10:
         detect_brute_force_db_save(logs_under_one_min)
-        job_update(job_id_create_list("Brute Force", "Brute Force detected", "Critical"))
+        job_update(
+            job_id_create_list("Brute Force", "Brute Force detected", "Critical")
+        )
         return logs_under_one_min
     else:
         job_update(job_id_create_list("Brute Force", "Brute Force Not detected", "Low"))
@@ -173,42 +191,77 @@ def detect_special_privilege_logon(df):
     if count > 0:
         print("Special privilege logon detected .. !")
         df_filtered.show()
-        spl_privilege_logon_db_save(df_filtered) # db save function
-        job_update(job_id_create_list("Special privilege logon", "Special privilege logon detected .. !", "Critical"))
+        spl_privilege_logon_db_save(df_filtered)  # db save function
+        job_update(
+            job_id_create_list(
+                "Special privilege logon",
+                "Special privilege logon detected .. !",
+                "Critical",
+            )
+        )
         return df_filtered
     else:
         print("No special privilege logon detected.")
-        job_update(job_id_create_list("Special privilege logon", "No Special privilege ", "Low"))
+        job_update(
+            job_id_create_list(
+                "Special privilege logon", "No Special privilege ", "Low"
+            )
+        )
         return None
 
 
 def detect_user_account_changed(df):
     df_filtered = df.filter(col("event_id") == "4738")
     count = df_filtered.count()
-    user_account_change_db_save(df_filtered) # db save function
+    user_account_change_db_save(df_filtered)  # db save function
     if count > 0:
         print(f"User account change detected {count} times .. !")
-        job_update(job_id_create_list(f"User account change", f"User account change detected {count} times", "Mid"))
+        job_update(
+            job_id_create_list(
+                f"User account change",
+                f"User account change detected {count} times",
+                "Mid",
+            )
+        )
         df_filtered.show()
         return df_filtered
     else:
         print("No user account change detected.")
-        job_update(job_id_create_list(f"User account change", f"No User account change detected", "Low"))
+        job_update(
+            job_id_create_list(
+                f"User account change", f"No User account change detected", "Low"
+            )
+        )
 
         return None
 
 
 def explicit_credential_logon(df):
     df_filtered = filter_logs_by_event_id(df, 4648)
-    df_valid = regex_query(df_filtered, [r'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}'])
+    df_valid = regex_query(
+        df_filtered, [r"[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}"]
+    )
 
     if df_valid:
-        df_valid = df_valid.withColumn("email", regexp_extract(col("message"), r'([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})', 0))
+        df_valid = df_valid.withColumn(
+            "email",
+            regexp_extract(
+                col("message"), r"([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})", 0
+            ),
+        )
         count = df_valid.count()
 
         if count > 0:
-            job_update(job_id_create_list("Explicit credentials logon", f"Logon with explicit credentials detected {count} times (Event ID 4648) with valid email addresses.. !", "High"))
-            print(f"Logon with explicit credentials detected {count} times (Event ID 4648) with valid email addresses.. !")
+            job_update(
+                job_id_create_list(
+                    "Explicit credentials logon",
+                    f"Logon with explicit credentials detected {count} times (Event ID 4648) with valid email addresses.. !",
+                    "High",
+                )
+            )
+            print(
+                f"Logon with explicit credentials detected {count} times (Event ID 4648) with valid email addresses.. !"
+            )
             # event_4648_db_save(df_valid)  # db save function
             # job_update(job_id_create_list("Event ID 4648", f"Logon with explicit credentials detected {count} times with valid email addresses", "High"))
             df_valid.show()
@@ -216,11 +269,23 @@ def explicit_credential_logon(df):
             # return df_valid
         else:
             print("No valid logon with explicit credentials detected (Event ID 4648).")
-            job_update(job_id_create_list("Explicit credentials logon", "No valid logon with explicit credentials detected", "Low"))
+            job_update(
+                job_id_create_list(
+                    "Explicit credentials logon",
+                    "No valid logon with explicit credentials detected",
+                    "Low",
+                )
+            )
             # return None
     else:
         print("No valid logon with explicit credentials detected (Event ID 4648).")
-        job_update(job_id_create_list("Explicit credentials logon", "No valid logon with explicit credentials detected", "Low"))
+        job_update(
+            job_id_create_list(
+                "Explicit credentials logon",
+                "No valid logon with explicit credentials detected",
+                "Low",
+            )
+        )
         # return None
 
 
@@ -229,61 +294,103 @@ def extract_new_process_creation_logs(df):
     df_exe = df_filtered.filter(col("message").contains(".exe"))
 
     if df_exe:
-        df_exe = df_exe.withColumn("exe_files", regexp_extract(col("message"), r'(.*\.exe)', 0))
+        df_exe = df_exe.withColumn(
+            "exe_files", regexp_extract(col("message"), r"(.*\.exe)", 0)
+        )
         # df_exe = df_exe.withColumn("exe_files", df_exe["exe_files"].cast(StringType()))
         count = df_exe.count()
 
         if count > 0:
             print(f"Found {count} logs with new process being created.")
-            job_update(job_id_create_list("extract_new_process_creation_logs",f"Found {count} logs with new process being created.","Mid"))
+            job_update(
+                job_id_create_list(
+                    "extract_new_process_creation_logs",
+                    f"Found {count} logs with new process being created.",
+                    "Mid",
+                )
+            )
             df_exe.show(truncate=False)
             new_process_creation_log_db_save(df_exe)
             return df_exe
         else:
-            job_update(job_id_create_list("extract_new_process_creation_logs","No logs with new process created","Low"))
+            job_update(
+                job_id_create_list(
+                    "extract_new_process_creation_logs",
+                    "No logs with new process created",
+                    "Low",
+                )
+            )
             print("No logs with new process created")
             return None
     else:
-        job_update(job_id_create_list("extract_new_process_creation_logs","No logs with new process created","Low"))
+        job_update(
+            job_id_create_list(
+                "extract_new_process_creation_logs",
+                "No logs with new process created",
+                "Low",
+            )
+        )
         print("No logs with new process created")
         return None
 
 
 def detect_network_disconnection(df):
-    df_filtered = df.filter(col("event_id") == "27")  
+    df_filtered = df.filter(col("event_id") == "27")
     count = df_filtered.count()
-    
+
     if count > 0:
         print(f"Network link disconnection detected {count} times.")
         df_filtered.show(truncate=False)
-        job_update(job_id_create_list("detect_network_disconnection",f"Network link disconnection detected {count} times.","Mid"))
+        job_update(
+            job_id_create_list(
+                "detect_network_disconnection",
+                f"Network link disconnection detected {count} times.",
+                "Mid",
+            )
+        )
         detect_network_disconnection_db_save(df_filtered)
         return df_filtered
     else:
-        job_update(job_id_create_list("detect_network_disconnection",f"No network link disconnection detected.","Low"))        
+        job_update(
+            job_id_create_list(
+                "detect_network_disconnection",
+                f"No network link disconnection detected.",
+                "Low",
+            )
+        )
         print("No network link disconnection detected.")
         return None
 
 
-    
 def detect_user_local_group_enumeration(df):
-    df_filtered = df.filter(col("event_id") == "4798") 
+    df_filtered = df.filter(col("event_id") == "4798")
     count = df_filtered.count()
-    
+
     if count > 0:
-        job_update(job_id_create_list("detect_user_local_group_enumeration",f"A user's local group membership was enumerated {count} times.","High"))        
+        job_update(
+            job_id_create_list(
+                "detect_user_local_group_enumeration",
+                f"A user's local group membership was enumerated {count} times.",
+                "High",
+            )
+        )
 
         print(f"A user's local group membership was enumerated {count} times.")
         df_filtered.show(truncate=False)
         detect_user_local_group_enumeration_db_save(df_filtered)
         return df_filtered
     else:
-        job_update(job_id_create_list("detect_user_local_group_enumeration",f"No user local group membership enumeration detected.","Low"))        
+        job_update(
+            job_id_create_list(
+                "detect_user_local_group_enumeration",
+                f"No user local group membership enumeration detected.",
+                "Low",
+            )
+        )
         print("No user local group membership enumeration detected.")
         return None
 
 
-    
 def powershell_remote_auth(df):
     df_filtered = df.filter(col("winlog.event_id") == "32850")
     count = df_filtered.count()
@@ -297,10 +404,9 @@ def powershell_remote_auth(df):
         return None
 
 
-
 def track_user_activity(df, agent_id):
     df_user_activity = df.filter(col("agent").getItem("id") == agent_id)
-    
+
     if df_user_activity.count() > 0:
         df_user_activity.orderBy("@timestamp").show()
         track_user_activity_db_save(df_user_activity)
@@ -308,11 +414,14 @@ def track_user_activity(df, agent_id):
     else:
         print(f"No activity found for agent ID: {agent_id}")
         return None
-    
 
 
 def detect_unusual_login_times(df):
-    return df.filter((col("event_id") == 4624) & ((hour(col("@timestamp")) < 6) | (hour(col("@timestamp")) > 18)))
+    return df.filter(
+        (col("event_id") == 4624)
+        & ((hour(col("@timestamp")) < 6) | (hour(col("@timestamp")) > 18))
+    )
+
 
 def user_behavior_anomaly(df):
     df = df.withColumn("@timestamp", col("@timestamp").cast(TimestampType()))
@@ -320,11 +429,10 @@ def user_behavior_anomaly(df):
     # Grouping by user ID and calculating event count and average timestamp
     user_activity_df = df.groupBy("id").agg(
         count("event_id").alias("event_count"),
-        avg(col("@timestamp").cast("long")).alias("avg_timestamp")
+        avg(col("@timestamp").cast("long")).alias("avg_timestamp"),
     )
 
-
-    '''
+    """
     # Calculate the average event count across all users and store it in a new DataFrame
     avg_event_count_df = user_activity_df.agg(avg("event_count").alias("avg_event_count"))
     # Show the output of the avg_event_count_df
@@ -333,14 +441,14 @@ def user_behavior_anomaly(df):
     filtered_df = user_activity_df.filter(col("event_count") > avg_event_count_df.first()["avg_event_count"])
     # Show the output of the filtered DataFrame
     filtered_df.show()
-    '''
-
-
+    """
 
     # Flagging users with unusual event counts
-    anomaly_df = user_activity_df.filter(col("event_count") > user_activity_df.agg(avg("event_count")).first()[0] * 2)
+    anomaly_df = user_activity_df.filter(
+        col("event_count") > user_activity_df.agg(avg("event_count")).first()[0] * 2
+    )
     anomaly_df.show()
-    unusual_login_df = detect_unusual_login_times(df) #Detecting unusual logins
+    unusual_login_df = detect_unusual_login_times(df)  # Detecting unusual logins
 
     # Joining based on the user ID to see if flagged users had unusual login times
     if anomaly_df.count() > 0:
@@ -356,7 +464,7 @@ def user_behavior_anomaly(df):
         return anomaly_df
     else:
         print("No anomalies detected in user behavior.")
-        return None    
+        return None
 
 
 def detect_brute_force_with_success(df):
@@ -377,8 +485,8 @@ def correlate_execution_policy_attack(df):
     if df is None or df.rdd.isEmpty():
         print("Input DataFrame is empty or None, skipping rule.")
         return
-        
-    df_latest_day= group_logs_by_date_latest(df)
+
+    df_latest_day = group_logs_by_date_latest(df)
 
     df_4104 = df_latest_day.filter(col("event_id") == "4104")
     df_4672 = df_latest_day.filter(col("event_id") == "4672")
@@ -394,22 +502,32 @@ def correlate_execution_policy_attack(df):
         common_timestamp = df_filtered.agg({"@timestamp": "min"}).collect()[0][0]
 
         total_count = count_4104 + count_4672 + count_4798
-        job_update(job_id_create_list(
-            "Execution_Policy_Attack",
-            f"Detected potential execution policy attack with {total_count}",
-            "Critical"
-        ))
-        print(f"Detected potential execution policy attack with {total_count} events at {common_timestamp}.")
+        job_update(
+            job_id_create_list(
+                "Execution_Policy_Attack",
+                f"Detected potential execution policy attack with {total_count}",
+                "Critical",
+            )
+        )
+        print(
+            f"Detected potential execution policy attack with {total_count} events at {common_timestamp}."
+        )
 
         df_filtered.select(
             lit(common_timestamp).alias("Common_Timestamp"),  # Common timestamp
             col("event_id"),
             col("hostname"),
-            col("message")
+            col("message"),
         ).show(truncate=False)
 
     else:
-        job_update(job_id_create_list("Execution_Policy_Attack",f"No execution policy attack detected.","Low"))
+        job_update(
+            job_id_create_list(
+                "Execution_Policy_Attack",
+                f"No execution policy attack detected.",
+                "Low",
+            )
+        )
         print(f"No execution policy attack detected.")
 
 
@@ -417,7 +535,6 @@ def cout_UseNameAndSystem(df):
     unique_hostnames = df.select("name").distinct().rdd.flatMap(lambda x: x).collect()
     unique_hostnames = list(set(unique_hostnames))
     save_unique_hostnames(unique_hostnames)
-
 
 
 def correlate_windows_firewall_attack(df):
@@ -432,38 +549,56 @@ def correlate_windows_firewall_attack(df):
     df_2052 = df_latest_day.filter(col("event_id") == "2052")
     df_2059 = df_latest_day.filter(col("event_id") == "2059")
     df_5001 = df_latest_day.filter(col("event_id") == "5001")
-    df_4104 = df_latest_day.filter(col("event_id") == "4104")  
+    df_4104 = df_latest_day.filter(col("event_id") == "4104")
 
     count_2097 = df_2097.count()
     count_2099 = df_2099.count()
     count_2052 = df_2052.count()
     count_2059 = df_2059.count()
     count_5001 = df_5001.count()
-    count_4104 = df_4104.count()  
+    count_4104 = df_4104.count()
 
-    if count_2097 > 0 or count_2099 > 0 or count_2052 > 0 or count_2059 > 0 or count_5001 > 0 or count_4104 > 0:
-        df_filtered = df_2097.union(df_2099).union(df_2052).union(df_2059).union(df_5001).union(df_4104)
+    if (
+        count_2097 > 0
+        or count_2099 > 0
+        or count_2052 > 0
+        or count_2059 > 0
+        or count_5001 > 0
+        or count_4104 > 0
+    ):
+        df_filtered = (
+            df_2097.union(df_2099)
+            .union(df_2052)
+            .union(df_2059)
+            .union(df_5001)
+            .union(df_4104)
+        )
 
         common_timestamp = df_filtered.agg({"@timestamp": "min"}).collect()[0][0]
 
-        total_count = count_2097 + count_2099 + count_2052 + count_2059 + count_5001 + count_4104
-        job_update(job_id_create_list(
-            "Windows_Firewall_Attack",
-            f"Detected potential Windows Firewall attack with {total_count} events",
-            "Critical"
-        ))
-        print(f"Detected potential Windows Firewall attack with {total_count} events at {common_timestamp}.")
+        total_count = (
+            count_2097 + count_2099 + count_2052 + count_2059 + count_5001 + count_4104
+        )
+        job_update(
+            job_id_create_list(
+                "Windows_Firewall_Attack",
+                f"Detected potential Windows Firewall attack with {total_count} events",
+                "Critical",
+            )
+        )
+        print(
+            f"Detected potential Windows Firewall attack with {total_count} events at {common_timestamp}."
+        )
 
         df_filtered.select(
             lit(common_timestamp).alias("Common_Timestamp"),  # Common timestamp
             col("event_id"),
             col("hostname"),
-            col("message")
+            col("message"),
         ).show(truncate=False)
 
     else:
         print("No malicious activity detected in Windows Firewall logs.")
-
 
 
 def detect_rdp_brute_force(df):
@@ -488,42 +623,50 @@ def detect_rdp_brute_force(df):
         print("No brute force attack detected")
         return None
 
+
 def filter_logs_down_from_time(df, time):
     # Filter the DataFrame from the given timestamp to the end
     filtered_df = df.filter(col("@timestamp") >= time)
     # filtered_df.show()
     return filtered_df
 
+
 def isRdp_userLogin(df):
     suc = filter_logs_by_event_id(df, 4624)
-    checkRdp = df.filter(col("LogonType") == 10 )
-    return True,checkRdp 
-    checkRdp.show() 
+    checkRdp = df.filter(col("LogonType") == 10)
+    return True, checkRdp
+    checkRdp.show()
+
 
 def rdp(df):
     failLogon = filter_logs_by_event_id(df, 4625)
     result = detect_rdp_brute_force(df)
-    
-    
+
     if result is not None:
         fromAttackTime = filter_logs_down_from_time(df, result.first()["@timestamp"])
-        resultOf , data = isRdp_userLogin(fromAttackTime)
+        resultOf, data = isRdp_userLogin(fromAttackTime)
         if resultOf:
             ip_rows = data.select("RemoteIpAddress").collect()
-            ip_addresses = [row.RemoteIpAddress for row in ip_rows if row.RemoteIpAddress is not None]
+            ip_addresses = [
+                row.RemoteIpAddress
+                for row in ip_rows
+                if row.RemoteIpAddress is not None
+            ]
             unique_ip_addresses = set(ip_addresses)
             print(f"{unique_ip_addresses} brute forced and has loged in")
-            alertUi("RDP Attack",f"{unique_ip_addresses} brute forced and has loged in","high")
+            alertUi(
+                "RDP Attack",
+                f"{unique_ip_addresses} brute forced and has loged in",
+                "high",
+            )
             # user_behavior_anomaly(fromAttackTime)
             detect_special_privilege_logon(fromAttackTime)
             detect_user_account_changed(fromAttackTime)
             data.show()
-            
 
         # result.show()
     else:
         print("No brute force attack detected")
-
 
 
 def rule_engine(df, rules):
@@ -559,7 +702,7 @@ def rule_engine(df, rules):
         elif rule["type"] == "powershell_remote_auth":
             powershell_remote_auth(df)
         elif rule["type"] == "track_activity":
-            track_user_activity(df,"47c6da14-cd88-47c0-b99b-9096a7bde971")
+            track_user_activity(df, "47c6da14-cd88-47c0-b99b-9096a7bde971")
         elif rule["type"] == "user_behavior_anomaly":
             df = user_behavior_anomaly(df)
         elif rule["type"] == "correlate_brute_force_logon":
@@ -570,11 +713,8 @@ def rule_engine(df, rules):
             rdp(df_selected_rdp)
         elif rule["type"] == "correlate_windows_firewall":
             df = correlate_windows_firewall_attack(df)
-        
-    # return df
-    
-    
 
+    # return df
 
 
 # ----------------- Main -----------------------
@@ -594,7 +734,7 @@ rules = [
     # {"type": "correlate_brute_force_logon"},
     # {"type": "correlate_powershell"},
     # {"type": "correlate_windows_firewall"},
-    {"type" : "rdp_attack_detact"}
+    {"type": "rdp_attack_detact"}
 ]
 
 # Apply rules using the rule engine
@@ -607,10 +747,10 @@ No need of Show since you are not returning anything
 """
 # output = detect_brute_force(df_selected)
 # if output is not None:
-    # print("Brute Force attempt detected .. !")
-    # output.show()
+# print("Brute Force attempt detected .. !")
+# output.show()
 # else:
-    # print("No brute force attack detected")
+# print("No brute force attack detected")
 
 # testing the functions
 
@@ -629,7 +769,6 @@ Things to Do
 
 
 """
-
 
 
 spark.stop()
