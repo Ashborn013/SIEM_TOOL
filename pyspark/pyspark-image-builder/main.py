@@ -27,6 +27,7 @@ from interactwithUi import alertUi
 spark = SparkSession.builder.appName("Read JSON File").getOrCreate()
 file_path_rdp = "/home/jovyan/work/rdp-brute.json"
 file_path = "/home/jovyan/work/altered.json"
+mal_file_path = "/home/jovyan/work/malware_test2.json" # Malware file path
 
 text_data = spark.read.text(file_path)
 json_data = text_data.rdd.map(lambda row: json.loads(row.value))
@@ -668,6 +669,31 @@ def rdp(df):
     else:
         print("No brute force attack detected")
 
+def bonzi_malware_correlation(df):
+    if df is None or df.rdd.isEmpty():
+        print("Input DataFrame is empty or None, skipping rule.")
+        return
+    # df = df.withColumn("event", to_json(df["event"]))
+    df_latest_day = group_logs_by_date_latest(df)
+    event_ids = [4624, 4673, 5158, 4627, 5379, 4672, 4689, 4663, 4670, 4799, 4656, 4688, 5156, 4690, 4658, 4703]
+
+    union_df = None
+    # union_df = df.dropDuplicates()
+    for event_id in event_ids:
+        df_filter = filter_logs_by_event_id(df_latest_day, event_id)
+        if union_df is None:
+            union_df = df_filter
+        else:
+            df1= df_filter.dropDuplicates()
+            union_df1 = union_df.union(df1) # Union of all filtered DataFrames
+
+    if union_df1 is not None:
+        union_df1.show(truncate=False)
+        union_df1.write.json("bonzi_malware_correlation.json")
+        print("Malware detected")
+    else:
+        print("No malware detected")
+
 
 def rule_engine(df, rules):
     cout_UseNameAndSystem(df_selected)
@@ -713,6 +739,8 @@ def rule_engine(df, rules):
             rdp(df_selected_rdp)
         elif rule["type"] == "correlate_windows_firewall":
             df = correlate_windows_firewall_attack(df)
+        elif rule["type"] == "bonzi_malware_correlation":
+            bonzi_malware_correlation(df)
 
     # return df
 
@@ -735,6 +763,7 @@ rules = [
     # {"type": "correlate_powershell"},
     # {"type": "correlate_windows_firewall"},
     {"type": "rdp_attack_detact"}
+    # {"type": "bonzi_malware_correlation"}
 ]
 
 # Apply rules using the rule engine
