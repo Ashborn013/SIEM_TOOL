@@ -23,11 +23,12 @@ import json
 import uuid  # for generating unique id for each Job entry
 from interactwithUi import alertUi
 
-from rdpcheck import checkrdp
+# from rdpcheck import checkrdp
+from malware_check import checkmalware
 
 spark = SparkSession.builder.appName("Read JSON File").getOrCreate()
 
-file_path = "/home/jovyan/work/altered.json"
+file_path = "/home/jovyan/work/malware_test2.json"
 # df = spark.read.json(file_path)
 # df_selected = df.select(
 #     col("@timestamp"),
@@ -43,5 +44,5 @@ file_path = "/home/jovyan/work/altered.json"
 # )
 
 if __name__ == "__main__":
-    checkrdp(spark,file_path)
-    df_selected.show()
+    checkmalware(spark, file_path)
+    # df_selected.show()
