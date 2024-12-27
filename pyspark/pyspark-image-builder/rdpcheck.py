@@ -21,8 +21,9 @@ from pyspark.sql.window import Window
 from pyspark.sql.types import TimestampType
 from datetime import datetime
 import json
-
+from interactwithUi import alertUi
 from main import detect_special_privilege_logon,detect_user_account_changed
+from saveToSql import *
 
 def isRdp_userLogin(df):
     suc = filter_logs_by_event_id(df, 4624)
@@ -87,7 +88,7 @@ def rdp(df):
             #     f"{unique_ip_addresses} brute forced and has loged in",
             #     "high",
             # )
-            # user_behavior_anomaly(fromAttackTime)
+            user_behavior_anomaly(fromAttackTime)
             detect_special_privilege_logon(fromAttackTime)
             detect_user_account_changed(fromAttackTime)
             data.show()
@@ -98,6 +99,56 @@ def rdp(df):
 
 def filter_logs_by_event_id(df, event_id):
     return df.filter(col("event_id") == event_id)
+
+def user_behavior_anomaly(df):
+    df = df.withColumn("@timestamp", col("@timestamp").cast(TimestampType()))
+
+    # Grouping by user ID and calculating event count and average timestamp
+    user_activity_df = df.groupBy("id").agg(
+        count("event_id").alias("event_count"),
+        avg(col("@timestamp").cast("long")).alias("avg_timestamp"),
+    )
+
+    """
+    # Calculate the average event count across all users and store it in a new DataFrame
+    avg_event_count_df = user_activity_df.agg(avg("event_count").alias("avg_event_count"))
+    # Show the output of the avg_event_count_df
+    avg_event_count_df.show()
+    # Create a DataFrame that filters users with an event_count greater than the average event count
+    filtered_df = user_activity_df.filter(col("event_count") > avg_event_count_df.first()["avg_event_count"])
+    # Show the output of the filtered DataFrame
+    filtered_df.show()
+    """
+
+    # Flagging users with unusual event counts
+    anomaly_df = user_activity_df.filter(
+        col("event_count") > user_activity_df.agg(avg("event_count")).first()[0] * 2
+    )
+    anomaly_df.show()
+    unusual_login_df = detect_unusual_login_times(df)  # Detecting unusual logins
+
+    # Joining based on the user ID to see if flagged users had unusual login times
+    if anomaly_df.count() > 0:
+        flagged_users = anomaly_df.select("id").rdd.flatMap(lambda x: x).collect()
+        print(f"Flagged users with unusual event counts: {flagged_users}")
+        anomaly_df.show()
+        user_behavior_anomaly_db_save(anomaly_df)
+        flagged_unusual_login_df = anomaly_df.join(unusual_login_df, "id", "inner")
+        if flagged_unusual_login_df.count() > 0:
+            print("Flagged users with unusual login times:")
+            flagged_unusual_login_df.show()
+
+        return anomaly_df
+    else:
+        print("No anomalies detected in user behavior.")
+        return None
+
+
+def detect_unusual_login_times(df):
+    return df.filter(
+        (col("event_id") == 4624)
+        & ((hour(col("@timestamp")) < 6) | (hour(col("@timestamp")) > 18))
+    )
 
 
 def checkrdp (spark,file_path):
