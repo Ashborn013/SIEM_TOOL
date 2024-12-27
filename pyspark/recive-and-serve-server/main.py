@@ -3,7 +3,7 @@ import os
 import json
 from sqlFuntions import *
 from flask_cors import CORS
-
+from mogodbFunctions import *
 app = Flask(__name__)
 CORS(app)
 
@@ -83,6 +83,7 @@ def get_extract_new_process_creation_logs():
 @app.route("/Job_details", methods=["GET"])
 def get_job_details():
     data = query_job_details()
+    data = query_job_details_from_mongo()
     return jsonify(data), 200
 
 @app.route("/userpass", methods=["GET"])
