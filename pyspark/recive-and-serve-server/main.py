@@ -86,10 +86,7 @@ def get_job_details():
     data = query_job_details_from_mongo()
     return jsonify(data), 200
 
-@app.route("/userpass", methods=["GET"])
-def get_userpass():
-    data = query_user_data()
-    return jsonify(data), 200
+
 
 @app.route("/network_disconnection", methods=["GET"])
 def get_network_disconnection():
