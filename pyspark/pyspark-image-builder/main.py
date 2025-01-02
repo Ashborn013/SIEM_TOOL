@@ -291,7 +291,7 @@ def explicit_credential_logon(df):
 
 
 def extract_new_process_creation_logs(df):
-    df_filtered = df.filter(col("event_id") == 4688)
+    df_filtered = df.filter(col("winlog.event_id") == 4688)
     df_exe = df_filtered.filter(col("message").contains(".exe"))
 
     if df_exe:
