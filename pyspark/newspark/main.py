@@ -11,6 +11,7 @@ from utils import *
 
 from rdpcheck import checkrdp
 from malware_check import checkmalware
+from windows_firewall_attack import correlate_windows_firewall_attack
 # Initialize logging
 
 
@@ -70,8 +71,9 @@ def app():
 
 
 def coreFunctions(df):
-    checkrdp(df)
-    checkmalware(df)
+    # checkrdp(df)
+    # checkmalware(df)
+    correlate_windows_firewall_attack(df)
 
 
 if __name__ == "__main__":
