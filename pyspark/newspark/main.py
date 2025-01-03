@@ -1,15 +1,19 @@
 from pymongo import MongoClient
 from pyspark.sql import SparkSession
 import bson
-from rdpcheck import checkrdp
 from mongodbfunctions import viewAllData
 from libs import fromMongoToSparkdf
 from time import sleep
 import logging
 import signal
 import sys
+from utils import *
 
+from rdpcheck import checkrdp
+from bonzi_malware_cor import bonzi_malware_correlation
 # Initialize logging
+
+
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(levelname)s - %(message)s",
@@ -66,7 +70,8 @@ def app():
 
 
 def coreFunctions(df):
-    checkrdp(df)
+    bonzi_malware_correlation(df)
+    # checkrdp(df)
 
 
 if __name__ == "__main__":

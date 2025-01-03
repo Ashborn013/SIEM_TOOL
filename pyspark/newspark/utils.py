@@ -70,3 +70,5 @@ def detect_user_account_changed(df):
         # )
 
         return None
+def filter_logs_by_event_id(df, event_id):
+    return df.filter(col("event_id") == event_id)
