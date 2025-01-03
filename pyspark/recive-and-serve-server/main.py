@@ -79,13 +79,14 @@ def mongo_save():
     if not data:
         return jsonify({"error": "Invalid JSON data"}), 400
 
+    global log_buffer
     try:
-        db = connectWithDb()
-        collection = db["logs"]
-        collection.insert_one(data)
-        return jsonify({"message": "Log saved to MongoDB"}), 200
+        log_buffer.append(data)
+        if len(log_buffer) >= BUFFER_LIMIT:
+            flush_buffer_to_mongodb()
+        return jsonify({"message": "Log buffered successfully"}), 200
     except Exception as e:
-        return jsonify({"error": f"Failed to save to MongoDB: {e}"}), 500
+        return jsonify({"error": f"Failed to buffer log: {e}"}), 500
 
 
 @app.route("/")
