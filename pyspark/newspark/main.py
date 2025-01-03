@@ -10,7 +10,7 @@ import sys
 from utils import *
 
 from rdpcheck import checkrdp
-from bonzi_malware_cor import bonzi_malware_correlation
+from malware_check import checkmalware
 # Initialize logging
 
 
@@ -70,8 +70,8 @@ def app():
 
 
 def coreFunctions(df):
-    bonzi_malware_correlation(df)
-    # checkrdp(df)
+    checkrdp(df)
+    checkmalware(df)
 
 
 if __name__ == "__main__":

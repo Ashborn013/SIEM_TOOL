@@ -72,3 +72,47 @@ def detect_user_account_changed(df):
         return None
 def filter_logs_by_event_id(df, event_id):
     return df.filter(col("event_id") == event_id)
+
+def extract_new_process_creation_logs(df):
+    df_filtered = df.filter(col("winlog.event_id") == 4688)
+    df_exe = df_filtered.filter(col("message").contains(".exe"))
+
+    if df_exe:
+        df_exe = df_exe.withColumn(
+            "exe_files", regexp_extract(col("message"), r"(.*\.exe)", 0)
+        )
+        # df_exe = df_exe.withColumn("exe_files", df_exe["exe_files"].cast(StringType()))
+        count = df_exe.count()
+
+        if count > 0:
+            print(f"Found {count} logs with new process being created.")
+            # job_update(
+            #     job_id_create_list(
+            #         "extract_new_process_creation_logs",
+            #         f"Found {count} logs with new process being created.",
+            #         "Mid",
+            #     )
+            # )
+            df_exe.show(truncate=False)
+            # new_process_creation_log_db_save(df_exe)
+            return df_exe
+        else:
+            # job_update(
+            #     job_id_create_list(
+            #         "extract_new_process_creation_logs",
+            #         "No logs with new process created",
+            #         "Low",
+            #     )
+            # )
+            print("No logs with new process created")
+            return None
+    else:
+        # job_update(
+        #     job_id_create_list(
+        #         "extract_new_process_creation_logs",
+        #         "No logs with new process created",
+        #         "Low",
+        #     )
+        # )
+        print("No logs with new process created")
+        return None
