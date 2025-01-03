@@ -1,3 +1,4 @@
+from threading import Timer
 from flask import Flask, request, jsonify
 import os
 import json
@@ -8,6 +9,9 @@ app = Flask(__name__)
 CORS(app) 
 
 FILE_PATH = "/saveData/data.json"
+log_buffer = []
+BUFFER_LIMIT = 100  # Flush to MongoDB after 100 logs
+FLUSH_INTERVAL = 5  # Flush every 5 seconds (in seconds)
 
 # @app.route("/save_json", methods=["POST"])
 # def save_json():
@@ -51,6 +55,40 @@ def save_json():
         return jsonify({"error": f"Failed to write to file: {e}"}), 500
 
     return jsonify({"message": "JSON data saved successfully"}), 200
+
+def flush_buffer_to_mongodb():
+    global log_buffer
+    if log_buffer:  # Only flush if buffer has logs
+        try:
+            db = connectWithDb()
+            collection = db["logs"]
+            collection.insert_many(log_buffer)  # Insert all logs in buffer
+            print(f"Inserted {len(log_buffer)} logs into MongoDB.")
+            log_buffer.clear()  # Clear buffer after successful insertion
+        except Exception as e:
+            print(f"Failed to flush logs: {e}")
+
+    # Schedule the next flush
+    Timer(FLUSH_INTERVAL, flush_buffer_to_mongodb).start()
+
+flush_buffer_to_mongodb() # Starts the Flush Timer
+
+@app.route("/mongo_save", methods=["POST"])
+def mongo_save():
+    data = request.get_json()
+    if not data:
+        return jsonify({"error": "Invalid JSON data"}), 400
+
+    global log_buffer
+    try:
+        log_buffer.append(data)
+        if len(log_buffer) >= BUFFER_LIMIT:
+            flush_buffer_to_mongodb()
+        return jsonify({"message": "Log buffered successfully"}), 200
+    except Exception as e:
+        return jsonify({"error": f"Failed to buffer log: {e}"}), 500
+
+
 @app.route("/")
 def home():
     return "W0rking"
