@@ -16,7 +16,7 @@ from pyspark.sql.functions import (
 )
 from utils import group_logs_by_date_latest
 
-def correlate_windows_firewall_attack(df):
+def correlate_execution_policy_attack(df):
     df = df.select(
     "@timestamp",
     "log",
@@ -29,56 +29,36 @@ def correlate_windows_firewall_attack(df):
     col("winlog").getItem("event_id").alias("event_id"),
     col("host").getItem("hostname").alias("hostname"),
     )
+        
     if df is None or df.rdd.isEmpty():
         print("Input DataFrame is empty or None, skipping rule.")
         return
 
     df_latest_day = group_logs_by_date_latest(df)
 
-    df_2097 = df_latest_day.filter(col("event_id") == "2097")
-    df_2099 = df_latest_day.filter(col("event_id") == "2099")
-    df_2052 = df_latest_day.filter(col("event_id") == "2052")
-    df_2059 = df_latest_day.filter(col("event_id") == "2059")
-    df_5001 = df_latest_day.filter(col("event_id") == "5001")
     df_4104 = df_latest_day.filter(col("event_id") == "4104")
+    df_4672 = df_latest_day.filter(col("event_id") == "4672")
+    df_4798 = df_latest_day.filter(col("event_id") == "4798")
 
-    count_2097 = df_2097.count()
-    count_2099 = df_2099.count()
-    count_2052 = df_2052.count()
-    count_2059 = df_2059.count()
-    count_5001 = df_5001.count()
     count_4104 = df_4104.count()
+    count_4672 = df_4672.count()
+    count_4798 = df_4798.count()
 
-    if (
-        count_2097 > 0
-        or count_2099 > 0
-        or count_2052 > 0
-        or count_2059 > 0
-        or count_5001 > 0
-        or count_4104 > 0
-    ):
-        df_filtered = (
-            df_2097.union(df_2099)
-            .union(df_2052)
-            .union(df_2059)
-            .union(df_5001)
-            .union(df_4104)
-        )
+    if count_4104 > 0 and count_4672 > 0 and count_4798 > 0:
+        df_filtered = df_4104.union(df_4672).union(df_4798)
 
         common_timestamp = df_filtered.agg({"@timestamp": "min"}).collect()[0][0]
 
-        total_count = (
-            count_2097 + count_2099 + count_2052 + count_2059 + count_5001 + count_4104
-        )
+        total_count = count_4104 + count_4672 + count_4798
         # job_update(
         #     job_id_create_list(
-        #         "Windows_Firewall_Attack",
-        #         f"Detected potential Windows Firewall attack with {total_count} events",
+        #         "Execution_Policy_Attack",
+        #         f"Detected potential execution policy attack with {total_count}",
         #         "Critical",
         #     )
         # )
         print(
-            f"Detected potential Windows Firewall attack with {total_count} events at {common_timestamp}."
+            f"Detected potential execution policy attack with {total_count} events at {common_timestamp}."
         )
 
         df_filtered.select(
@@ -89,5 +69,11 @@ def correlate_windows_firewall_attack(df):
         ).show(truncate=False)
 
     else:
-        print("No malicious activity detected in Windows Firewall logs.")
-
+        # job_update(
+        #     job_id_create_list(
+        #         "Execution_Policy_Attack",
+        #         f"No execution policy attack detected.",
+        #         "Low",
+        #     )
+        # )
+        print(f"No execution policy attack detected.")

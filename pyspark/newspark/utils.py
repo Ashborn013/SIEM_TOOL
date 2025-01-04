@@ -116,3 +116,10 @@ def extract_new_process_creation_logs(df):
         # )
         print("No logs with new process created")
         return None
+
+def group_logs_by_date_latest(df):
+    df_with_day = df.withColumn("day", date_format(col("@timestamp"), "yyyy-MM-dd"))
+    latest_day = df_with_day.agg(spark_max("day")).collect()[0][0]
+    # print(latest_day)
+    df_latest_day = df_with_day.filter(col("day") == latest_day)
+    return df_latest_day
