@@ -72,10 +72,11 @@ def app():
 
 
 def coreFunctions(df):
-    # checkrdp(df)
-    # checkmalware(df)
-    # correlate_windows_firewall_attack(df)
+    checkrdp(df)
+    checkmalware(df)
+    correlate_windows_firewall_attack(df)
     correlate_execution_policy_attack(df)
+    # df.show(truncate=False, n=20)
 
 
 if __name__ == "__main__":

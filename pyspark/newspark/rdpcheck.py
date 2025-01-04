@@ -21,6 +21,16 @@ from pyspark.sql.window import Window
 from pyspark.sql.types import TimestampType
 from datetime import datetime
 import json
+import logging
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
+    handlers=[
+        logging.StreamHandler(),  # Logs to the console
+        logging.FileHandler("app.log"),  # Logs to a file named 'app.log'
+    ],
+)
 
 # from interactwithUi import alertUi
 from utils import detect_special_privilege_logon, detect_user_account_changed
@@ -61,10 +71,10 @@ def detect_rdp_brute_force(df):
     count = logs_under_one_min.count()
 
     if count > 10:
-        print("Rdp Brute Force attempt detected .. !")
+        logging.info("Rdp Brute Force attempt detected .. !")
         return logs_under_one_min
     else:
-        print("No brute force attack detected")
+        logging.info("No brute force attack detected")
         return None
 
 
@@ -83,7 +93,7 @@ def rdp(df):
                 if row.RemoteIpAddress is not None
             ]
             unique_ip_addresses = set(ip_addresses)
-            print(f"{unique_ip_addresses} brute forced and has loged in")
+            logging.info(f"{unique_ip_addresses} brute forced and has loged in")
             # alertUi(
             #     "RDP Attack",
             #     f"{unique_ip_addresses} brute forced and has loged in",
@@ -96,7 +106,7 @@ def rdp(df):
 
         # result.show()
     else:
-        print("No brute force attack detected")
+        logging.info("No brute force attack detected")
 
 
 def filter_logs_by_event_id(df, event_id):
@@ -122,17 +132,17 @@ def user_behavior_anomaly(df):
     # Joining based on the user ID to see if flagged users had unusual login times
     if anomaly_df.count() > 0:
         flagged_users = anomaly_df.select("id").rdd.flatMap(lambda x: x).collect()
-        print(f"Flagged users with unusual event counts: {flagged_users}")
+        logging.info(f"Flagged users with unusual event counts: {flagged_users}")
         anomaly_df.show()
         # user_behavior_anomaly_db_save(anomaly_df)
         flagged_unusual_login_df = anomaly_df.join(unusual_login_df, "id", "inner")
         if flagged_unusual_login_df.count() > 0:
-            print("Flagged users with unusual login times:")
+            logging.info("Flagged users with unusual login times:")
             flagged_unusual_login_df.show()
 
         return anomaly_df
     else:
-        print("No anomalies detected in user behavior.")
+        logging.info("No anomalies detected in user behavior.")
         return None
 
 

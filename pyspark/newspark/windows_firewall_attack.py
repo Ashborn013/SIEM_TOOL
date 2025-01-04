@@ -15,6 +15,16 @@ from pyspark.sql.functions import (
     from_json,
 )
 from utils import group_logs_by_date_latest
+import logging
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
+    handlers=[
+        logging.StreamHandler(),  # Logs to the console
+        logging.FileHandler("app.log"),  # Logs to a file named 'app.log'
+    ],
+)
 
 def correlate_windows_firewall_attack(df):
     df = df.select(
@@ -30,7 +40,7 @@ def correlate_windows_firewall_attack(df):
     col("host").getItem("hostname").alias("hostname"),
     )
     if df is None or df.rdd.isEmpty():
-        print("Input DataFrame is empty or None, skipping rule.")
+        logging.info("Input DataFrame is empty or None, skipping rule.")
         return
 
     df_latest_day = group_logs_by_date_latest(df)
@@ -77,7 +87,7 @@ def correlate_windows_firewall_attack(df):
         #         "Critical",
         #     )
         # )
-        print(
+        logging.info(
             f"Detected potential Windows Firewall attack with {total_count} events at {common_timestamp}."
         )
 
@@ -89,5 +99,5 @@ def correlate_windows_firewall_attack(df):
         ).show(truncate=False)
 
     else:
-        print("No malicious activity detected in Windows Firewall logs.")
+        logging.info("No malicious activity detected in Windows Firewall logs.")
 

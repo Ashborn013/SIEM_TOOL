@@ -15,9 +15,20 @@ from pyspark.sql.functions import (
     from_json,
 )
 from utils import group_logs_by_date_latest
+import logging
 
-def correlate_execution_policy_attack(df):
-    df = df.select(
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
+    handlers=[
+        logging.StreamHandler(),  # Logs to the console
+        logging.FileHandler("app.log"),  # Logs to a file named 'app.log'
+    ],
+)
+
+def correlate_execution_policy_attack(df_in):
+    logging.info("Debug 1")
+    df = df_in.select(
     "@timestamp",
     "log",
     "message",
@@ -31,7 +42,7 @@ def correlate_execution_policy_attack(df):
     )
         
     if df is None or df.rdd.isEmpty():
-        print("Input DataFrame is empty or None, skipping rule.")
+        logging.info("Input DataFrame is empty or None, skipping rule.")
         return
 
     df_latest_day = group_logs_by_date_latest(df)
@@ -43,7 +54,6 @@ def correlate_execution_policy_attack(df):
     count_4104 = df_4104.count()
     count_4672 = df_4672.count()
     count_4798 = df_4798.count()
-
     if count_4104 > 0 and count_4672 > 0 and count_4798 > 0:
         df_filtered = df_4104.union(df_4672).union(df_4798)
 
@@ -57,16 +67,15 @@ def correlate_execution_policy_attack(df):
         #         "Critical",
         #     )
         # )
-        print(
+        logging.info(
             f"Detected potential execution policy attack with {total_count} events at {common_timestamp}."
         )
-
         df_filtered.select(
             lit(common_timestamp).alias("Common_Timestamp"),  # Common timestamp
             col("event_id"),
             col("hostname"),
             col("message"),
-        ).show(truncate=False)
+        ).show(n=20)
 
     else:
         # job_update(
@@ -76,4 +85,4 @@ def correlate_execution_policy_attack(df):
         #         "Low",
         #     )
         # )
-        print(f"No execution policy attack detected.")
+        logging.info(f"No execution policy attack detected.")
