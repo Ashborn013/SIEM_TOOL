@@ -16,6 +16,8 @@ from pyspark.sql.functions import (
 )
 from utils import group_logs_by_date_latest
 import logging
+from libs import job_id_create_list
+from mongodbfunctions import insertData
 
 logging.basicConfig(
     level=logging.INFO,
@@ -26,18 +28,19 @@ logging.basicConfig(
     ],
 )
 
+
 def correlate_windows_firewall_attack(df):
     df = df.select(
-    "@timestamp",
-    "log",
-    "message",
-    "ecs",
-    "event",
-    col("agent").getItem("name").alias("name"),
-    col("agent").getItem("id").alias("id"),
-    col("agent").getItem("type").alias("type"),
-    col("winlog").getItem("event_id").alias("event_id"),
-    col("host").getItem("hostname").alias("hostname"),
+        "@timestamp",
+        "log",
+        "message",
+        "ecs",
+        "event",
+        col("agent").getItem("name").alias("name"),
+        col("agent").getItem("id").alias("id"),
+        col("agent").getItem("type").alias("type"),
+        col("winlog").getItem("event_id").alias("event_id"),
+        col("host").getItem("hostname").alias("hostname"),
     )
     if df is None or df.rdd.isEmpty():
         logging.info("Input DataFrame is empty or None, skipping rule.")
@@ -80,13 +83,15 @@ def correlate_windows_firewall_attack(df):
         total_count = (
             count_2097 + count_2099 + count_2052 + count_2059 + count_5001 + count_4104
         )
-        # job_update(
-        #     job_id_create_list(
-        #         "Windows_Firewall_Attack",
-        #         f"Detected potential Windows Firewall attack with {total_count} events",
-        #         "Critical",
-        #     )
-        # )
+        insertData(
+            "report",
+            job_id_create_list(
+                "Windows_Firewall_Attack",
+                f"Detected potential Windows Firewall attack with {total_count} events",
+                "Critical",
+            ),
+        )
+
         logging.info(
             f"Detected potential Windows Firewall attack with {total_count} events at {common_timestamp}."
         )
@@ -100,4 +105,11 @@ def correlate_windows_firewall_attack(df):
 
     else:
         logging.info("No malicious activity detected in Windows Firewall logs.")
-
+        insertData(
+            "report",
+            job_id_create_list(
+                "Windows_Firewall_Attack",
+                f"No malicious activity detected in Windows Firewall logs.",
+                "Low"
+            ),
+        )

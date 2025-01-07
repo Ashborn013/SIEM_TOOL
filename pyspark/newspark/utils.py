@@ -70,8 +70,11 @@ def detect_user_account_changed(df):
         # )
 
         return None
+
+
 def filter_logs_by_event_id(df, event_id):
     return df.filter(col("event_id") == event_id)
+
 
 def extract_new_process_creation_logs(df):
     df_filtered = df.filter(col("winlog.event_id") == 4688)
@@ -116,6 +119,7 @@ def extract_new_process_creation_logs(df):
         # )
         print("No logs with new process created")
         return None
+
 
 def group_logs_by_date_latest(df):
     df_with_day = df.withColumn("day", date_format(col("@timestamp"), "yyyy-MM-dd"))

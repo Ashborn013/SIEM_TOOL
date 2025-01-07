@@ -22,6 +22,8 @@ from pyspark.sql.types import TimestampType
 from datetime import datetime
 import json
 import logging
+from mongodbfunctions import insertData
+from libs import job_id_create_list
 
 logging.basicConfig(
     level=logging.INFO,
@@ -72,6 +74,14 @@ def detect_rdp_brute_force(df):
 
     if count > 10:
         logging.info("Rdp Brute Force attempt detected .. !")
+        insertData(
+            "report",
+            job_id_create_list(
+                "Windows_Firewall_Attack",
+                f"Detected potential rdp attack",
+                "Critical",
+            ),
+        )
         return logs_under_one_min
     else:
         logging.info("No brute force attack detected")

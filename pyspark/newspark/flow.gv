@@ -1,0 +1,156 @@
+digraph G {
+concentrate=true;
+splines="ortho";
+rankdir="LR";
+subgraph legend{
+    rank = min;
+    label = "legend";
+    Legend [shape=none, margin=0, label = <
+        <table cellspacing="0" cellpadding="0" border="1"><tr><td>Code2flow Legend</td></tr><tr><td>
+        <table cellspacing="0">
+        <tr><td>Regular function</td><td width="50px" bgcolor='#cccccc'></td></tr>
+        <tr><td>Trunk function (nothing calls this)</td><td bgcolor='#966F33'></td></tr>
+        <tr><td>Leaf function (this calls nothing else)</td><td bgcolor='#6db33f'></td></tr>
+        <tr><td>Function call</td><td><font color='black'>&#8594;</font></td></tr>
+        </table></td></tr></table>
+        >];
+}node_2b9f6b7d [label="5: fromMongoToSparkdf()" name="libs::fromMongoToSparkdf" shape="rect" style="rounded,filled" fillcolor="#6db33f" ];
+node_7d957c5d [label="11: job_id_create_list()" name="libs::job_id_create_list" shape="rect" style="rounded,filled" fillcolor="#6db33f" ];
+node_b7b2de37 [label="0: (global)()" name="main::(global)" shape="rect" style="rounded,filled" fillcolor="#966F33" ];
+node_cbf1296c [label="50: app()" name="main::app" shape="rect" style="rounded,filled" fillcolor="#cccccc" ];
+node_6851c14f [label="75: coreFunctions()" name="main::coreFunctions" shape="rect" style="rounded,filled" fillcolor="#cccccc" ];
+node_f5eeaa82 [label="201: checkmalware()" name="malware_check::checkmalware" shape="rect" style="rounded,filled" fillcolor="#cccccc" ];
+node_14335198 [label="186: correlate_logs()" name="malware_check::correlate_logs" shape="rect" style="rounded,filled" fillcolor="#cccccc" ];
+node_3035d180 [label="175: detect_attempt_to_duplicate_handle_to_object()" name="malware_check::detect_attempt_to_duplicate_handle_to_object" shape="rect" style="rounded,filled" fillcolor="#6db33f" ];
+node_07d21986 [label="121: detect_credential_access()" name="malware_check::detect_credential_access" shape="rect" style="rounded,filled" fillcolor="#6db33f" ];
+node_32b71245 [label="157: detect_group_membership()" name="malware_check::detect_group_membership" shape="rect" style="rounded,filled" fillcolor="#6db33f" ];
+node_a9f2d851 [label="130: detect_object_access()" name="malware_check::detect_object_access" shape="rect" style="rounded,filled" fillcolor="#6db33f" ];
+node_365627d7 [label="139: detect_permission_changes()" name="malware_check::detect_permission_changes" shape="rect" style="rounded,filled" fillcolor="#6db33f" ];
+node_912bcf65 [label="148: detect_privilege_service()" name="malware_check::detect_privilege_service" shape="rect" style="rounded,filled" fillcolor="#6db33f" ];
+node_9cadad37 [label="103: detect_process_termination()" name="malware_check::detect_process_termination" shape="rect" style="rounded,filled" fillcolor="#6db33f" ];
+node_4d09f0d9 [label="166: detect_sec_grp_membership()" name="malware_check::detect_sec_grp_membership" shape="rect" style="rounded,filled" fillcolor="#6db33f" ];
+node_f2d5c3d8 [label="112: detect_suspicious_network_activity()" name="malware_check::detect_suspicious_network_activity" shape="rect" style="rounded,filled" fillcolor="#6db33f" ];
+node_e0cd92c5 [label="6: connectWithDb()" name="mongodbfunctions::connectWithDb" shape="rect" style="rounded,filled" fillcolor="#6db33f" ];
+node_a3c8cdee [label="22: insertData()" name="mongodbfunctions::insertData" shape="rect" style="rounded,filled" fillcolor="#cccccc" ];
+node_4ff16ce5 [label="42: retrieveDataMultipleId()" name="mongodbfunctions::retrieveDataMultipleId" shape="rect" style="rounded,filled" fillcolor="#966F33" ];
+node_33a789f3 [label="29: retrieveDataOneId()" name="mongodbfunctions::retrieveDataOneId" shape="rect" style="rounded,filled" fillcolor="#cccccc" ];
+node_e867c03a [label="12: viewAllData()" name="mongodbfunctions::viewAllData" shape="rect" style="rounded,filled" fillcolor="#cccccc" ];
+node_3ece0837 [label="32: correlate_execution_policy_attack()" name="powershell_attack_cor::correlate_execution_policy_attack" shape="rect" style="rounded,filled" fillcolor="#cccccc" ];
+node_5b8cb523 [label="166: checkrdp()" name="rdpcheck::checkrdp" shape="rect" style="rounded,filled" fillcolor="#cccccc" ];
+node_0bc7ffe9 [label="60: detect_rdp_brute_force()" name="rdpcheck::detect_rdp_brute_force" shape="rect" style="rounded,filled" fillcolor="#cccccc" ];
+node_d1105cb7 [label="159: detect_unusual_login_times()" name="rdpcheck::detect_unusual_login_times" shape="rect" style="rounded,filled" fillcolor="#6db33f" ];
+node_052f50ae [label="122: filter_logs_by_event_id()" name="rdpcheck::filter_logs_by_event_id" shape="rect" style="rounded,filled" fillcolor="#6db33f" ];
+node_e185e2c9 [label="47: filter_logs_down_from_time()" name="rdpcheck::filter_logs_down_from_time" shape="rect" style="rounded,filled" fillcolor="#6db33f" ];
+node_40b5ded0 [label="54: isRdp_userLogin()" name="rdpcheck::isRdp_userLogin" shape="rect" style="rounded,filled" fillcolor="#cccccc" ];
+node_4e0e4e7d [label="41: isRdp_userLogin()" name="rdpcheck::isRdp_userLogin" shape="rect" style="rounded,filled" fillcolor="#966F33" ];
+node_e974b196 [label="91: rdp()" name="rdpcheck::rdp" shape="rect" style="rounded,filled" fillcolor="#cccccc" ];
+node_66153435 [label="126: user_behavior_anomaly()" name="rdpcheck::user_behavior_anomaly" shape="rect" style="rounded,filled" fillcolor="#cccccc" ];
+node_68958abb [label="23: detect_special_privilege_logon()" name="utils::detect_special_privilege_logon" shape="rect" style="rounded,filled" fillcolor="#6db33f" ];
+node_2594f7bd [label="49: detect_user_account_changed()" name="utils::detect_user_account_changed" shape="rect" style="rounded,filled" fillcolor="#6db33f" ];
+node_f6677c4d [label="79: extract_new_process_creation_logs()" name="utils::extract_new_process_creation_logs" shape="rect" style="rounded,filled" fillcolor="#6db33f" ];
+node_f57f3261 [label="124: group_logs_by_date_latest()" name="utils::group_logs_by_date_latest" shape="rect" style="rounded,filled" fillcolor="#6db33f" ];
+node_c47b9aec [label="32: correlate_windows_firewall_attack()" name="windows_firewall_attack::correlate_windows_firewall_attack" shape="rect" style="rounded,filled" fillcolor="#cccccc" ];
+node_b7b2de37 -> node_cbf1296c [color="#CC79A7" penwidth="2"];
+node_cbf1296c -> node_2b9f6b7d [color="#F0E442" penwidth="2"];
+node_cbf1296c -> node_6851c14f [color="#F0E442" penwidth="2"];
+node_cbf1296c -> node_e867c03a [color="#F0E442" penwidth="2"];
+node_6851c14f -> node_f5eeaa82 [color="#CC79A7" penwidth="2"];
+node_6851c14f -> node_3ece0837 [color="#CC79A7" penwidth="2"];
+node_6851c14f -> node_5b8cb523 [color="#CC79A7" penwidth="2"];
+node_6851c14f -> node_c47b9aec [color="#CC79A7" penwidth="2"];
+node_f5eeaa82 -> node_14335198 [color="#56B4E9" penwidth="2"];
+node_14335198 -> node_3035d180 [color="#000000" penwidth="2"];
+node_14335198 -> node_07d21986 [color="#000000" penwidth="2"];
+node_14335198 -> node_32b71245 [color="#000000" penwidth="2"];
+node_14335198 -> node_a9f2d851 [color="#000000" penwidth="2"];
+node_14335198 -> node_365627d7 [color="#000000" penwidth="2"];
+node_14335198 -> node_912bcf65 [color="#000000" penwidth="2"];
+node_14335198 -> node_9cadad37 [color="#000000" penwidth="2"];
+node_14335198 -> node_4d09f0d9 [color="#000000" penwidth="2"];
+node_14335198 -> node_f2d5c3d8 [color="#000000" penwidth="2"];
+node_14335198 -> node_f6677c4d [color="#000000" penwidth="2"];
+node_a3c8cdee -> node_e0cd92c5 [color="#D55E00" penwidth="2"];
+node_4ff16ce5 -> node_33a789f3 [color="#0072B2" penwidth="2"];
+node_33a789f3 -> node_e0cd92c5 [color="#009E73" penwidth="2"];
+node_e867c03a -> node_e0cd92c5 [color="#56B4E9" penwidth="2"];
+node_3ece0837 -> node_7d957c5d [color="#CC79A7" penwidth="2"];
+node_3ece0837 -> node_7d957c5d [color="#CC79A7" penwidth="2"];
+node_3ece0837 -> node_a3c8cdee [color="#CC79A7" penwidth="2"];
+node_3ece0837 -> node_a3c8cdee [color="#CC79A7" penwidth="2"];
+node_3ece0837 -> node_f57f3261 [color="#CC79A7" penwidth="2"];
+node_5b8cb523 -> node_e974b196 [color="#009E73" penwidth="2"];
+node_0bc7ffe9 -> node_7d957c5d [color="#E69F00" penwidth="2"];
+node_0bc7ffe9 -> node_a3c8cdee [color="#E69F00" penwidth="2"];
+node_0bc7ffe9 -> node_052f50ae [color="#E69F00" penwidth="2"];
+node_4e0e4e7d -> node_052f50ae [color="#0072B2" penwidth="2"];
+node_40b5ded0 -> node_052f50ae [color="#000000" penwidth="2"];
+node_e974b196 -> node_0bc7ffe9 [color="#D55E00" penwidth="2"];
+node_e974b196 -> node_052f50ae [color="#D55E00" penwidth="2"];
+node_e974b196 -> node_e185e2c9 [color="#D55E00" penwidth="2"];
+node_e974b196 -> node_40b5ded0 [color="#D55E00" penwidth="2"];
+node_e974b196 -> node_66153435 [color="#D55E00" penwidth="2"];
+node_e974b196 -> node_68958abb [color="#D55E00" penwidth="2"];
+node_e974b196 -> node_2594f7bd [color="#D55E00" penwidth="2"];
+node_66153435 -> node_d1105cb7 [color="#0072B2" penwidth="2"];
+node_c47b9aec -> node_7d957c5d [color="#F0E442" penwidth="2"];
+node_c47b9aec -> node_7d957c5d [color="#F0E442" penwidth="2"];
+node_c47b9aec -> node_a3c8cdee [color="#F0E442" penwidth="2"];
+node_c47b9aec -> node_a3c8cdee [color="#F0E442" penwidth="2"];
+node_c47b9aec -> node_f57f3261 [color="#F0E442" penwidth="2"];
+subgraph cluster_5cf0c8e7 {
+    node_2b9f6b7d node_7d957c5d;
+    label="File: libs";
+    name="libs";
+    style="filled";
+    graph[style=dotted];
+};
+subgraph cluster_817b09d9 {
+    node_cbf1296c node_6851c14f node_b7b2de37;
+    label="File: main";
+    name="main";
+    style="filled";
+    graph[style=dotted];
+};
+subgraph cluster_f03abe3e {
+    node_9cadad37 node_f2d5c3d8 node_07d21986 node_a9f2d851 node_365627d7 node_912bcf65 node_32b71245 node_4d09f0d9 node_3035d180 node_14335198 node_f5eeaa82;
+    label="File: malware_check";
+    name="malware_check";
+    style="filled";
+    graph[style=dotted];
+};
+subgraph cluster_0221e527 {
+    node_e0cd92c5 node_e867c03a node_a3c8cdee node_33a789f3 node_4ff16ce5;
+    label="File: mongodbfunctions";
+    name="mongodbfunctions";
+    style="filled";
+    graph[style=dotted];
+};
+subgraph cluster_ffe7f42f {
+    node_3ece0837;
+    label="File: powershell_attack_cor";
+    name="powershell_attack_cor";
+    style="filled";
+    graph[style=dotted];
+};
+subgraph cluster_9aae83d8 {
+    node_4e0e4e7d node_e185e2c9 node_40b5ded0 node_0bc7ffe9 node_e974b196 node_052f50ae node_66153435 node_d1105cb7 node_5b8cb523;
+    label="File: rdpcheck";
+    name="rdpcheck";
+    style="filled";
+    graph[style=dotted];
+};
+subgraph cluster_925d806f {
+    node_68958abb node_2594f7bd node_f6677c4d node_f57f3261;
+    label="File: utils";
+    name="utils";
+    style="filled";
+    graph[style=dotted];
+};
+subgraph cluster_5a213f34 {
+    node_c47b9aec;
+    label="File: windows_firewall_attack";
+    name="windows_firewall_attack";
+    style="filled";
+    graph[style=dotted];
+};
+}

@@ -1,22 +1,43 @@
 services:
-  jupyter-notebook:
-    build:
-      context: pyspark-image-builder
-      dockerfile: Dockerfile
-    # ports:
-    #   - "4040:4040"  
+
+  pyspark-app:
+    build: newspark
     volumes:
-      - ./pyspark-image-builder/:/home/jovyan/work  
-      - data:/saveData
-      - sql_db:/home/jovyan/DataBaseStore
-    # environment:
-    #   JUPYTER_ENABLE_LAB: "yes"  # Enable JupyterLab interface (optional)
-    command: [ "python" ,"/home/jovyan/work/main-app.py" ]
-    # command: ["tail", "-f", "/dev/null"]
-
+      - ./newspark:/app
     depends_on:
-      - db 
+      - mongo
+    command: ["python", "main.py"]
+    
+  spark:
+    image: docker.io/bitnami/spark:3.5
+    environment:
+      - SPARK_MODE=master
+      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+      - SPARK_RPC_ENCRYPTION_ENABLED=no
+      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+      - SPARK_SSL_ENABLED=no
+      - SPARK_USER=spark
 
+    ports:
+      - '8080:8080'
+  spark-worker:
+    image: docker.io/bitnami/spark:3.5
+    environment:
+      - SPARK_MODE=worker
+      - SPARK_MASTER_URL=spark://spark:7077
+      - SPARK_WORKER_MEMORY=1G
+      - SPARK_WORKER_CORES=1
+      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+      - SPARK_RPC_ENCRYPTION_ENABLED=no
+      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+      - SPARK_SSL_ENABLED=no
+      - SPARK_USER=spark
+  mongo:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
   flask-server:
     build:
       context: recive-and-serve-server 
@@ -25,69 +46,11 @@ services:
       - "223:223"
     volumes:
       - ./recive-and-serve-server/:/app
-      - data:/saveData
-      - ./saveData:/saveData
-      - sql_db:/DataBaseStore
+
     
-    depends_on:
-      - db 
-
-  db:
-    image: mariadb:10.6
-    restart: always
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-    ports:
-      - 3306:3306
-  # mysql:
-  #   restart: always
-  #   container_name: "mysql"
-  #   image: mysql:latest
-  #   ports:
-  #     - 3306:3306
-  #   environment:
-  #     - MYSQL_ROOT_PASSWORD=password
-  #     - MYSQL_DATABASE=pyspark
-  #     - MYSQL_USER=user
-  #     - MYSQL_PASSWORD=password
-    volumes:
-    - mysql_db:/var/lib/mysql
-
-  phpmyadmin:
-    image: phpmyadmin
-    restart: always
-    ports:
-      - 8080:80
-    environment:
-      - PMA_ARBITRARY=1
-    
-    depends_on:
-      - db 
-
-  mongo:
-    image: mongo
-    restart: always
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: example
-    volumes:
-      - mongo_db:/data/db
-
-  # mongo-express:
-  #   image: mongo-express
-  #   restart: always
-  #   ports:
-  #     - 8081:8081
-  #   environment:
-  #     ME_CONFIG_MONGODB_ADMINUSERNAME: root
-  #     ME_CONFIG_MONGODB_ADMINPASSWORD: example
-  #     ME_CONFIG_MONGODB_URL: mongodb://root:example@mongo:27017/
-  #     ME_CONFIG_BASICAUTH: false
 
 volumes:
   data:
-  sql_db:
-  mysql_db:
-  mongo_db:
+  mongo-data:
 
 

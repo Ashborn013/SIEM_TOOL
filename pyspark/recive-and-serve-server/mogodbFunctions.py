@@ -3,7 +3,7 @@ from pymongo import MongoClient
 from bson import ObjectId
 
 def connectWithDb():
-    client = MongoClient('mongodb://root:example@mongo:27017/')
+    client = MongoClient('mongodb://mongo:27017/')
     db = client['Main']
     return db
 
