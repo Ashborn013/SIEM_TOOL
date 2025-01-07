@@ -467,6 +467,25 @@ def user_behavior_anomaly(df):
         print("No anomalies detected in user behavior.")
         return None
 
+def detect_event_log_tampering(df: DataFrame) -> DataFrame:
+    audit_log_cleared = filter_logs_by_event_id(df, "1102")  # Audit log cleared
+    config_changes = filter_logs_by_event_id(df, "104")     # Configuration changes
+
+    tampering_activity = audit_log_cleared.join(
+        config_changes,
+        audit_log_cleared["winlog.event_data.SubjectUserName"] ==
+        config_changes["winlog.event_data.SubjectUserName"],
+        "inner"
+    )
+
+    #event_log_tampering_db_save(tampering_activity) - yet to be created.
+    if tampering_activity.count() > 0:
+        print("Event log tampering detected!")
+        tampering_activity.show(truncate=False)
+    else:
+        print("No event log tampering activity detected.")
+    
+    return tampering_activity
 
 def detect_brute_force_with_success(df):
     failed_logon_df = detect_brute_force(df)

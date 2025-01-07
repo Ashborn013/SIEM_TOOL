@@ -68,25 +68,10 @@ def insert_data(table_name: str, df: DataFrame):
 
 
 def save_to_db(df: DataFrame, table_name: str):
-    columns = [
-        "timestamp TEXT",
-        "log TEXT",
-        "message TEXT",
-        "ecs TEXT",
-        "event TEXT",
-        "name TEXT",
-        "id TEXT",
-        "type TEXT",
-        "event_id TEXT",
-        "hostname TEXT",
-    ]
-    if table_name == "explicit_credential_logon":
-        columns.append("email TEXT")
-    elif table_name == "new_process_creation_log":
-        columns.append("exe_files TEXT")
-
-    create_table(table_name, columns)
-    insert_data(table_name, df)
+    if df is not None and df.count() > 0:
+        columns = [f"{col} TEXT" for col in df.columns]
+        create_table(table_name, columns)
+        insert_data(table_name, df)
 
 
 def detect_brute_force_db_save(df: DataFrame):
@@ -133,6 +118,26 @@ def save_unique_hostnames(hostnames: List[str]):
     create_table("hostname", ["hostname TEXT UNIQUE"])
     query = "INSERT IGNORE INTO hostname (hostname) VALUES (%s)"
     execute_query(query, [(hostname,) for hostname in set(hostnames)], many=True)
+
+
+def detect_brute_force_with_success_db_save(df: DataFrame):
+    save_to_db(df, "brute_force_success_logon")
+
+
+def correlate_execution_policy_attack_db_save(df: DataFrame):
+    save_to_db(df, "execution_policy_attack")
+
+
+def detect_rdp_brute_force_db_save(df: DataFrame):
+    save_to_db(df, "rdp_brute_force")
+
+
+def correlate_windows_firewall_attack_db_save(df: DataFrame):
+    save_to_db(df, "windows_firewall_attack")
+
+
+def bonzi_malware_correlation_db_save(df: DataFrame):
+    save_to_db(df, "bonzi_malware_correlation")
 
 
 def job_id_create_list(job: str, message: str, level: str) -> List[Any]:
