@@ -110,6 +110,6 @@ def correlate_windows_firewall_attack(df):
             job_id_create_list(
                 "Windows_Firewall_Attack",
                 f"No malicious activity detected in Windows Firewall logs.",
-                "Low"
+                "Low",
             ),
         )
