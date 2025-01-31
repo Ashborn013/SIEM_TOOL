@@ -55,62 +55,62 @@ def get_brute_force():
     data = []
     return jsonify(data), 200
 
-@app.route("/user_account_changes", methods=["GET"])
-def get_user_account_changes():
-    data = []
-    return jsonify(data), 200
+# @app.route("/user_account_changes", methods=["GET"])
+# def get_user_account_changes():
+#     data = []
+#     return jsonify(data), 200
 
-@app.route("/spl_privilege_logons", methods=["GET"])
-def get_spl_privilege_logons():
-    data = []
-    return jsonify(data), 200
+# @app.route("/spl_privilege_logons", methods=["GET"])
+# def get_spl_privilege_logons():
+#     data = []
+#     return jsonify(data), 200
 
-@app.route("/explicit_credential_logon", methods=["GET"])
-def get_explicit_credential_logon():
-    data = []
-    return jsonify(data), 200
+# @app.route("/explicit_credential_logon", methods=["GET"])
+# def get_explicit_credential_logon():
+#     data = []
+#     return jsonify(data), 200
 
-@app.route("/extract_new_process_creation_logs", methods=["GET"])
-def get_extract_new_process_creation_logs():
-    data = []
-    return jsonify(data), 200
-# Ok
-@app.route("/Job_details", methods=["GET"])
-def get_job_details():
-    data = query_job_details_from_mongo()
-    return jsonify(data), 200
+# @app.route("/extract_new_process_creation_logs", methods=["GET"])
+# def get_extract_new_process_creation_logs():
+#     data = []
+#     return jsonify(data), 200
+# # Ok
+# @app.route("/Job_details", methods=["GET"])
+# def get_job_details():
+#     data = query_job_details_from_mongo()
+#     return jsonify(data), 200
 
 
 
-@app.route("/network_disconnection", methods=["GET"])
-def get_network_disconnection():
-    data = []
-    return jsonify(data), 200
+# @app.route("/network_disconnection", methods=["GET"])
+# def get_network_disconnection():
+#     data = []
+#     return jsonify(data), 200
 
-@app.route("/user_local_group_enumeration", methods=["GET"])
-def get_user_local_group_enumeration():
-    data = []
-    return jsonify(data), 200
+# @app.route("/user_local_group_enumeration", methods=["GET"])
+# def get_user_local_group_enumeration():
+#     data = []
+#     return jsonify(data), 200
 
-@app.route("/powershell_remote_auth", methods=["GET"])
-def get_powershell_remote_auth():
-    data = []
-    return jsonify(data), 200
+# @app.route("/powershell_remote_auth", methods=["GET"])
+# def get_powershell_remote_auth():
+#     data = []
+#     return jsonify(data), 200
 
-@app.route("/hostnames",methods=["GET"])
-def get_hostnames():
-    data = []
-    return jsonify(data) , 200
+# @app.route("/hostnames",methods=["GET"])
+# def get_hostnames():
+#     data = []
+#     return jsonify(data) , 200
 
-@app.route("/track_user_activity", methods=["GET"])
-def get_track_user_activity():
-    data = []
-    return jsonify(data), 200
+# @app.route("/track_user_activity", methods=["GET"])
+# def get_track_user_activity():
+#     data = []
+#     return jsonify(data), 200
 
-@app.route("/unusual_login_times", methods=["GET"])
-def get_unusual_login_times():
-    data = []
-    return jsonify(data), 200
+# @app.route("/unusual_login_times", methods=["GET"])
+# def get_unusual_login_times():
+#     data = []
+#     return jsonify(data), 200
 
 
 if __name__ == "__main__":
