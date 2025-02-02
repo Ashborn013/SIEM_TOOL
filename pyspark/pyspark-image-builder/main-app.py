@@ -24,11 +24,12 @@ import uuid  # for generating unique id for each Job entry
 from interactwithUi import alertUi
 
 # from rdpcheck import checkrdp
-from malware_check import checkmalware
+# from malware_check import checkmalware
+from gandcrab_malcheck import checkgandcrabmalware
 
 spark = SparkSession.builder.appName("Read JSON File").getOrCreate()
 
-file_path = "/home/jovyan/work/malware_test2.json"
+file_path = "/home/jovyan/work/gandcrab.json"
 # df = spark.read.json(file_path)
 # df_selected = df.select(
 #     col("@timestamp"),
@@ -44,5 +45,5 @@ file_path = "/home/jovyan/work/malware_test2.json"
 # )
 
 if __name__ == "__main__":
-    checkmalware(spark, file_path)
+    checkgandcrabmalware(file_path)
     # df_selected.show()

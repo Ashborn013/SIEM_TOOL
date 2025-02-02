@@ -13,6 +13,7 @@ from rdpcheck import checkrdp
 from malware_check import checkmalware
 from windows_firewall_attack import correlate_windows_firewall_attack
 from powershell_attack_cor import correlate_execution_policy_attack
+from gandcrab_malcheck import checkgandcrabmalware
 
 # Initialize logging
 
@@ -77,6 +78,8 @@ def coreFunctions(df):
     checkmalware(df)
     correlate_windows_firewall_attack(df)
     correlate_execution_policy_attack(df)
+    checkgandcrabmalware(df)
+
     # df.show(truncate=False, n=20)
 
 

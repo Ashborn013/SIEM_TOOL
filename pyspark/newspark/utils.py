@@ -14,6 +14,8 @@ from pyspark.sql.functions import (
     date_format,
     max as spark_max,
     from_json,
+    Window,
+    TimestampType,
 )
 from datetime import datetime
 import json
@@ -118,6 +120,74 @@ def extract_new_process_creation_logs(df):
         #     )
         # )
         print("No logs with new process created")
+        return None
+    
+def detect_brute_force(df):
+    df = df.withColumn("@timestamp", col("@timestamp").cast(TimestampType()))
+    out_put = filter_logs_by_event_id(df, 4625)
+    out_put = out_put.orderBy("@timestamp")
+
+    windowSpec = Window.orderBy("@timestamp")
+    out_put = out_put.withColumn(
+        "time_diff",
+        col("@timestamp").cast("long")
+        - lag("@timestamp", 1).over(windowSpec).cast("long"),
+    )
+
+    logs_under_one_min = out_put.filter(col("time_diff") < 60)
+    count = logs_under_one_min.count()
+
+    if count > 10:
+        # detect_brute_force_db_save(logs_under_one_min)
+        # job_update(
+        #     job_id_create_list("Brute Force", "Brute Force detected", "Critical")
+        # )
+        logs_under_one_min.show()
+        return logs_under_one_min
+    else:
+        #job_update(job_id_create_list("Brute Force", "Brute Force Not detected", "Low"))
+        return None
+
+
+def detect_brute_force_with_success(df):
+    failed_logon_df = detect_brute_force(df)
+    if failed_logon_df is not None:
+        success_logon_df = filter_logs_by_event_id(df, 4624)
+        correlated_df = success_logon_df.join(failed_logon_df, ["hostname"], "inner")
+        if correlated_df.count() > 0:
+            print("Brute Force followed by a successful logon detected.")
+            correlated_df.show()
+            return correlated_df
+        else:
+            print("No successful logon after brute force attack.")
+            return None
+        
+def detect_user_local_group_enumeration(df):
+    df_filtered = df.filter(col("event_id") == "4798")
+    count = df_filtered.count()
+
+    if count > 0:
+        # job_update(
+        #     job_id_create_list(
+        #         "detect_user_local_group_enumeration",
+        #         f"A user's local group membership was enumerated {count} times.",
+        #         "High",
+        #     )
+        # )
+
+        print(f"A user's local group membership was enumerated {count} times.")
+        df_filtered.show(truncate=False)
+        #detect_user_local_group_enumeration_db_save(df_filtered)
+        return df_filtered
+    else:
+        # job_update(
+        #     job_id_create_list(
+        #         "detect_user_local_group_enumeration",
+        #         f"No user local group membership enumeration detected.",
+        #         "Low",
+        #     )
+        # )
+        print("No user local group membership enumeration detected.")
         return None
 
 
