@@ -23,7 +23,7 @@ from datetime import datetime
 import json
 import logging
 from mongodbfunctions import insertData
-from libs import job_id_create_list
+from libs import job_id_create_list ,df_to_dict
 
 logging.basicConfig(
     level=logging.INFO,
@@ -74,14 +74,7 @@ def detect_rdp_brute_force(df):
 
     if count > 10:
         logging.info("Rdp Brute Force attempt detected .. !")
-        insertData(
-            "report",
-            job_id_create_list(
-                "Windows_Firewall_Attack",
-                f"Detected potential rdp attack",
-                "Critical",
-            ),
-        )
+
         return logs_under_one_min
     else:
         logging.info("No brute force attack detected")
@@ -91,8 +84,17 @@ def detect_rdp_brute_force(df):
 def rdp(df):
     failLogon = filter_logs_by_event_id(df, 4625)
     result = detect_rdp_brute_force(df)
-
+#checkthistemp
     if result is not None:
+        insertData(
+            "report",
+            job_id_create_list(
+                "Windows_Firewall_Attack",
+                f"Detected potential rdp attack",
+                "Critical",
+                df_to_dict(result),
+            ),
+        )
         fromAttackTime = filter_logs_down_from_time(df, result.first()["@timestamp"])
         resultOf, data = isRdp_userLogin(fromAttackTime)
         if resultOf:
@@ -109,9 +111,9 @@ def rdp(df):
             #     f"{unique_ip_addresses} brute forced and has loged in",
             #     "high",
             # )
-            user_behavior_anomaly(fromAttackTime)
-            detect_special_privilege_logon(fromAttackTime)
-            detect_user_account_changed(fromAttackTime)
+            # user_behavior_anomaly(fromAttackTime)
+            # detect_special_privilege_logon(fromAttackTime)
+            # detect_user_account_changed(fromAttackTime)
             data.show()
 
         # result.show()

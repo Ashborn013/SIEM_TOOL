@@ -2,7 +2,6 @@ from threading import Timer
 from flask import Flask, request, jsonify
 import os
 import json
-from sqlFuntions import *
 from flask_cors import CORS 
 from mogodbFunctions import *
 app = Flask(__name__)
@@ -54,6 +53,18 @@ def home():
 def get_brute_force():
     data = []
     return jsonify(data), 200
+@app.route("/hostnames",methods=["GET"])
+def get_hostnames():
+    data = []
+    return jsonify(data) , 200
+
+@app.route("/Job_details", methods=["GET"])
+def get_job_details():
+    data = query_job_details_from_mongo()
+    return jsonify(data), 200
+
+
+
 
 # @app.route("/user_account_changes", methods=["GET"])
 # def get_user_account_changes():
@@ -75,10 +86,6 @@ def get_brute_force():
 #     data = []
 #     return jsonify(data), 200
 # # Ok
-# @app.route("/Job_details", methods=["GET"])
-# def get_job_details():
-#     data = query_job_details_from_mongo()
-#     return jsonify(data), 200
 
 
 
@@ -97,10 +104,6 @@ def get_brute_force():
 #     data = []
 #     return jsonify(data), 200
 
-# @app.route("/hostnames",methods=["GET"])
-# def get_hostnames():
-#     data = []
-#     return jsonify(data) , 200
 
 # @app.route("/track_user_activity", methods=["GET"])
 # def get_track_user_activity():

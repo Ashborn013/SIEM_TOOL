@@ -14,9 +14,9 @@ from pyspark.sql.functions import (
     date_format,
     max as spark_max,
     from_json,
-    Window,
-    TimestampType,
 )
+
+from pyspark.sql.types import TimestampType
 from datetime import datetime
 import json
 import uuid  # for generating unique id for each Job entry
@@ -121,13 +121,14 @@ def extract_new_process_creation_logs(df):
         # )
         print("No logs with new process created")
         return None
-    
+
+
 def detect_brute_force(df):
     df = df.withColumn("@timestamp", col("@timestamp").cast(TimestampType()))
     out_put = filter_logs_by_event_id(df, 4625)
     out_put = out_put.orderBy("@timestamp")
 
-    windowSpec = Window.orderBy("@timestamp")
+    windowSpec = window.orderBy("@timestamp")
     out_put = out_put.withColumn(
         "time_diff",
         col("@timestamp").cast("long")
@@ -145,7 +146,7 @@ def detect_brute_force(df):
         logs_under_one_min.show()
         return logs_under_one_min
     else:
-        #job_update(job_id_create_list("Brute Force", "Brute Force Not detected", "Low"))
+        # job_update(job_id_create_list("Brute Force", "Brute Force Not detected", "Low"))
         return None
 
 
@@ -161,7 +162,8 @@ def detect_brute_force_with_success(df):
         else:
             print("No successful logon after brute force attack.")
             return None
-        
+
+
 def detect_user_local_group_enumeration(df):
     df_filtered = df.filter(col("event_id") == "4798")
     count = df_filtered.count()
@@ -177,7 +179,7 @@ def detect_user_local_group_enumeration(df):
 
         print(f"A user's local group membership was enumerated {count} times.")
         df_filtered.show(truncate=False)
-        #detect_user_local_group_enumeration_db_save(df_filtered)
+        # detect_user_local_group_enumeration_db_save(df_filtered)
         return df_filtered
     else:
         # job_update(
@@ -197,3 +199,4 @@ def group_logs_by_date_latest(df):
     # print(latest_day)
     df_latest_day = df_with_day.filter(col("day") == latest_day)
     return df_latest_day
+
