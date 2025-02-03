@@ -2,7 +2,8 @@ from pyspark.sql import SparkSession
 from pyspark.sql.functions import col
 from pyspark.sql.types import StructType, StructField, StringType, TimestampType, MapType
 from utils import detect_special_privilege_logon, detect_brute_force_with_success, detect_user_local_group_enumeration
-
+from mongodbfunctions import insertData
+from libs import job_id_create_list ,df_to_dict
 import logging
 
 logging.basicConfig(
@@ -88,9 +89,24 @@ def correlate_logs(df):
         malware_detected = True
     if malware_detected:
         logging.info("Malware detected based on log correlation.")
-        df.show()
+        insertData(
+            "report",
+            job_id_create_list(
+                "Malware_Detected",
+                f"Detected potential malware activity",
+                "Critical",
+            ),
+        )
     else:
         logging.info("No malware detected based on log correlation.")
+        insertData(
+            "report",
+            job_id_create_list(
+                "Malware_Detected",
+                f"No malware activity detected",
+                "Critical",
+            ),
+        )
 
 def checkgandcrabmalware(df):
     correlate_logs(df)
