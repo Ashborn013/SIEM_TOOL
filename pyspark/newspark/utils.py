@@ -8,14 +8,13 @@ from pyspark.sql.functions import (
     avg,
     hour,
     when,
-    window,
     collect_list,
     lit,
     date_format,
     max as spark_max,
     from_json,
 )
-
+from pyspark.sql.window import Window
 from pyspark.sql.types import TimestampType
 from datetime import datetime
 import json
@@ -128,7 +127,7 @@ def detect_brute_force(df):
     out_put = filter_logs_by_event_id(df, 4625)
     out_put = out_put.orderBy("@timestamp")
 
-    windowSpec = window.orderBy("@timestamp")
+    windowSpec = Window.orderBy("@timestamp")
     out_put = out_put.withColumn(
         "time_diff",
         col("@timestamp").cast("long")

@@ -88,6 +88,7 @@ def correlate_logs(df):
         malware_detected = True
     if malware_detected:
         logging.info("Malware detected based on log correlation.")
+        df.show()
     else:
         logging.info("No malware detected based on log correlation.")
 
