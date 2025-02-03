@@ -14,6 +14,8 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 import { Badge } from "@/components/ui/badge"
+import Link from 'next/link'
+import { Button } from "@/components/ui/button"
 
 export function JobTable({ rows }) {
   return (
@@ -33,7 +35,7 @@ export function JobTable({ rows }) {
           {rows.map((row, index) => (
             <TableRow key={index}>
               <TableCell>{index + 1}</TableCell>
-              <TableCell>{row.Job}</TableCell>
+              <TableCell>{row.job}</TableCell>
               <TableCell>
                 <TooltipProvider>
                   <Tooltip>
@@ -51,8 +53,9 @@ export function JobTable({ rows }) {
                   {row.level}
                 </Badge>
               </TableCell>
-              <TableCell>{row.Job_id}</TableCell>
+              <TableCell>{row.job_id}</TableCell>
               <TableCell>{new Date(row.time * 1000).toLocaleString()}</TableCell>
+              <TableCell><Button><Link href={`/user/report/${row.job_id}`}>Open</Link></Button></TableCell>
             </TableRow>
           ))}
         </TableBody>
@@ -83,36 +86,36 @@ export function JobTableScroll({ rows }) {
               </TableRow>
             </TableHeader>
             <TableBody>
-          {rows.map((row, index) => (
-            <TableRow key={index}>
-              <TableCell>{index + 1}</TableCell>
-              <TableCell>{row.Job}</TableCell>
-              <TableCell>
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger>
-                      {row.message.length > 50 ? `${row.message.substring(0, 50)}...` : row.message}
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>{row.message}</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              </TableCell>
-              <TableCell>
-                <Badge variant={row.level.toLowerCase() === 'error' ? 'destructive' : 'default'}>
-                  {row.level}
-                </Badge>
-              </TableCell>
-              <TableCell>{row.Job_id}</TableCell>
-              <TableCell>{new Date(row.time * 1000).toLocaleString()}</TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
+              {displayRows.map((row, index) => (
+                <TableRow key={index}>
+                  <TableCell>{index + 1}</TableCell>
+                  <TableCell>{row.job}</TableCell>
+                  <TableCell>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger>
+                          {row.message.length > 50 ? `${row.message.substring(0, 50)}...` : row.message}
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>{row.message}</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant={row.level.toLowerCase() === 'error' ? 'destructive' : 'default'}>
+                      {row.level}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>{row.job_id}</TableCell>
+                  <TableCell>{new Date(row.time * 1000).toLocaleString()}</TableCell>
+
+                </TableRow>
+              ))}
+            </TableBody>
           </Table>
         </ScrollArea>
       </CardContent>
     </Card>
   )
 }
-

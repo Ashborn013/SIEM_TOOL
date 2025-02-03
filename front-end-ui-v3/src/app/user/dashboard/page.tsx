@@ -77,9 +77,9 @@ function useDataFetching() {
     try {
       setError(null)
 
-      const [jobDetailsResponse, bruteForceLogs] = await Promise.all([
+      const [jobDetailsResponse] = await Promise.all([
         fetch("http://127.0.0.1:223/Job_details").then((res) => res.json()),
-        fetch("http://127.0.0.1:223/brute_force").then((res) => res.json()),
+        // fetch("http://127.0.0.1:223/brute_force").then((res) => res.json()),
       ])
 
       const newCounts = countValuesInArray(jobDetailsResponse)

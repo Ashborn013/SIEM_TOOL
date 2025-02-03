@@ -29,16 +29,16 @@ export default function Page() {
       }
     }
 
-    fetchJobDetails() // Initial fetch
-    const intervalId = setInterval(fetchJobDetails, 5000) // Fetch every 5000 ms (5 seconds)
+    fetchJobDetails() 
+    const intervalId = setInterval(fetchJobDetails, 5000) 
     return () => clearInterval(intervalId)
   }, [])
 
   const filteredRows = rows.filter(row => 
-    row.Job.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    row.job.toLowerCase().includes(searchQuery.toLowerCase()) ||
     row.message.toLowerCase().includes(searchQuery.toLowerCase()) ||
     row.level.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    row.Job_id.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    row.job_id.toLowerCase().includes(searchQuery.toLowerCase()) ||
     new Date(row.time * 1000).toLocaleString().toLowerCase().includes(searchQuery.toLowerCase())
   )
 
@@ -69,4 +69,3 @@ export default function Page() {
     </div>
   )
 }
-
