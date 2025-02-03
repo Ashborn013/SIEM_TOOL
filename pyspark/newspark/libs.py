@@ -1,6 +1,7 @@
 import time
 import uuid
-
+import json
+import bson
 
 def fromMongoToSparkdf(spark, mongoList):
     rdd = spark.sparkContext.parallelize(mongoList)
@@ -17,3 +18,8 @@ def job_id_create_list(job, message, level, ids=[]):
         "job_id": str(uuid.uuid4()),
         "logs_ids": ids,
     }
+
+
+def df_to_dict(df):
+    pandas_df = df.toPandas()    
+    return pandas_df.to_dict(orient='records')
