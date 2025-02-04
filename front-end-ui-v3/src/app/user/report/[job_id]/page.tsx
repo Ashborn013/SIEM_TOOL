@@ -3,6 +3,8 @@ import { useEffect, useState } from "react"
 import { useParams, notFound } from "next/navigation"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { DynamicTable } from "@/components/DynamicTable"
+import { ScrollArea } from "@/components/ui/scroll-area"
 
 export default function JobPage() {
   const { job_id } = useParams()
@@ -30,6 +32,7 @@ export default function JobPage() {
       }
     }
 
+
     fetchJob()
   }, [job_id]) // Added job_id to the dependency array
 
@@ -40,6 +43,7 @@ export default function JobPage() {
   if (job === undefined) {
     return <div>Loading...</div>
   }
+  console.log(job.logs_ids)
 
   return (
     <div className="container mx-auto p-4">
@@ -73,6 +77,9 @@ export default function JobPage() {
           </div>
         </CardContent>
       </Card>
+      {job.logs_ids.length > 0 && (
+        <DynamicTable data={job.logs_ids} />
+      )}
     </div>
   )
 }
