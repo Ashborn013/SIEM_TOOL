@@ -1,0 +1,19 @@
+services:
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: password
+    volumes:
+      - frontend-pgdata:/var/lib/postgresql/data 
+    ports :
+      - "5432:5432"
+  mailhog:
+    container_name: siem-mailhog-server
+    image: mailhog/mailhog:v1.0.1
+    restart: always
+    ports:
+    - 1025:1025
+    - 8025:8025
+volumes:
+  frontend-pgdata : 
