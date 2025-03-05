@@ -1,4 +1,4 @@
-const nodemailer = require("nodemailer");
+import  nodemailer from "nodemailer"
 
 export const transporter = nodemailer.createTransport({
     host: process.env.MAIL_SEVER_SMTP_HOST || "localhost",              // MailHog SMTP server

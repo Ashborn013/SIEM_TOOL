@@ -7,11 +7,11 @@ import { Label } from "@/components/ui/label"
 import { authClient } from "@/lib/auth-client"
 import { toast } from "sonner"
 import { X } from "lucide-react"
+import { redirect } from "next/dist/server/api-utils"
 
 async function login(formData: FormData) {
   const email = formData.get('email')?.toString().trim()
   const password = formData.get('password')?.toString().trim()
-
   if (!email || !password) {
     console.error('Email and password are required')
     return
