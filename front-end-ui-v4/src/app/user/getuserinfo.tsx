@@ -3,15 +3,13 @@ import { authClient } from "@/lib/auth-client";
 // import auth from '@/lib/auth'
 export async function getUserInfoForSIdeBar() {
     const { data: sessionInfo } = await authClient.getSession();
-    const user = sessionInfo?.user
+    const user = sessionInfo?.user;
     if (!user) {
-        return {}
+        return {};
     }
     return {
-        name: user.name ,
-        email: user.email ,
-        avatar: user.image 
-    }
-
-
+        name: user.name,
+        email: user.email,
+        avatar: user.image || "/assests/circle-user.svg"
+    };
 }

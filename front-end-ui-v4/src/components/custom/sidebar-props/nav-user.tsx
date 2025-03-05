@@ -1,19 +1,9 @@
 "use client"
+import { authClient } from "@/lib/auth-client"
+import { useRouter } from "next/navigation"
+import { BadgeCheck, Bell, ChevronsUpDown, LogOut } from "lucide-react"
 
-import {
-  BadgeCheck,
-  Bell,
-  ChevronsUpDown,
-  CreditCard,
-  LogOut,
-  Sparkles,
-} from "lucide-react"
-
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/components/ui/avatar"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -23,12 +13,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import {
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  useSidebar,
-} from "@/components/ui/sidebar"
+import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "@/components/ui/sidebar"
 
 export function NavUser({
   user,
@@ -40,6 +25,24 @@ export function NavUser({
   }
 }) {
   const { isMobile } = useSidebar()
+  const router = useRouter()
+
+  const handleLogout = async () => {
+    try {
+      const { data: sessionInfo } = await authClient.getSession()
+      const token = sessionInfo?.session.token as string
+      await authClient.revokeSession({
+        token: token,
+      })
+
+      // Redirect to login page after successful logout
+      router.push("/login")
+    } catch (error) {
+      console.error("Logout failed:", error)
+      // Still try to redirect even if there's an error
+      router.push("/login")
+    }
+  }
 
   return (
     <SidebarMenu>
@@ -102,7 +105,7 @@ export function NavUser({
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={handleLogout}>
               <LogOut />
               Log out
             </DropdownMenuItem>
@@ -112,3 +115,4 @@ export function NavUser({
     </SidebarMenu>
   )
 }
+

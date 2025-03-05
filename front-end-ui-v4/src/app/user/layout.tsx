@@ -21,6 +21,7 @@ export default function Layout({ children }: { children: ReactNode }) {
     const getInfoCall = async () => {
       const data = await getUserInfoForSIdeBar() as User;
       userValueSet(data);
+      console.log(data)
     };
     getInfoCall();
   }, []);
