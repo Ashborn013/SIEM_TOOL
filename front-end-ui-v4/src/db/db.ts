@@ -9,3 +9,4 @@ export const  db = drizzle({
   }
 });
 
+export const db_other = drizzle(process.env.DATABASE_URL_OTHER!);

@@ -8,8 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { toast } from "sonner"
 // import 
-
-
+import NoTokenFound from './Notokenfound';
 
 
 export default function Page() {
@@ -62,7 +61,7 @@ export default function Page() {
   }
 
   if (token === null) {
-    return <div>No token Found</div>;
+    return <><NoTokenFound/></>;
   }
 
   return (

@@ -55,7 +55,7 @@ def get_brute_force():
     return jsonify(data), 200
 @app.route("/hostnames",methods=["GET"])
 def get_hostnames():
-    data = []
+    data = quaryHostNames_from_mongo()
     return jsonify(data) , 200
 
 @app.route("/Job_details", methods=["GET"])

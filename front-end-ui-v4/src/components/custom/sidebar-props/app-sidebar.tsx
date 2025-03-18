@@ -43,10 +43,11 @@ const data = {
           title: "Report",
           url: "/user/report",
         },
+        // {
+        //   title: "Risk",
+        //   url: "/user/risk",
+        // },
         {
-          title: "Risk",
-          url: "/user/risk",
-        },{
           title : "Targets",
           url : "/user/targets"
         }
