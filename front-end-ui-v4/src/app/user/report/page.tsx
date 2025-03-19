@@ -81,7 +81,7 @@ export default function Page() {
   return (
     <QueryClientProvider client={queryClient}>
       <JobList />
-      <ReactQueryDevtools initialIsOpen={false} />
+      {/* <ReactQueryDevtools initialIsOpen={false} /> */}
     </QueryClientProvider>
   )
 }

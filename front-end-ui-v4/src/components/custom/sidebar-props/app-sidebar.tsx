@@ -48,8 +48,8 @@ const data = {
         //   url: "/user/risk",
         // },
         {
-          title : "Targets",
-          url : "/user/targets"
+          title : "Machines",
+          url : "/user/machines"
         }
       ],
     },
