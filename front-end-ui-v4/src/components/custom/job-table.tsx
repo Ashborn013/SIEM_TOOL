@@ -17,7 +17,7 @@ import { Badge } from "@/components/ui/badge"
 import Link from 'next/link'
 import { Button } from "@/components/ui/button"
 
-export function JobTable({ rows }) {
+export function JobTable({ rows  } ) {
   return (
     <div className="rounded-md border">
       <Table>

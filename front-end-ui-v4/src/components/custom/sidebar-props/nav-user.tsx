@@ -14,6 +14,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "@/components/ui/sidebar"
+import { NotificationsAlert } from "./notification-alert"
 
 export function NavUser({
   user,
@@ -100,8 +101,7 @@ export function NavUser({
                 Billing
               </DropdownMenuItem> */}
               <DropdownMenuItem>
-                <Bell />
-                Notifications
+                <NotificationsAlert/>
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />

@@ -4,6 +4,7 @@ import { drizzle } from 'drizzle-orm/node-postgres';
 import { nextCookies } from "better-auth/next-js";
 import { user, account, session, verification } from '@/db/auth-schema'
 import { sendEmail } from "@/actions/email";
+import { openAPI } from "better-auth/plugins"
 export const db = drizzle({
     connection: {
         connectionString: process.env.DATABASE_URL!,
@@ -54,7 +55,7 @@ export const auth = betterAuth({
         // }
     },
 
-    plugins: [nextCookies()]
+    plugins: [openAPI(),nextCookies()]
 
 })
 

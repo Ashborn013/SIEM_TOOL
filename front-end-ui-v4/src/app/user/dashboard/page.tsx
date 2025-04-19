@@ -8,8 +8,6 @@ import { Bar, BarChart, XAxis, YAxis, CartesianGrid } from "recharts"
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Search } from 'lucide-react'
-import { Input } from "@/components/ui/input"
 
 const queryClient = new QueryClient()
 
@@ -160,7 +158,7 @@ async function getJobDetails() {
   return res.json()
 }
 
-export function SkeletonCard() {
+function SkeletonCard() {
   return (
     <Card className="w-full max-w-6xl mx-auto p-4">
       <CardHeader>

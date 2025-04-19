@@ -1,9 +1,4 @@
 {
-  "extends": ["next/core-web-vitals", "next/typescript"],
-  // "overrides": [
-  //   {
-  //     "files": ["/"],
-  //     "rules": {}
-  //   }
-  // ]
+  "extends": ["next/core-web-vitals", "next/typescript"]
+
 }
