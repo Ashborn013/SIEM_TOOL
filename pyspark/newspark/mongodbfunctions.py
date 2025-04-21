@@ -41,3 +41,17 @@ def retrieveDataOneId(collection_name, id):
 
 def retrieveDataMultipleId(collection_name, ids):
     return [retrieveDataOneId(collection_name, x) for x in ids]
+
+def add_notification_to_mongo(message):
+    """
+    Add a new notification message to the 'notification' collection.
+    
+    Args:
+        message (dict): A dictionary containing the notification details.
+                        Example: {"title": "Alert", "content": "This is a test notification"}
+    """
+    db = connectWithDb()
+    collection = db['notification']
+    
+    result = collection.insert_one(message)
+    return str(result.inserted_id)

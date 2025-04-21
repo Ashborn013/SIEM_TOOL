@@ -7,7 +7,7 @@ RUN apt-get install -y  openjdk-17-jdk
 
 # Install pyspark
 # RUN pip install distutils --break-package-system
-RUN pip install pyspark pymongo[srv] pandas numpy setuptools
+RUN pip install pyspark pymongo[srv] pandas numpy setuptools pyyaml requests
 
 # Copy your application code
 COPY . /app

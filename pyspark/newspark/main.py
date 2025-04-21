@@ -1,7 +1,7 @@
 from pymongo import MongoClient
 from pyspark.sql import SparkSession
 import bson
-from mongodbfunctions import viewAllData
+from mongodbfunctions import viewAllData,add_notification_to_mongo
 from libs import fromMongoToSparkdf
 from time import sleep
 import logging
@@ -14,7 +14,7 @@ from malware_check import checkmalware
 from windows_firewall_attack import correlate_windows_firewall_attack
 from powershell_attack_cor import correlate_execution_policy_attack
 from gandcrab_malcheck import checkgandcrabmalware
-
+from time import time
 # Initialize logging
 
 
@@ -75,10 +75,11 @@ def app():
 
 def coreFunctions(df):
     checkrdp(df)
+    add_notification_to_mongo({"title": "Alert", "content": "This is a test notification","time":time()})
     checkmalware(df)
     correlate_windows_firewall_attack(df)
     correlate_execution_policy_attack(df)
-    checkgandcrabmalware(df)
+    # checkgandcrabmalware(df)
 
     # df.show(truncate=False, n=20)
 
@@ -89,3 +90,62 @@ if __name__ == "__main__":
     finally:
         logging.info("Stopping SparkSession...")
         spark.stop()
+# import json
+# import logging
+# import signal
+# from time import sleep
+
+# from pyspark.sql import SparkSession
+# from mongodbfunctions import viewAllData
+# from libs import fromMongoToSparkdf
+# from rdpcheck import checkrdp
+
+# logging.basicConfig(
+#     level=logging.INFO,
+#     format="%(asctime)s - %(levelname)s - %(message)s",
+#     handlers=[logging.StreamHandler(), logging.FileHandler("app.log")]
+# )
+
+# spark = SparkSession.builder.appName("SIEM-RDP").master("spark://spark:7077").getOrCreate()
+# count = 0
+# running = True
+
+# def signal_handler(sig, frame):
+#     global running
+#     logging.info("Stopping gracefully...")
+#     running = False
+
+# signal.signal(signal.SIGINT, signal_handler)
+# signal.signal(signal.SIGTERM, signal_handler)
+
+# with open("mitre_map.json") as f:
+#     mitre_map = json.load(f)
+
+# def coreFunctions(df):
+#     checkrdp(df, mitre_map)
+
+# def app():
+#     global count, running
+#     while running:
+#         try:
+#             logging.info("Checking logs from MongoDB...")
+#             data = viewAllData()
+#             count2 = len(data)
+
+#             if count != count2:
+#                 df = fromMongoToSparkdf(spark, data)
+#                 coreFunctions(df)
+#                 count = count2
+#             else:
+#                 logging.info("No new data.")
+#         except Exception as e:
+#             logging.error(f"Error occurred: {e}", exc_info=True)
+#         finally:
+#             sleep(60)
+
+# if __name__ == "__main__":
+#     try:
+#         app()
+#     finally:
+#         spark.stop()
+#         logging.info("Spark session stopped.")

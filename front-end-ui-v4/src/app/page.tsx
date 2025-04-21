@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { Shield, BarChart2, AlertCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
-export default function LandingPage() {
+function LandingPage() {
   return (
     <div className="flex flex-col min-h-screen">
       <header className="px-4 lg:px-6 h-14 flex items-center">
@@ -79,3 +79,18 @@ export default function LandingPage() {
   )
 }
 
+import Image from "next/image";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
+const queryClient = new QueryClient()
+
+
+
+export default function Render() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <LandingPage />
+      <ReactQueryDevtools initialIsOpen={false} />
+    </QueryClientProvider>
+  );
+}

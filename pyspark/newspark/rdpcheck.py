@@ -184,3 +184,28 @@ def checkrdp(df_rdp):
     )
     df_selected_rdp.show()
     rdp(df_selected_rdp)
+
+# from pyspark.sql.functions import col, lit
+# from functools import reduce
+# import logging
+
+# def checkrdp(df, mitre_map):
+#     rdp_techniques = ["ATTACK.T1076"]  # RDP technique ID
+
+#     for tid in rdp_techniques:
+#         if tid in mitre_map:
+#             logging.info(f"Conditions for {tid}: {conditions}") 
+#             rule = mitre_map[tid]
+#             conditions = rule["match"]
+#             tech_name = rule["name"]
+
+#             logging.info(f"[RDP] Checking for {tech_name} ({tid})")
+
+#             filters = [col(field).isin(values) for field, values in conditions.items()]
+#             filtered_df = df.filter(reduce(lambda x, y: x & y, filters))
+
+#             if filtered_df.count() > 0:
+#                 detected = filtered_df.withColumn("technique_id", lit(tid)) \
+#                                       .withColumn("technique_name", lit(tech_name))
+#                 detected.show(truncate=False)
+#                 # You can save to MongoDB or alerting system here

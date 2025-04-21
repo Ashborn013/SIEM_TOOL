@@ -15,7 +15,7 @@ export default function Page() {
   return (
     <QueryClientProvider client={queryClient}>
       <JobDetails />
-      {/* <ReactQueryDevtools initialIsOpen={false} /> */}
+      <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   )
 }

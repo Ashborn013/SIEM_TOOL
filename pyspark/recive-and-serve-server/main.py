@@ -65,6 +65,17 @@ def get_job_details():
 
 
 
+@app.route("/notifications", methods=["GET"])
+def get_notifications():
+    """
+    Fetch all notifications from the 'notification' collection and return as JSON.
+    """
+    try:
+        data = fetch_notifications_from_mongo()
+        return jsonify(data), 200
+    except Exception as e:
+        return jsonify({"error": f"Failed to fetch notifications: {e}"}), 500
+    
 
 # @app.route("/user_account_changes", methods=["GET"])
 # def get_user_account_changes():
