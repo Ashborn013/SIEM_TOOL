@@ -1,0 +1,49 @@
+{
+  "name": "someting",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@heroui/button": "^2.2.17",
+    "@heroui/dropdown": "^2.3.17",
+    "@heroui/react": "^2.7.6",
+    "@heroui/system": "^2.4.13",
+    "@heroui/theme": "^2.4.13",
+    "@tanstack/react-query": "^5.74.4",
+    "@tanstack/react-query-devtools": "^5.74.4",
+    "better-auth": "^1.2.7",
+    "dotenv": "^16.5.0",
+    "drizzle-orm": "^0.42.0",
+    "framer-motion": "^12.7.4",
+    "lucide-react": "^0.501.0",
+    "moment": "^2.30.1",
+    "motion": "^12.7.4",
+    "next": "^15.3.1",
+    "nodemailer": "^6.10.1",
+    "pg": "^8.14.1",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "recharts": "^2.15.3",
+    "zod": "^3.24.3"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3",
+    "@types/node": "^20",
+    "@types/nodemailer": "^6.4.17",
+    "@types/pg": "^8.11.13",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "drizzle-kit": "^0.31.0",
+    "eslint": "^9",
+    "eslint-config-next": "15.1.7",
+    "postcss": "^8",
+    "tailwindcss": "^3.4.1",
+    "tsx": "^4.19.3",
+    "typescript": "^5"
+  }
+}
