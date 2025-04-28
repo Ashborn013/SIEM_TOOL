@@ -10,6 +10,7 @@ import Sidebar from '@/components/sidebar-props/sidebar-main'
 import { GetJobType } from './schema'
 import moment from "moment"
 import LogTable from '@/components/custom/log-table'
+import ReportLogDataDisplayModal from './reporttablemodal'
 
 async function fetchJobs(job_id: string) {
     const res = await fetch("http://localhost:223/Job_details")
@@ -43,7 +44,7 @@ function JobPage() {
                 <h1 className="text-2xl font-bold">Job Details</h1>
                 <p className="text-gray-500">Detailed information about the selected job</p>
             </header>
-            <div className="flex justify-center mb-6">
+            {/* <div className="flex justify-center mb-6">
                 <div className="relative w-full max-w-md">
                     <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                     <Input
@@ -54,7 +55,7 @@ function JobPage() {
                         onChange={(e) => setSearchQuery(e.target.value)}
                     />
                 </div>
-            </div>
+            </div> */}
             <Card className='flex'>
                 <CardHeader>
                     <h2 className="text-lg font-semibold">Job Information</h2>
@@ -90,17 +91,13 @@ function JobPage() {
 
 export default function Page() {
     const { job_id } = useParams()
-    const { data: job, isLoading, isError } = useQuery({
-        queryKey: ['jobDetail', job_id],
-        queryFn: () => fetchJobs(job_id as string),
-    })
-
+    
     return (
         <div className="flex min-h-screen">
             <Sidebar />
             <div className="flex flex-1 items-center justify-center flex-col">
                 <JobPage />
-                {/* <LogTable rows={job?.job_id ?? []} /> */}
+                <ReportLogDataDisplayModal jobId={job_id as string} />
             </div>
         </div>
     )

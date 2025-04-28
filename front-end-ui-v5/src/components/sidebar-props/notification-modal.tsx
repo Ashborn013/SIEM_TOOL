@@ -12,6 +12,7 @@ interface NotificationModalProps {
     isOpen: boolean;
     onOpenChange: () => void;
 }
+
 async function fetchNotifications() {
     // Simulate network delay
     const res = await fetch("http://127.0.0.1:223/notifications")
