@@ -112,6 +112,7 @@ export function MachineCard({ machine }: MachineCardProps) {
                       <Chip
                         variant="dot"
                         className="justify-start font-mono text-xs"
+                        key={i}
                       >
                         {ip}
                       </Chip>
@@ -129,6 +130,7 @@ export function MachineCard({ machine }: MachineCardProps) {
                       <Chip
                         variant="dot"
                         className="justify-start font-mono text-xs"
+                        key={i}
                       >
                         {mac}
                       </Chip>
