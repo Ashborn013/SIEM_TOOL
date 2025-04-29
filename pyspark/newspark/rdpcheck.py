@@ -22,8 +22,9 @@ from pyspark.sql.types import TimestampType
 from datetime import datetime
 import json
 import logging
-from mongodbfunctions import insertData
+from mongodbfunctions import insertData, add_notification_to_mongo
 from libs import job_id_create_list ,df_to_dict
+from time import time
 
 logging.basicConfig(
     level=logging.INFO,
@@ -95,6 +96,7 @@ def rdp(df):
                 df_to_dict(result),
             ),
         )
+        add_notification_to_mongo({"title": "RDP Attack","content": "Potential RDP brute force attack detected.","time": time()})
         fromAttackTime = filter_logs_down_from_time(df, result.first()["@timestamp"])
         resultOf, data = isRdp_userLogin(fromAttackTime)
         if resultOf:

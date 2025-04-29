@@ -75,11 +75,11 @@ def app():
 
 def coreFunctions(df):
     checkrdp(df)
-    add_notification_to_mongo({"title": "Alert", "content": "This is a test notification","time":time()})
+    #add_notification_to_mongo({"title": "Alert", "content": "This is a test notification","time":time()})
     checkmalware(df)
     correlate_windows_firewall_attack(df)
     correlate_execution_policy_attack(df)
-    # checkgandcrabmalware(df)
+    checkgandcrabmalware(df)
 
     # df.show(truncate=False, n=20)
 

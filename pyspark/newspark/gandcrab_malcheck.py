@@ -2,9 +2,10 @@ from pyspark.sql import SparkSession
 from pyspark.sql.functions import col
 from pyspark.sql.types import StructType, StructField, StringType, TimestampType, MapType
 from utils import detect_special_privilege_logon, detect_brute_force_with_success, detect_user_local_group_enumeration
-from mongodbfunctions import insertData
+from mongodbfunctions import insertData, add_notification_to_mongo
 from libs import job_id_create_list ,df_to_dict
 import logging
+from time import time
 
 logging.basicConfig(
     level=logging.INFO,
@@ -95,8 +96,10 @@ def correlate_logs(df):
                 "Malware_Detected",
                 f"Detected potential malware activity",
                 "Critical",
+                df_to_dict(df),
             ),
         )
+        add_notification_to_mongo({"title": "Malware Alert","content": "Potential malware activity detected.","time": time()})
     else:
         logging.info("No malware detected based on log correlation.")
         insertData(
