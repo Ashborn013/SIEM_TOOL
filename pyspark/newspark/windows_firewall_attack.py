@@ -16,9 +16,10 @@ from pyspark.sql.functions import (
 )
 from utils import group_logs_by_date_latest
 import logging
-from libs import job_id_create_list
-from mongodbfunctions import insertData
+from libs import job_id_create_list, df_to_dict
+from mongodbfunctions import insertData, add_notification_to_mongo
 
+from time import time
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(levelname)s - %(message)s",
@@ -89,8 +90,17 @@ def correlate_windows_firewall_attack(df):
                 "Windows_Firewall_Attack",
                 f"Detected potential Windows Firewall attack with {total_count} events",
                 "Critical",
+                df_to_dict(
+                    df_filtered.select(
+                        col("@timestamp").alias("timestamp"),
+                        col("event_id"),
+                        col("hostname"),
+                        col("message"),
+                    )
+                ),
             ),
         )
+        add_notification_to_mongo({"title": "Windows Firewall Attack","content": "Firewall attack detected.","time": time()})
 
         logging.info(
             f"Detected potential Windows Firewall attack with {total_count} events at {common_timestamp}."

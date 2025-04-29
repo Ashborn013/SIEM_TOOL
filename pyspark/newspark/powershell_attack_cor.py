@@ -16,8 +16,9 @@ from pyspark.sql.functions import (
 )
 from utils import group_logs_by_date_latest
 import logging
-from libs import job_id_create_list
-from mongodbfunctions import insertData
+from libs import job_id_create_list, df_to_dict
+from mongodbfunctions import insertData, add_notification_to_mongo
+from time import time
 
 logging.basicConfig(
     level=logging.INFO,
@@ -72,8 +73,17 @@ def correlate_execution_policy_attack(df_in):
                 "Execution_Policy_Attack",
                 f"Detected potential execution policy attack with {total_count}",
                 "Critical",
-            ),
+                df_to_dict(
+                    df_filtered.select(
+                        col("@timestamp").alias("timestamp"),
+                        col("event_id"),
+                        col("hostname"),
+                        col("message"),
+                    )
+                ),
+            )
         )
+        add_notification_to_mongo({"title": "Execution Policy Attack","content": "Policy attack detected.","time": time()})
         df_filtered.select(
             lit(common_timestamp).alias("Common_Timestamp"),  # Common timestamp
             col("event_id"),
