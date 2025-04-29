@@ -390,19 +390,16 @@ This appendix contains visual representations of the SIEM tool dashboard, highli
 
 > **Note:** Images are annotated to describe key features and interface elements for better understanding.  
 
-![[Pasted image 20250320003214.png]]
+![Home Page](./assets/home-page.png)
+![Login PAge](./assets/login-page.png)
+![](./assets/Log-search-info.jpeg)
+![](./assets/job-listing.jpeg)
+![](./assets/security-trends.jpeg)
+![](./assets/job-details.jpeg)
+![](./assets/Machine-Info.jpeg)
+![](./assets/Machine-info-network.jpeg)
+![](./assets/Notification-page.jpeg)
 
-![[Pasted image 20250320003255.png]]
-
-![[Pasted image 20250320005821.png]]
-
-![[Pasted image 20250320005845.png]]
-
-![[img92.jpg]]
-
-![[Pasted image 20250320005914.png]]
-
-![[Pasted image 20250320005940.png]]
 
 
 ---
