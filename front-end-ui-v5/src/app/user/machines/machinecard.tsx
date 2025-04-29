@@ -1,3 +1,4 @@
+"use client"
 import { Badge, Chip, Divider } from "@heroui/react"; // Correct library name
 import {
   Card,
