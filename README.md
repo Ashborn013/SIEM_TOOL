@@ -35,8 +35,7 @@ The system follows this data processing flow:
 ```
 Log Sources → Winlogbeat (Windows Logs) → Kafka (Transport) → PySpark (Processing & Correlation Engine) → MongoDB (Storage) → Frontend Dashboard (Visualization & Reporting)
 ```
-
-![[SIEM Architecture-2.png]]
+![SIEM-Arch](./assets/SIEM%20Architecture-2.png)
 
 The SIEM tool follows a modular and scalable architecture, utilizing open-source technologies for enhanced performance. The core components include:
 1. Log Collection (Winlogbeat): Collects Windows security logs and forwards them to Kafka.
