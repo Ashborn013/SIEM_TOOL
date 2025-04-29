@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { Badge, Chip, Divider } from "@heroui/react"; // Correct library name
 import {
   Card,
@@ -46,12 +46,15 @@ export function MachineCard({ machine }: MachineCardProps) {
           {machine.os.name} (v{machine.os.version}, Build {machine.os.build})
           <Divider />
           <Tabs>
-            <Tab key="System" title={
-              <div className="flex items-center space-x-2">
-                <Cpu />
-                <span>System</span>
-              </div>
-            }>
+            <Tab
+              key="System"
+              title={
+                <div className="flex items-center space-x-2">
+                  <Cpu />
+                  <span>System</span>
+                </div>
+              }
+            >
               <div className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
@@ -63,7 +66,9 @@ export function MachineCard({ machine }: MachineCardProps) {
                       </div>
                       <div className="flex justify-between text-sm">
                         <span className="text-muted-foreground">Version:</span>
-                        <span className="font-medium">{machine.os.version}</span>
+                        <span className="font-medium">
+                          {machine.os.version}
+                        </span>
                       </div>
                       <div className="flex justify-between text-sm">
                         <span className="text-muted-foreground">Build:</span>
@@ -86,15 +91,16 @@ export function MachineCard({ machine }: MachineCardProps) {
                   </div>
                 </div>
               </div>
-
-
             </Tab>
-            <Tab key="Network" title={
-              <div className="flex items-center space-x-2">
-                <Network />
-                <span>Network</span>
-              </div>
-            }>
+            <Tab
+              key="Network"
+              title={
+                <div className="flex items-center space-x-2">
+                  <Network />
+                  <span>Network</span>
+                </div>
+              }
+            >
               <div className="space-y-4">
                 <div>
                   <h3 className="text-sm font-medium mb-2 flex items-center gap-2">
@@ -130,16 +136,10 @@ export function MachineCard({ machine }: MachineCardProps) {
                   </div>
                 </div>
               </div>
-
-
             </Tab>
-
           </Tabs>
         </CardBody>
       </Card>
     </>
   );
 }
-
-
-

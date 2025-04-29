@@ -1,12 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import {
-  ChevronDown,
-  Rocket,
-  Boxes,
-  Wrench,Shield,Box
-} from "lucide-react";
+import { ChevronDown, Rocket, Boxes, Wrench, Shield, Box } from "lucide-react";
 import { Button } from "@heroui/react";
 import { useRouter } from "next/navigation";
 import SideBarUser from "./sidebar-user";
@@ -19,8 +14,7 @@ const navigationItems = [
       { name: "Dashboard", href: "/user/dashboard" },
       { name: "Report", href: "/user/report" },
       { name: "Machines", href: "/user/machines" },
-
-    ]
+    ],
   },
   {
     title: "Documentation",
@@ -30,8 +24,7 @@ const navigationItems = [
       { name: "Get Started", href: "#" },
       { name: "Tutorials", href: "#" },
       { name: "Changelog", href: "#" },
-
-    ]
+    ],
   },
   {
     title: "Settings",
@@ -40,17 +33,20 @@ const navigationItems = [
       { name: "Theme", href: "#" },
       { name: "General", href: "#" },
       { name: "Config", href: "#" },
-
-    ]
-  }
+    ],
+  },
 ];
 
 export default function Sidebar() {
   const router = useRouter();
-  const [expandedSection, setExpandedSection] = useState<string | null>("Getting Started");
+  const [expandedSection, setExpandedSection] = useState<string | null>(
+    "Getting Started"
+  );
 
   const toggleSection = (sectionTitle: string) => {
-    setExpandedSection(current => current === sectionTitle ? null : sectionTitle);
+    setExpandedSection((current) =>
+      current === sectionTitle ? null : sectionTitle
+    );
   };
 
   return (
@@ -61,8 +57,10 @@ export default function Sidebar() {
       className="w-64 h-screen bg-background text-foreground/60 p-4 flex flex-col"
     >
       <div className="mb-6 flex items-center gap-2">
-        <span className="text-foreground font-semibold text-xl ">Some SID</span>
-        
+        <span className="text-foreground font-semibold text-xl ">
+          SIEM Guard
+        </span>
+        <Shield />
       </div>
 
       <nav className="flex-1 space-y-6">
@@ -79,7 +77,7 @@ export default function Sidebar() {
               </div>
               <ChevronDown
                 className={`w-4 h-4 transition-transform ${
-                  expandedSection === section.title ? 'rotate-180' : ''
+                  expandedSection === section.title ? "rotate-180" : ""
                 }`}
               />
             </Button>
