@@ -53,7 +53,7 @@ export default function ReportLogDataDisplayModal({
           {(onClose) => (
             <>
               <ModalHeader className="flex flex-col gap-1">
-                Modal Title
+                {/* Modal Title */}
               </ModalHeader>
               <ModalBody>
                 <LogTable rows={job?.logs_ids ?? []} />

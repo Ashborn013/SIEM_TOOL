@@ -20,21 +20,21 @@ const navigationItems = [
     title: "Documentation",
     icon: <Boxes className="w-4 h-4" />,
     items: [
-      { name: "Introduction", href: "#" },
-      { name: "Get Started", href: "#" },
-      { name: "Tutorials", href: "#" },
-      { name: "Changelog", href: "#" },
+      // { name: "Introduction", href: "#" },
+      { name: "Get Started", href: "/SIEMGuard-Documentation.pdf" },
+      // { name: "Tutorials", href: "#" },
+      // { name: "Changelog", href: "#" },
     ],
   },
-  {
-    title: "Settings",
-    icon: <Wrench className="w-4 h-4" />,
-    items: [
-      { name: "Theme", href: "#" },
-      { name: "General", href: "#" },
-      { name: "Config", href: "#" },
-    ],
-  },
+  // {
+  //   title: "Settings",
+  //   icon: <Wrench className="w-4 h-4" />,
+  //   items: [
+  //     { name: "Theme", href: "#" },
+  //     { name: "General", href: "#" },
+  //     { name: "Config", href: "#" },
+  //   ],
+  // },
 ];
 
 export default function Sidebar() {
