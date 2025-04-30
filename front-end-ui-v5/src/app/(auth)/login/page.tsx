@@ -109,9 +109,9 @@ export default function LoginCard() {
               <h1 className="text-2xl font-bold text-foreground">
                 Welcome Back
               </h1>
-              <p className="text-sm text-default-500">
+              {/* <p className="text-sm text-default-500">
                 Please sign in to continue
-              </p>
+              </p> */}
             </CardHeader>
 
             <CardBody className="space-y-6">
